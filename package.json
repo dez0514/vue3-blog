@@ -1,0 +1,31 @@
+{
+  "name": "vue3-blog",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "fast-glob": "^3.2.11",
+    "mitt": "^3.0.0",
+    "nprogress": "^0.2.0",
+    "pinia": "^2.0.14",
+    "qs": "^6.10.3",
+    "vue": "^3.2.25",
+    "vue-router": "^4.0.15"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.36",
+    "@types/nprogress": "^0.2.0",
+    "@vitejs/plugin-vue": "^2.3.3",
+    "postcss-px-to-viewport": "^1.1.1",
+    "sass": "^1.52.1",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.9",
+    "vite-plugin-svg-icons": "^2.0.1",
+    "vue-tsc": "^0.34.7"
+  }
+}
