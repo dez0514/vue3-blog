@@ -6,6 +6,7 @@ import NProgress from 'nprogress'
 export const constantRoutes: Array<RouteRecordRaw> = [
   {
     path: '/',
+    name: 'home',
     meta: {
       title: '博客'
     },

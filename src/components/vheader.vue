@@ -1,9 +1,9 @@
 <template>
   <div :class="['header', scrollHeight > 0 ? 'fixed' : '']">
-    <div class="header-left">昨天太近，明天太远</div>
+    <div class="header-left">昨天太近，明天太远 {{route.name}}</div>
     <div class="header-right">
       <div class="tab-list">
-        <div :class="['tab-item', tabIndex === index ? 'active' : '']" v-for="(item, index) in tabList" :key="index" @click="handleChangeRouter(index)" @mouseenter="hanleHoverTab(index)" @mouseleave="hanleHoverTab(-1)">
+        <div :class="['tab-item', tabIndex === index ? 'active' : '']" v-for="(item, index) in tabList" :key="index" @click="handleChangeRouter(index, item)" @mouseenter="hanleHoverTab(index)" @mouseleave="hanleHoverTab(-1)">
           <div class="icon">
             <svg-icon :icon-class="item.class"></svg-icon>
           </div>
@@ -19,11 +19,20 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref } from "vue"
-const tabList = [
-  { title: '博客', class: 'blog', width: 77 },
-  { title: '归档', class: 'archive', width: 77 },
-  { title: '关于我', class: 'me', width: 91 },
-  { title: '留言板', class: 'message', width: 91 }
+import { useRouter, useRoute } from "vue-router";
+const router = useRouter();
+const route = useRoute();
+interface tabItem {
+  title: string;
+  name: string;
+  class: string;
+  width: number;
+}
+const tabList: tabItem[] = [
+  { title: '博客', name: 'home', class: 'blog', width: 77 },
+  { title: '归档', name: 'archive', class: 'archive', width: 77 },
+  { title: '关于我', name: 'about', class: 'me', width: 91 },
+  { title: '留言板', name: 'messageboard', class: 'message', width: 91 }
 ]
 const tabIndex = ref<number>(0)
 const hoverIndex = ref<number>(0)
@@ -38,9 +47,10 @@ const translateX = computed(() => {
   }
   return 0
 })
-const handleChangeRouter = (index: number) => {
+const handleChangeRouter = (index: number, item: tabItem) => {
   tabIndex.value = index
   hoverIndex.value = index
+  router.push({ name: item.name })
 }
 const hanleHoverTab = (index: number) => {
   if(index === -1) {
@@ -55,6 +65,13 @@ const handleScrollWindow = () => {
   scrollHeight.value = scrollTop
 }
 onMounted(() => {
+  setTimeout(() => {
+    const index = tabList.findIndex(item => item.name === route.name)
+    if(index > -1) {
+      tabIndex.value = index
+      hoverIndex.value = index
+    }
+  }, 300)
   window.addEventListener('scroll', handleScrollWindow)
 })
 onUnmounted(() => {
