@@ -2,23 +2,18 @@
   <div>
     <svg-icon icon-class="blog"></svg-icon>
     <div class="box2"></div>
-    <div class="box">
+    <!-- <div class="box">
       <bubble-cover :cover="cover"></bubble-cover>
-    </div>
-    <div class="box">
-      <bubble-cover :cover="cover"></bubble-cover>
-    </div>
-    <div class="box">
-      <bubble-cover :cover="cover"></bubble-cover>
-    </div>
-    <div class="box">
-      <bubble-cover :cover="cover"></bubble-cover>
+    </div> -->
+    <div>
+      <myswiper></myswiper>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import BubbleCover from '../../components/BubbleCover/index.vue'
-import cover from '../../assets/test.jpg'
+// import BubbleCover from '../../components/BubbleCover/index.vue'
+// import cover from '../../assets/test.jpg'
+import myswiper from '../../components/Myswiper.vue'
 </script>
 <style>
 .box {
