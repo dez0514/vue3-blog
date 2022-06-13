@@ -11,8 +11,16 @@
         </div>
         <div class="anchor" :style="{ '--menu_width': tabList[hoverIndex].width + 'px', '--tranlate-left': translateX }"></div>
       </div>
-      <div class="search-btn">
+      <div class="search-btn" @click="handleIsShowSearch(true)">
         <svg-icon icon-class="search"></svg-icon>
+      </div>
+      <div :class="['search-wrap', showSearch ? 'show_search' : '']">
+        <div class="search-content">
+          <div>search</div>
+          <div class="close-btn" @click="handleIsShowSearch(false)">
+            <svg-icon icon-class="close"></svg-icon>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -34,6 +42,7 @@ const tabList: tabItem[] = [
   { title: '关于我', name: 'about', class: 'me', width: 91 },
   { title: '留言板', name: 'messageboard', class: 'message', width: 91 }
 ]
+const showSearch = ref<boolean>(false)
 const tabIndex = ref<number>(0)
 const hoverIndex = ref<number>(0)
 const scrollHeight = ref<number>(0)
@@ -47,6 +56,9 @@ const translateX = computed(() => {
   }
   return 0
 })
+const handleIsShowSearch = (isShow: boolean) => {
+  showSearch.value = isShow
+}
 const handleChangeRouter = (index: number, item: tabItem) => {
   tabIndex.value = index
   hoverIndex.value = index
@@ -161,6 +173,24 @@ onUnmounted(() => {
     color: var(--white);
     -webkit-box-shadow: 0 13px 15px -5px var(--primary_opacity_5);
     box-shadow: 0 13px 15px -5px var(--primary_opacity_5);
+  }
+}
+.search-wrap {
+  position: fixed;
+  width: 100%;
+  height: 56px;
+  right: -100%;
+  top: 0;
+  background: pink;
+  transition: right .5s linear;
+  &.show_search {
+    right: 0
+  }
+  .search-content {
+    display: flex;
+  }
+  .close-btn {
+    font-size: 32px;
   }
 }
 </style>
