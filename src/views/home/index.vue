@@ -6,14 +6,16 @@
       <bubble-cover :cover="cover"></bubble-cover>
     </div> -->
     <div>
-      <myswiper></myswiper>
+      <pic-swiper></pic-swiper>
+      <text-swiper></text-swiper>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 // import BubbleCover from '../../components/BubbleCover/index.vue'
 // import cover from '../../assets/test.jpg'
-import myswiper from '../../components/Myswiper.vue'
+import PicSwiper from '../../components/PicSwiper.vue'
+import TextSwiper from '../../components/TextSwiper.vue'
 </script>
 <style>
 .box {
