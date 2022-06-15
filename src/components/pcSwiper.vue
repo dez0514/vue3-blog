@@ -22,9 +22,7 @@
               </div>
             </div>
         </div>
-        <div class="img-wrap">
-          <img src="../assets/pg1.png" alt="">
-        </div>
+        <div class="img-wrap" :style="{ '--url': png1 }"></div>
       </div>
     </swiper-slide>
     <swiper-slide>
@@ -42,9 +40,7 @@
               </div>
             </div>
         </div>
-        <div class="img-wrap">
-          <img src="../assets/pg2.png" alt="">
-        </div>
+        <div class="img-wrap" :style="{ '--url': png2 }"></div>
       </div>
     </swiper-slide>
     <swiper-slide>
@@ -62,9 +58,7 @@
               </div>
             </div>
         </div>
-        <div class="img-wrap">
-          <img src="../assets/pg3.png" alt="">
-        </div>
+        <div class="img-wrap" :style="{ '--url': png3 }"></div>
       </div>
     </swiper-slide>
     <swiper-slide>
@@ -82,14 +76,16 @@
               </div>
             </div>
         </div>
-        <div class="img-wrap">
-          <img src="../assets/pg4.png" alt="">
-        </div>
+        <div class="img-wrap" :style="{ '--url': png4 }"></div>
       </div>
     </swiper-slide>
   </swiper>
 </template>
 <script lang="ts" setup>
+import png1 from '../assets/pg1.png'
+import png2 from '../assets/pg2.png'
+import png3 from '../assets/pg3.png'
+import png4 from '../assets/pg4.png'
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import "swiper/css/bundle";
@@ -173,10 +169,9 @@ const resize = (swiper: any) => {
     height: 220px;
     border-radius: 12px;
     box-shadow: 0 8px 15px rgba(0, 0 , 0, .4), 60px 0 20px -30px rgba(0, 0, 0, .5), -60px 0 20px -30px rgba(0, 0, 0, .5);
-    img {
-        display: block;
-        width: 100%;
-    }
+    background: url(var(--url)) no-repeat;
+    background-position: 0 0;
+    background-size: 100% 100%;
   }
 }
 </style>
