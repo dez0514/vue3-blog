@@ -82,10 +82,10 @@ const init = () => {
 }
 onMounted(() => {
   init()
-  window.addEventListener('resize', () => init())
+  // window.addEventListener('resize', () => init())
 })
 onUnmounted(() => {
-  window.removeEventListener('resize', () => {})
+  // window.removeEventListener('resize', () => {})
 })
 </script>
 <style lang="scss" scoped>

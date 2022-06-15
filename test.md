@@ -34,3 +34,12 @@ npm i vue-router pinia axios qs 等。。。
 
 #### 注意：defineProps
 用完之后，props 最好 const { 属性名... } = toRefs(props) 解构一下并转化成响应式。js里使用加 .value
+
+#### pinia
+```
+// 批量更新
+configStores.$patch({
+    isCollapse: true,
+    isPc: false
+})
+```

@@ -1,5 +1,8 @@
 <template>
-  <div class="banner-wrap">
+  <div class="pc-banner-wrap" v-if="isPc">
+    <pc-swiper></pc-swiper>
+  </div>
+  <div class="banner-wrap" v-else>
     <bubble-cover></bubble-cover>
     <div class="swiper-pics">
       <pic-swiper></pic-swiper>
@@ -11,8 +14,18 @@
 import BubbleCover from './BubbleCover/index.vue' 
 import PicSwiper from './PicSwiper.vue'
 import TextSwiper from './TextSwiper.vue'
+import PcSwiper from './pcSwiper.vue'
+import { configStore } from '../store'
+import { storeToRefs } from 'pinia'
+const configStores = configStore()
+const { isPc } = storeToRefs(configStores)
 </script>
 <style lang="scss" scoped>
+.pc-banner-wrap {
+  background-color: #78797b;
+  height: 350px;
+  border-radius: 10px;
+}
 .banner-wrap {
   position: relative;
   background-color: #78797b;
