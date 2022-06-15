@@ -1,21 +1,17 @@
 <template>
   <div>
+    <banner />
     <svg-icon icon-class="blog"></svg-icon>
     <div class="box2"></div>
     <!-- <div class="box">
       <bubble-cover :cover="cover"></bubble-cover>
     </div> -->
-    <div>
-      <pic-swiper></pic-swiper>
-      <text-swiper></text-swiper>
-    </div>
   </div>
 </template>
 <script lang="ts" setup>
 // import BubbleCover from '../../components/BubbleCover/index.vue'
 // import cover from '../../assets/test.jpg'
-import PicSwiper from '../../components/PicSwiper.vue'
-import TextSwiper from '../../components/TextSwiper.vue'
+import banner from '../../components/banner.vue'
 </script>
 <style>
 .box {

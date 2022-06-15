@@ -4,6 +4,7 @@
     :loop="true"
     :resistanceRatio="0"
     :pagination="false"
+    :followFinger="false"
     @slideChange="onSlideChange"
     @swiper="onSwiper"
     @setTransition="setTransition"
@@ -12,22 +13,22 @@
   >
     <!-- :autoplay="autoplayOptions"  :modules="modules" -->
     <swiper-slide>
-      <div class="mobile-banner">
+      <div class="img-wrapper">
         <img src="../assets/pg1.png" />
       </div>
     </swiper-slide>
     <swiper-slide>
-      <div class="mobile-banner">
+      <div class="img-wrapper">
         <img src="../assets/pg2.png" />
       </div>
     </swiper-slide>
     <swiper-slide>
-      <div class="mobile-banner">
+      <div class="img-wrapper">
         <img src="../assets/pg3.png" />
       </div>
     </swiper-slide>
     <swiper-slide>
-      <div class="mobile-banner">
+      <div class="img-wrapper">
         <img src="../assets/pg4.png" />
       </div>
     </swiper-slide>
@@ -37,7 +38,8 @@
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import "swiper/css/bundle";
-import { ref } from "vue"
+import { ref, onUnmounted, onMounted } from "vue"
+import { emitter } from '../utils/useEmit'
 // import { Pagination, A11y, Autoplay } from 'swiper'
 // import { PaginationOptions } from 'swiper/types/modules/pagination';
 // const autoplayOptions = {
@@ -68,8 +70,17 @@ import { ref } from "vue"
 //   // return current + ' of ' + total;
 // }
 // const modules = [Pagination, A11y, Autoplay]
-const controlSwiper = ref(null)
-
+const controlSwiper = ref<any>(null)
+const changeSlides = (type: String) => {
+  if(controlSwiper.value) {
+    // controlSwiper.value.slideTo(index, 1000, false)
+    if(type === 'prev') {
+      controlSwiper.value.slidePrev()
+    } else if (type === 'next') {
+      controlSwiper.value.slideNext()
+    }
+  }
+}
 const onSwiper = (swiper: any) => {
   console.log(swiper);
   controlSwiper.value = swiper
@@ -110,12 +121,19 @@ const setTransition = (swiper: any, transition: any) => {
     slide.transition(transition);
   }
 }
-const onSlideChange = () => {
-  console.log('slide change');
+const onSlideChange = (swiper: any) => {
+  console.log('slide change pic========', swiper.activeIndex, swiper.realIndex);
 };
-
+onMounted(() => {
+  emitter.on('change-prev-slide', () => changeSlides('prev'))
+  emitter.on('change-next-slide', () => changeSlides('next'))
+})
+onUnmounted(()=>{
+  emitter.off('change-prev-slide', () => changeSlides('prev'))
+  emitter.off('change-next-slide', () => changeSlides('next'))
+})
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .swiper-pic-container {
   width: 200px;
   height: 200px;
@@ -127,13 +145,13 @@ const onSlideChange = () => {
   text-align: center;
 }
 
-.swiper-slide div {
+.swiper-slide .img-wrapper {
   width: 100%;
   border-radius: 7px;
-  margin: 10px 0 10px 4%;
+  margin: 30px 0 10px 4%; // 10
 }
 
-.swiper-slide div img {
+.swiper-slide .img-wrapper img {
   width: 86%;
   display: block;
   border-radius: 7px;

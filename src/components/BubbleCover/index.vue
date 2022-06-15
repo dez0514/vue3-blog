@@ -7,7 +7,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, ref, toRefs } from 'vue';
+import { computed, onMounted, onUnmounted, ref, toRefs } from 'vue';
 import Bubble from './bubble'
 interface Props {
   refs?: any,
@@ -74,16 +74,25 @@ const render = () => {
   // console.log('bubble==', bubbles.value)
   requestAnimationFrame(render)
 }
-onMounted(() => {
+const init = () => {
   setCanvasSize()
   setTimeout(() => {
     render()
   },500)
+}
+onMounted(() => {
+  init()
+  window.addEventListener('resize', () => init())
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', () => {})
 })
 </script>
 <style lang="scss" scoped>
 .bubble-cover {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   overflow: hidden;
   width: 100%;
   height: 100%;
