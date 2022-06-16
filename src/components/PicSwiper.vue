@@ -72,7 +72,7 @@ import { emitter } from '../utils/useEmit'
 // const modules = [Pagination, A11y, Autoplay]
 const controlSwiper = ref<any>(null)
 const changeSlides = (type: String) => {
-  if(controlSwiper.value) {
+  if(controlSwiper.value && controlSwiper.value.slidePrev && controlSwiper.value.slideNext) {
     // controlSwiper.value.slideTo(index, 1000, false)
     if(type === 'prev') {
       controlSwiper.value.slidePrev()
@@ -94,7 +94,7 @@ const init = (swiper: any) => {
   }
 }
 const resize = (swiper: any) => {
-  console.log('resize===', swiper)
+  // console.log('resize===', swiper)
   swiper.update();
 }
 const setTranslate = (swiper: any) => {

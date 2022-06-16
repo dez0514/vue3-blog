@@ -1,5 +1,6 @@
 <template>
   <div class="pc-banner-wrap" v-if="isPc">
+    <bubble-cover></bubble-cover>
     <pc-swiper></pc-swiper>
   </div>
   <div class="banner-wrap" v-else>
@@ -22,8 +23,9 @@ const { isPc } = storeToRefs(configStores)
 </script>
 <style lang="scss" scoped>
 .pc-banner-wrap {
+  position: relative;
   background-color: #78797b;
-  height: 350px;
+  height: 320px;
   border-radius: 10px;
 }
 .banner-wrap {

@@ -1,26 +1,46 @@
 <template>
-  <div :class="['header', scrollHeight > 0 ? 'fixed' : '']">
-    <div class="header-left">昨天太近，明天太远</div>
-    <div class="header-right">
-      <div class="tab-list">
-        <div :class="['tab-item', tabIndex === index ? 'active' : '']" v-for="(item, index) in tabList" :key="index" @click="handleChangeRouter(index, item)" @mouseenter="hanleHoverTab(index)" @mouseleave="hanleHoverTab(-1)">
-          <div class="icon">
-            <svg-icon :icon-class="item.class"></svg-icon>
+  <div v-if="isPc" :class="['header', scrollHeight > 0 ? 'fixed' : '']">
+    <div class="header-left"><img src="../assets/logo.png" alt="" /></div>
+    <div :class="['header-right', showSearch ? 'trans' : '']">
+      <div class="header-desc">
+        <div class="tab-list">
+          <div :class="['tab-item', tabIndex === index ? 'active' : '']" v-for="(item, index) in tabList" :key="index"
+            @click="handleChangeRouter(index, item)" @mouseenter="hanleHoverTab(index)" @mouseleave="hanleHoverTab(-1)">
+            <div class="icon">
+              <svg-icon :icon-class="item.class"></svg-icon>
+            </div>
+            <div>{{ item.title }}</div>
           </div>
-          <div>{{ item.title }}</div>
+          <div class="anchor"
+            :style="{ '--menu_width': tabList[hoverIndex].width + 'px', '--tranlate-left': translateX }"></div>
         </div>
-        <div class="anchor" :style="{ '--menu_width': tabList[hoverIndex].width + 'px', '--tranlate-left': translateX }"></div>
+        <div class="search-btn" @click="handleIsShowSearch(true)">
+          <svg-icon icon-class="search"></svg-icon>
+        </div>
       </div>
-      <div class="search-btn" @click="handleIsShowSearch(true)">
+    </div>
+  </div>
+  <div class="app-header" v-else>
+    <div :class="['app-header-desc', showSearch ? 'trans' : '']">
+      <div class="header-btn" @click="hanleShowSider">
+        <svg-icon icon-class="menu"></svg-icon>
+      </div>
+      <div class="logo-wrap">
+        <img src="../assets/logo.png" alt="" />
+      </div>
+      <div class="header-btn" @click="handleIsShowSearch(true)">
         <svg-icon icon-class="search"></svg-icon>
       </div>
-      <div :class="['search-wrap', showSearch ? 'show_search' : '']">
-        <div class="search-content">
-          <div>search</div>
-          <div class="close-btn" @click="handleIsShowSearch(false)">
-            <svg-icon icon-class="close"></svg-icon>
-          </div>
-        </div>
+    </div>
+  </div>
+  <div :class="['search-wrap', isPc? 'padding-extra' : '', showSearch ? 'trans' : '']">
+    <div class="search-content">
+      <div class="input-search-icon">
+        <svg-icon icon-class="search"></svg-icon>
+      </div>
+      <input v-model="keyword" class="search-input" placeholder="搜搜想看的..." type="text" />
+      <div class="close-btn" @click="handleCloseSearch">
+        <svg-icon icon-class="close"></svg-icon>
       </div>
     </div>
   </div>
@@ -28,6 +48,10 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref } from "vue"
 import { useRouter, useRoute } from "vue-router";
+import { configStore } from '../store'
+import { storeToRefs } from 'pinia'
+const configStores = configStore()
+const { isPc } = storeToRefs(configStores)
 const router = useRouter();
 const route = useRoute();
 interface tabItem {
@@ -46,18 +70,26 @@ const showSearch = ref<boolean>(false)
 const tabIndex = ref<number>(0)
 const hoverIndex = ref<number>(0)
 const scrollHeight = ref<number>(0)
+const keyword = ref<string>('')
 const translateX = computed(() => {
-  if(hoverIndex.value > 0) {
+  if (hoverIndex.value > 0) {
     let x = 0
-    for(let i = 0; i < hoverIndex.value; i++) {
+    for (let i = 0; i < hoverIndex.value; i++) {
       x += tabList[i].width
     }
     return x + 'px'
   }
   return 0
 })
+const hanleShowSider = () => {
+  configStores.updateCollapse(true)
+}
 const handleIsShowSearch = (isShow: boolean) => {
   showSearch.value = isShow
+}
+const handleCloseSearch = () => {
+  handleIsShowSearch(false)
+  keyword.value = ''
 }
 const handleChangeRouter = (index: number, item: tabItem) => {
   tabIndex.value = index
@@ -65,7 +97,7 @@ const handleChangeRouter = (index: number, item: tabItem) => {
   router.push({ name: item.name })
 }
 const hanleHoverTab = (index: number) => {
-  if(index === -1) {
+  if (index === -1) {
     hoverIndex.value = tabIndex.value
     return
   }
@@ -79,7 +111,7 @@ const handleScrollWindow = () => {
 onMounted(() => {
   setTimeout(() => {
     const index = tabList.findIndex(item => item.name === route.name)
-    if(index > -1) {
+    if (index > -1) {
       tabIndex.value = index
       hoverIndex.value = index
     }
@@ -102,19 +134,30 @@ onUnmounted(() => {
   padding: 0 40px;
   font-size: 14px;
   align-items: center;
-  transition: background-color .5s, box-shadow .5s, -webkit-box-shadow .5s;
+  transition: background-color .5s, box-shadow .5s;
   box-shadow: 0 1px var(--gray_7), 0 0 transparent, 0 2px var(--white);
+
   &.fixed {
     background-color: var(--white_opacity_9);
-    box-shadow: 0 5px 7px var(--gray_opacity_1),0 -10px var(--white_opacity_0);
+    box-shadow: 0 5px 7px var(--gray_opacity_1), 0 -10px var(--white_opacity_0);
   }
 }
-
+.header-left {
+  img {
+    display: block;
+    width: 260px;
+  }
+}
 .header-right {
   flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  transition: all .5s;
+  .header-desc {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100%;
+    transition: all .5s;
+  }
 }
 
 .tab-list {
@@ -150,9 +193,7 @@ onUnmounted(() => {
   border-radius: 3px;
   background-color: var(--primary);
   transform: translateX(var(--tranlate-left));
-  transition: width .5s linear, -webkit-transform .6s cubic-bezier(0, 0, 0, 1.33);
   transition: transform .6s cubic-bezier(0, 0, 0, 1.33), width .5s linear;
-  transition: transform .6s cubic-bezier(0, 0, 0, 1.33), width .5s linear, -webkit-transform .6s cubic-bezier(0, 0, 0, 1.33);
 }
 
 .search-btn {
@@ -171,26 +212,92 @@ onUnmounted(() => {
   &:hover {
     background-color: var(--primary);
     color: var(--white);
-    -webkit-box-shadow: 0 13px 15px -5px var(--primary_opacity_5);
     box-shadow: 0 13px 15px -5px var(--primary_opacity_5);
   }
 }
+/* app */
+.app-header {
+  z-index: var(--zIndex_3);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  height: 56px;
+  font-size: 14px;
+  align-items: center;
+  background-color: var(--white_opacity_9);
+  box-shadow: 0 5px 7px var(--gray_opacity_1), 0 -10px var(--white_opacity_0);
+  .app-header-desc {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 56px;
+    transition: all .5s;
+    &.trans {
+      transform: translateX(-100%);
+    }
+  }
+  .header-btn {
+    width: 56px;
+    height: 56px;
+    text-align: center;
+    line-height: 56px;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  .logo-wrap {
+    flex: 1;
+    img {
+      display: block;
+      margin: 13px auto;
+      height: 30px;
+    }
+  }
+}
+/* 搜索 */
 .search-wrap {
   position: fixed;
   width: 100%;
   height: 56px;
   right: -100%;
   top: 0;
-  background: pink;
-  transition: right .5s linear;
-  &.show_search {
-    right: 0
+  transition: all .5s;
+  z-index: var(--zIndex_4);
+  &.padding-extra {
+    padding-left: 312px;
   }
   .search-content {
     display: flex;
+    align-items: center;
+    height: 100%;
+
+    .search-input {
+      flex: 1;
+      outline: none;
+      border: 0;
+      height: 100%;
+      background: transparent;
+    }
+
+    .input-search-icon {
+      width: 56px;
+      text-align: center;
+      line-height: 56px;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .close-btn {
+      @extend .input-search-icon;
+    }
   }
-  .close-btn {
-    font-size: 32px;
+}
+/* 平移 */
+.trans {
+  transform: translateX(-100%);
+  .header-desc {
+    opacity: 0;
   }
 }
 </style>

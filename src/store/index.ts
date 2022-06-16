@@ -3,8 +3,8 @@ import { ConfigState } from '../types'
 
 export const configStore = defineStore('config', {
   state: (): ConfigState => ({
-    isCollapse: false,
-    isPc: true
+    isCollapse: false, // app sidebar
+    isPc: document.body.clientWidth > 990 // is pc
   }),
   getters: {
     getCommonConfig(state: ConfigState): ConfigState {
