@@ -10,6 +10,7 @@
         margin: 20px auto;
         position: relative;
         overflow: hidden;
+        overflow-y: auto;
         border: 1px solid #333;
         padding: 10px;
         width: 112px;
@@ -22,7 +23,7 @@
     </style>
   </head>
   <body>
-    <div class="box">
+    <div class="box" id="aa">
       <span id="typed"></span>
     </div>
     <script type="text/javascript">
@@ -41,6 +42,12 @@
             }
         };
         var typed = new Typed('#typed', options);
+        function test() {
+          document.getElementById('aa').scrollTop++
+        }
+        var timer = setInterval(function() {
+          test()
+        }, 20)
     </script>
   </body>
 </html>
