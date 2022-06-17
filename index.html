@@ -6,35 +6,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
     <style>
-      :root {
-        --sk-size: 60px;
-        --sk-color: #666;
-      }
       .sk-wave {
-        width: var(--sk-size);
-        height: var(--sk-size);
+        position: relative;
+        height: 50px;
         display: flex;
         justify-content: space-between;
       }
 
       .sk-wave-rect {
-        background-color: var(--sk-color);
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        background-color: #8a99ac;
+        /* #9faab9 #bcc2cf #dee2e9 */
         height: 100%;
-        width: 15%;
+        width: 4px;
+        border-radius: 40px;
+        transform-origin: center;
         animation: sk-wave 1.2s infinite ease-in-out; 
       }
 
-      .sk-wave-rect:nth-child(1) { animation-delay: -1.2s; }
-      .sk-wave-rect:nth-child(2) { animation-delay: -1.1s; }
-      .sk-wave-rect:nth-child(3) { animation-delay: -1.0s; }
-      .sk-wave-rect:nth-child(4) { animation-delay: -0.9s; }
-      .sk-wave-rect:nth-child(5) { animation-delay: -0.8s; }
+      .sk-wave-rect:nth-child(1) { animation-delay: -1.2s; left: 0 }
+      .sk-wave-rect:nth-child(2) { animation-delay: -1.1s; left: 8px;}
+      .sk-wave-rect:nth-child(3) { animation-delay: -1.0s; left: 16px;}
+      .sk-wave-rect:nth-child(4) { animation-delay: -0.9s; left: 24px;}
+      .sk-wave-rect:nth-child(5) { animation-delay: -0.8s; left: 32px;}
 
       @keyframes sk-wave {
         0%, 40%, 100% {
-          transform: scaleY(0.4); 
+          /* transform: scaleY(0.5); */
+          height: 50%;
         } 20% {
-          transform: scaleY(1); 
+          /* transform: scaleY(.5); */
+          height: 100%;
         } 
       }
     </style>
