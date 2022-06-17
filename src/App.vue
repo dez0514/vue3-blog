@@ -27,6 +27,10 @@ const resize = () => {
   // console.log(document.body.clientWidth)
   const ispc = document.body.clientWidth > 990
   configStores.updateIsPc(ispc)
+  if(ispc) {
+    // 防止侧边栏没隐藏
+    configStores.updateCollapse(false)
+  }
 }
 onMounted(() => {
   window.addEventListener('resize', () => resize())

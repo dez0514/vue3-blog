@@ -18,6 +18,14 @@
         </div>
         <div class="side-artlist">
           <div class="side-title">
+            <div class="side-txt">时间轴</div>
+          </div>
+          <div class="art-list">
+            <year-month-tree :inside="true"></year-month-tree>
+          </div>
+        </div>
+        <div class="side-artlist">
+          <div class="side-title">
             <div class="side-txt">最新博客</div>
           </div>
           <div class="art-list">
@@ -71,6 +79,7 @@ import { ref, onMounted } from "vue"
 import { useRouter, useRoute } from "vue-router";
 import { configStore } from '../store'
 import { storeToRefs } from 'pinia'
+import YearMonthTree from './yearMonthTree.vue'
 import png1 from '../assets/pg1.png'
 const configStores = configStore()
 const { isCollapse } = storeToRefs(configStores)
