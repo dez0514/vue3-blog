@@ -6,10 +6,11 @@
     <!-- <div class="box">
       <bubble-cover :cover="cover"></bubble-cover>
     </div> -->
+    <year-month-tree />
   </div>
 </template>
 <script lang="ts" setup>
-// import BubbleCover from '../../components/BubbleCover/index.vue'
+import YearMonthTree from '../../components/yearMonthTree.vue'
 // import cover from '../../assets/test.jpg'
 import banner from '../../components/banner.vue'
 </script>
