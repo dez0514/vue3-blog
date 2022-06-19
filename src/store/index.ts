@@ -14,6 +14,11 @@ export const configStore = defineStore('config', {
   actions: {
     updateCollapse(payload: boolean) {
       this.isCollapse = payload
+      if (payload) {
+        document.getElementsByTagName("body")[0].className = 'lock'
+      } else {
+        document.body.removeAttribute("class")
+      }
     },
     updateIsPc(payload: boolean) {
       this.isPc = payload

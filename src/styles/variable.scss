@@ -98,3 +98,9 @@ body {
   background-color: var(--gray_9);
   color: var(--gray_4);
 }
+// side 出现时 禁止滚动
+.lock #app {
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}

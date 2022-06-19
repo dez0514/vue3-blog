@@ -39,9 +39,9 @@ onUnmounted(() => {
   window.removeEventListener('resize', () => {})
 })
 </script>
-
 <style lang="scss" scoped>
 .page-container {
+  width: 100%;
   transition: all .5s;
 }
 .content {
@@ -66,7 +66,6 @@ onUnmounted(() => {
 	opacity: 0
 } 
 .rotate {
-  overflow: hidden;
   transform-origin: left 450px;
   transform: translateX(250px) perspective(600px) rotateY(10deg);
 }

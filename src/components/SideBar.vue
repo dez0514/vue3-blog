@@ -275,6 +275,7 @@ onMounted(() => {
     cursor: pointer;
     border: none;
     outline: none;
+    -webkit-tap-highlight-color: transparent;
     &:hover {
       background-color: var(--primary);
       color: #fff;
@@ -282,6 +283,7 @@ onMounted(() => {
   }
 }
 .side-artlist {
+  overflow: hidden;
   margin-top: 20px;
 }
 .art-list {
@@ -290,6 +292,7 @@ onMounted(() => {
 .article {
   display: flex;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   .cover {
     width: 60px;
     img {

@@ -10,6 +10,7 @@
     @setTransition="setTransition"
     @setTranslate="setTranslate"
     @resize="resize"
+    @destroy="destroyCallback"
   >
     <!-- :autoplay="autoplayOptions"  :modules="modules" -->
     <swiper-slide>
@@ -72,8 +73,9 @@ import { emitter } from '../utils/useEmit'
 // const modules = [Pagination, A11y, Autoplay]
 const controlSwiper = ref<any>(null)
 const changeSlides = (type: String) => {
-  if(controlSwiper.value && controlSwiper.value.slidePrev && controlSwiper.value.slideNext) {
-    // controlSwiper.value.slideTo(index, 1000, false)
+  if(controlSwiper.value && !controlSwiper.value.destroyed && controlSwiper.value.slidePrev && controlSwiper.value.slideNext) {
+    // 条件判断 确保 controlSwiper 已经实例化再执行联动。controlSwiper.value.destroyed 为true时 说明新的swiper还没初始化完毕。
+    // console.log('controlSwiper emit===', controlSwiper.value)
     if(type === 'prev') {
       controlSwiper.value.slidePrev()
     } else if (type === 'next') {
@@ -82,10 +84,14 @@ const changeSlides = (type: String) => {
   }
 }
 const onSwiper = (swiper: any) => {
-  console.log(swiper);
+  // console.log(swiper);
   controlSwiper.value = swiper
   init(swiper)
 };
+const destroyCallback = () => {
+  emitter.off('change-prev-slide', () => changeSlides('prev'))
+  emitter.off('change-next-slide', () => changeSlides('next'))
+}
 const init = (swiper: any) => {
   let slides = swiper.slides;
   for (let i = 0; i < slides.length; i++) {
@@ -122,15 +128,16 @@ const setTransition = (swiper: any, transition: any) => {
   }
 }
 const onSlideChange = (swiper: any) => {
-  console.log('slide change pic========', swiper.activeIndex, swiper.realIndex);
+  // console.log('slide change pic========', swiper.activeIndex, swiper.realIndex);
 };
 onMounted(() => {
-  emitter.on('change-prev-slide', () => changeSlides('prev'))
-  emitter.on('change-next-slide', () => changeSlides('next'))
+  setTimeout(() => {
+    emitter.on('change-prev-slide', () => changeSlides('prev'))
+    emitter.on('change-next-slide', () => changeSlides('next'))
+  }, 300)
 })
 onUnmounted(()=>{
-  emitter.off('change-prev-slide', () => changeSlides('prev'))
-  emitter.off('change-next-slide', () => changeSlides('next'))
+  destroyCallback()
 })
 </script>
 <style lang="scss" scoped>

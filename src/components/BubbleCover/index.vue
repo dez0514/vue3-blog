@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
 const { width, height, refs, cover, className, isBlur, direction, interval, radius, shadow } = toRefs(props)
 const containerRef = ref<HTMLDivElement | null>(null)
 const bubbleCanvas = ref<HTMLCanvasElement | null>(null)
-console.log('bubbleCanvas===', bubbleCanvas.value)
+// console.log('bubbleCanvas===', bubbleCanvas.value)
 
 
 const bubbles = ref<Bubble[]>([])

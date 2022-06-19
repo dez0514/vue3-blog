@@ -88,7 +88,7 @@ import { ref } from "vue"
 import { emitter } from '../utils/useEmit'
 const controlSwiper = ref(null)
 const onSwiper = (swiper: any) => {
-  console.log(swiper);
+  // console.log(swiper);
   controlSwiper.value = swiper
   // init(swiper)
 };
@@ -96,12 +96,12 @@ const onSwiper = (swiper: any) => {
 //   console.log('init==', swiper);
 // }
 const resize = (swiper: any) => {
-  console.log('resize===', swiper)
+  // console.log('resize===', swiper)
   swiper.update();
 }
 const onSlideChange = (swiper: any) => {
   // console.log('slide change', controlSwiper.value); // realIndex,  activeIndex
-  console.log('ccccc===', swiper.activeIndex)
+  // console.log('ccccc===', swiper.activeIndex)
   // emitter.emit('change-slide', swiper.activeIndex)
 };
 const onSlidePrevStart = (swiper: any) => {

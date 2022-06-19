@@ -67,12 +67,14 @@ const handleCheckMonth = (yearindex: number, monthindex:number) => {
 </script>
 <style lang="scss" scoped>
 .year-title {
+  overflow: hidden;
   box-sizing: border-box;
   height: 60px;
   line-height: 60px;
   padding-left: 20px;
   font-size: 20px;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   &:hover {
     color: var(--primary);
   }
@@ -93,6 +95,7 @@ const handleCheckMonth = (yearindex: number, monthindex:number) => {
   padding-left: 40px;
   font-size: 16px;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   &:hover {
     color: var(--primary);
   }

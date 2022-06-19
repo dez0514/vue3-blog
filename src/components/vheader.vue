@@ -239,19 +239,26 @@ onUnmounted(() => {
     }
   }
   .header-btn {
+    flex-shrink: 0;
     width: 56px;
     height: 56px;
     text-align: center;
     line-height: 56px;
     font-size: 24px;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
   .logo-wrap {
     flex: 1;
+    max-width: calc(100% - 112px);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     img {
       display: block;
-      margin: 13px auto;
-      height: 30px;
+      max-width: 100%;
+      max-height: 30px;
     }
   }
 }
@@ -286,6 +293,7 @@ onUnmounted(() => {
       line-height: 56px;
       font-size: 22px;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .close-btn {
