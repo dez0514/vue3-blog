@@ -1,50 +1,33 @@
 <template>
   <div>
     <banner />
-    <svg-icon icon-class="blog"></svg-icon>
-    <div class="box2"></div>
-    <!-- <div class="box">
-      <bubble-cover :cover="cover"></bubble-cover>
-    </div> -->
-    <year-month-tree />
+    <div class="content">
+      <div style="width: 200px">
+        <left-menu-wrap>
+          <template #default>
+            <year-month-tree />
+          </template>
+        </left-menu-wrap>
+      </div>
+      <div class="list-wrap">
+        12345
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
+import LeftMenuWrap from '../../components/leftMenuWrap.vue'
 import YearMonthTree from '../../components/yearMonthTree.vue'
 // import cover from '../../assets/test.jpg'
 import banner from '../../components/banner.vue'
 </script>
-<style>
-.box {
-  width: 600Px;
-  height: 300Px;
-  /* background-color: #666; */
-}
-.blog {
-  font-size: 0.18rem;
-  color: #f60;
-  /* 这里定义图标的颜色 */
-}
-
-
-.box2 {
-  width: 120px;
-  height: 60px;
-  background-color: #1890ff;
-}
-
-/* 设备最大宽度1200px的样式 */
-@media screen and (max-width: 1200px) {}
-
-/* 平板 */
-@media screen and (max-width: 768px) {}
-
-/* 手机 */
-@media screen and (max-width: 480px) {
-  .box2 {
-    width: 120Px;
-    height: 60Px;
-    background-color: #1890ff;
+<style lang="scss" scoped>
+.content {
+  position: relative;
+  display: flex;
+  .list-wrap {
+    padding-top: 30px;
+    width: calc(100% - 200px);
   }
 }
 </style>

@@ -4,6 +4,7 @@
     <div :class="['content', isPc ? 'pc-content' : '']">
       <router-view></router-view>
     </div>
+    <vfooter></vfooter>
   </div>
   <transition name="fade" v-if="!isPc">
 	  <div class="sider-mask" v-show="isCollapse" @click="hideSide"></div>
@@ -14,6 +15,7 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import vheader from './components/vheader.vue'
+import vfooter from './components/vfooter.vue'
 import SideBar from './components/SideBar.vue'
 import { configStore } from './store'
 import { onMounted, onUnmounted } from 'vue';
@@ -45,6 +47,8 @@ onUnmounted(() => {
   transition: all .5s;
 }
 .content {
+  box-sizing: border-box;
+  min-height: calc(100vh - 138px);
   padding-top: 58px;
   &.pc-content {
     padding: 78px 40px 0 40px;
