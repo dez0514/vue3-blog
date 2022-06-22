@@ -141,7 +141,7 @@ const jumpToDetail = () => {
 }
 
 .desc {
-  padding-top: 20px;
+  padding-top: 12px;
   width: 100%;
   color: var(--gray_4);
   font-size: 16px;
