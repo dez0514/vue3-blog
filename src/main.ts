@@ -6,6 +6,7 @@ import { createPinia } from 'pinia'
 import 'virtual:svg-icons-register'
 import SvgIcon from '@components/svgIcon.vue' // 引入组件
 import 'nprogress/nprogress.css'
+import '@iconfu/svg-inject'
 
 import "@/styles/reset.scss";
 const app: App<Element> = createApp(AppVue)
