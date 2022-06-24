@@ -2,7 +2,7 @@
   <div class="home">
     <banner />
     <div class="content">
-      <div style="width: 200px">
+      <div style="width: 200px;flex-shrink: 0;">
         <left-menu-wrap>
           <template #default>
             <nav-tags />
@@ -16,12 +16,21 @@
           <card></card>
           <card></card>
           <card></card>
-          <!-- <card></card>
           <card></card>
           <card></card>
           <card></card>
-          <card></card> -->
-    
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
           <!-- <card-line></card-line>
           <card-line></card-line>
           <card-line></card-line>
