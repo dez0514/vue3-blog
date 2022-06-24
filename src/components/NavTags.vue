@@ -50,6 +50,11 @@ const list = [
     { icon: "", name: "node" },
     { icon: "", name: "源码解读" },
     { icon: "", name: "mongodb" },
+    { icon: "", name: "test" },
+    { icon: "", name: "test2" },
+    { icon: "", name: "test3" },
+    { icon: "", name: "test4" },
+    { icon: "", name: "test6" },
     { icon: "", name: "生活随笔", src: testSvg },
     { icon: "", name: "瞎搞", src: 'http://localhost:8081/imgs/note.svg' },
 ]
@@ -64,8 +69,8 @@ const handleClickTab = (index: number) => {
     margin-top: 15px;
     font-size: 12px;
     line-height: 30px;
-    color: #8492a6;
-    border-top: rgba(31, 45, 61, 0.1) 1px solid;
+    color: var(--color_0);
+    border-top: var(--gray_opacity_1) 1px solid;
 }
 
 .tags-nav {
@@ -117,19 +122,18 @@ const handleClickTab = (index: number) => {
 }
 
 .nav-item.active {
-    color: #fff;
-    background-color: #20a0ff;
-    -webkit-box-shadow: 0 8px 10px rgba(32, 160, 255, 0.3);
-    box-shadow: 0 8px 10px rgba(32, 160, 255, 0.3);
+    color: var(--white);
+    background-color: var(--primary);
+    box-shadow: 0 8px 10px var(--primary_opacity_3);
 }
 
 .items-wrap:hover .nav-item {
-    background: rgba(32, 160, 255, 0.1);
-    color: #20a0ff;
+    background: var(--primary_opacity_1);
+    color: var(--primary);
 }
 
 .items-wrap:hover .nav-item.active {
-    color: #fff;
-    background-color: #20a0ff;
+    color: var(--white);
+    background-color: var(--primary);
 }
 </style>

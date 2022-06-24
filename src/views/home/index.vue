@@ -9,23 +9,26 @@
           </template>
         </left-menu-wrap>
       </div>
-      <div class="list-wrap">
-        <card></card>
-        <card></card>
-        <card></card>
-        <card></card>
-        <card></card>
-        <card></card>
-        <card></card>
-        <card></card>
-        <card></card>
-        <card></card>
-        <!-- <card-line></card-line>
-        <card-line></card-line>
-        <card-line></card-line>
-        <card-line></card-line>
-        <card-line></card-line>
-        <card-line></card-line> -->
+      <div style="box-sizing:border-box; padding-top: 30px;min-height: 606px">
+        <div class="list-wrap">
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <!-- <card></card>
+          <card></card>
+          <card></card>
+          <card></card>
+          <card></card> -->
+    
+          <!-- <card-line></card-line>
+          <card-line></card-line>
+          <card-line></card-line>
+          <card-line></card-line>
+          <card-line></card-line>
+          <card-line></card-line> -->
+        </div>
       </div>
     </div>
   </div>
@@ -47,7 +50,6 @@ import card from '../../components/card.vue'
   display: flex;
   .list-wrap {
     overflow: hidden;
-    padding-top: 30px;
     width: calc(100% - 200px);
     flex: 1;
     display: grid;

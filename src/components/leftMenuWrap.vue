@@ -27,8 +27,10 @@ onUnmounted(() => {
 </script>
 <style lang="scss" scoped>
 .left-menu-wrap {
+    overflow: hidden;
+    overflow-y: auto;
     width: inherit;
-    max-height: calc(100vh - 56px);
+    max-height: calc(100vh - 56px - 156px - 50px);
     &.fixed {
         position: fixed;
         top: 56px;
