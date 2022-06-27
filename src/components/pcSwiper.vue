@@ -22,7 +22,7 @@
               </div>
             </div>
         </div>
-        <div class="img-wrap" :style="{ '--url': png1 }"></div>
+        <div class="img-wrap" :style="{ '--url': `url(${png1})` }"></div>
       </div>
     </swiper-slide>
     <swiper-slide>
@@ -40,7 +40,7 @@
               </div>
             </div>
         </div>
-        <div class="img-wrap" :style="{ '--url': png2 }"></div>
+        <div class="img-wrap" :style="{ '--url': `url(${png2})` }"></div>
       </div>
     </swiper-slide>
     <swiper-slide>
@@ -58,7 +58,7 @@
               </div>
             </div>
         </div>
-        <div class="img-wrap" :style="{ '--url': png3 }"></div>
+        <div class="img-wrap" :style="{ '--url': `url(${png3})` }"></div>
       </div>
     </swiper-slide>
     <swiper-slide>
@@ -76,7 +76,7 @@
               </div>
             </div>
         </div>
-        <div class="img-wrap" :style="{ '--url': png4 }"></div>
+        <div class="img-wrap" :style="{ '--url': `url(${png4})` }"></div>
       </div>
     </swiper-slide>
   </swiper>
@@ -169,7 +169,7 @@ const resize = (swiper: any) => {
     height: 220px;
     border-radius: 12px;
     box-shadow: 0 8px 15px rgba(0, 0 , 0, .4), 60px 0 20px -30px rgba(0, 0, 0, .5), -60px 0 20px -30px rgba(0, 0, 0, .5);
-    background: url(var(--url)) no-repeat;
+    background: var(--url) no-repeat;
     background-position: 0 0;
     background-size: 100% 100%;
   }

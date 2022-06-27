@@ -30,7 +30,7 @@ onUnmounted(() => {
     overflow: hidden;
     overflow-y: auto;
     width: inherit;
-    max-height: calc(100vh - 56px - 156px - 50px);
+    max-height: calc(100vh - 56px - 138px - 50px);
     &.fixed {
         position: fixed;
         top: 56px;
