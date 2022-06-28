@@ -40,10 +40,11 @@
         </div>
       </div>
     </div>
-    <pagination></pagination>
+    <pagination :total="100" :currentPage="pageNumber" @update:currentPage="val => pageNumber = val"></pagination>
   </div>
 </template>
 <script lang="ts" setup>
+import { ref } from 'vue'
 import LeftMenuWrap from '../../components/leftMenuWrap.vue'
 import NavTags from '../../components/NavTags.vue'
 import banner from '../../components/banner.vue'
@@ -53,7 +54,8 @@ import pagination from '../../components/pagination.vue'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 const configStores = configStore()
-const { isPc } = storeToRefs(configStores)
+const { isPc } = storeToRefs(configStores);
+const pageNumber = ref<number>(1)
 </script>
 <style lang="scss" scoped>
 .home {
