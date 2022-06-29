@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <banner />
+    <banner mode="swiper" />
     <div class="content">
       <div style="width: 200px;flex-shrink: 0;" v-if="isPc">
         <left-menu-wrap>
