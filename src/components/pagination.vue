@@ -55,17 +55,16 @@ import { ref, computed, toRefs } from 'vue'
 interface Props {
   pageSize?: number, // 每页条数
   currentPage?: number, // 当前页码
-  total?: number, // 总页数
-  // maxPageCount?: number, // 最大显示多少个页面
+  total?: number // 总页数
 }
 const props = withDefaults(defineProps<Props>(), {
   pageSize: 10,
   currentPage: 1,
   total: 0,
-  // maxPageCount: 5
 })
+
 const { pageSize, currentPage, total } = toRefs(props)
-const maxPageCount = ref<number>(5) // 最多显示的页数，最好设置为 >=5 && <=21 的奇数
+const maxPageCount = ref<number>(5) // 最多显示的页数（也可以设为属性传入进来），最好设置为 >=5 && <=21 的奇数
 const emit = defineEmits<{
   (e: 'update:currentPage', num: number): void,
   (e: 'change', num: number): void

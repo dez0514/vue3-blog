@@ -43,6 +43,22 @@ configStores.$patch({
     isPc: false
 })
 ```
+```
+// 属性添加校验器。。
+const props = defineProps({
+  pageSize: {
+    type: Number,
+    default: 10
+  },
+  maxPageCount: {
+    type: Number,
+    default: 5,
+    validator: (val: number) => {
+      return val >= 5 && val <=21 && val%2 === 1
+    }
+  }
+})
+```
 todo: 
 1. 导航栏。 pc
 2. 列表 card， 归档card。 pc app
