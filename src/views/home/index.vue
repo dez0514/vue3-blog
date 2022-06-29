@@ -16,27 +16,6 @@
           <card></card>
           <card></card>
           <card></card>
-          <!-- <card></card>
-          <card></card>
-          <card></card>
-          <card></card>
-          <card></card>
-          <card></card>
-          <card></card> -->
-          <!-- <card></card>
-          <card></card>
-          <card></card>
-          <card></card>
-          <card></card>
-          <card></card>
-          <card></card>
-          <card></card> -->
-          <!-- <card-line></card-line>
-          <card-line></card-line>
-          <card-line></card-line>
-          <card-line></card-line>
-          <card-line></card-line>
-          <card-line></card-line> -->
         </div>
       </div>
     </div>
@@ -106,7 +85,7 @@ const pageNumber = ref<number>(1)
   .content .list-box .list-wrap {
     display: grid;
     grid-template-columns: repeat(1, 100%);
-    gap: 0;
+    gap: 15px;
   }
 }
 

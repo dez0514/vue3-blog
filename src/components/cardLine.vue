@@ -33,6 +33,7 @@ const jumpToDetail = () => {
 </script>
 <style lang="scss" scoped>
 .card-line {
+  box-sizing: border-box;
   display: flex;
   padding-bottom: 20px;
 }

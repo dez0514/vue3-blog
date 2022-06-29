@@ -15,32 +15,27 @@
           <card-line></card-line>
           <card-line></card-line>
           <card-line></card-line>
-          <card-line></card-line>
-          <card-line></card-line>
         </div>
       </div>
     </div>
     <pagination :total="100" v-model:currentPage="pageNumber"></pagination>
-    <!-- <div>
-      <img src="http://localhost:8081/imgs/test.jpg" alt="">
-    </div> -->
   </div>
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue'
-import banner from '../../components/banner.vue'
 import LeftMenuWrap from '../../components/leftMenuWrap.vue'
 import NavTimes from '../../components/NavTimes.vue'
-import cardLine from '../../components/cardLine.vue'
+import banner from '../../components/banner.vue'
 import pagination from '../../components/pagination.vue'
+import cardLine from '../../components/cardLine.vue'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 const configStores = configStore()
-const { isPc } = storeToRefs(configStores)
+const { isPc } = storeToRefs(configStores);
 const pageNumber = ref<number>(1)
 </script>
 <style lang="scss" scoped>
-.home {
+.archive {
   position: relative;
   padding-bottom: 50px;
 }
@@ -51,6 +46,7 @@ const pageNumber = ref<number>(1)
   .list-box {
     box-sizing:border-box;
     min-height: 606px;
+    width: calc(100% - 150px);
   }
   .list-box .list-wrap {
     overflow: hidden;
@@ -61,12 +57,15 @@ const pageNumber = ref<number>(1)
     gap: 18px;
   }
 }
-
 @media screen and (max-width: 990px) {
+  .content .list-box {
+    width: 100%;
+  }
   .content .list-box .list-wrap {
     display: grid;
     grid-template-columns: repeat(1, 100%);
-    gap: 0;
+    gap: 10px;
   }
 }
+
 </style>
