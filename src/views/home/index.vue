@@ -40,7 +40,7 @@
         </div>
       </div>
     </div>
-    <pagination :total="100" :currentPage="pageNumber" @update:currentPage="val => pageNumber = val"></pagination>
+    <pagination :total="100" v-model:currentPage="pageNumber"></pagination>
   </div>
 </template>
 <script lang="ts" setup>

@@ -1,8 +1,11 @@
 <template>
   <div class="pagination-wrapper">
     <ul :style="{ '--transleft': `${anchorLeft}px` }" v-show="total > pageSize">
-      <!-- <li class="pagination-anchor"></li> -->
-      <li class="pagination-item prev" @click="prevClick" v-show="showPrevBtn">
+      <li class="pagination-anchor"></li>
+      <li class="pagination-item prev" @click="prevClick" v-show="showPrevBtn"
+        @mouseenter="hanleHover('prev')"
+        @mouseleave="hanleHover(-1)"
+      >
         <svg-icon icon-class="left"></svg-icon>
       </li>
       <li class="pagination-item"
@@ -38,7 +41,10 @@
         @mouseenter="hanleHover(pageCount)"
         @mouseleave="hanleHover(-1)"
       >{{ pageCount }}</li>
-      <li class="pagination-item next" @click="nextClick" v-show="showNextBtn">
+      <li class="pagination-item next" @click="nextClick" v-show="showNextBtn"
+        @mouseenter="hanleHover('next')"
+        @mouseleave="hanleHover(-1)"
+      >
         <svg-icon icon-class="right"></svg-icon>
       </li>
     </ul>
@@ -56,10 +62,10 @@ const props = withDefaults(defineProps<Props>(), {
   pageSize: 10,
   currentPage: 1,
   total: 0,
-  // maxPageCount: 7
+  // maxPageCount: 5
 })
 const { pageSize, currentPage, total } = toRefs(props)
-const maxPageCount = ref<number>(7) // 最多显示的页数，最好设置为 >=5 <=21 的奇数
+const maxPageCount = ref<number>(5) // 最多显示的页数，最好设置为 >=5 && <=21 的奇数
 const emit = defineEmits<{
   (e: 'update:currentPage', num: number): void,
   (e: 'change', num: number): void
@@ -69,20 +75,97 @@ const current = computed({
   set: (value: number) => emit('update:currentPage', value) // 需要在父组件中显示传入update方法
 })
 const hoverIndex = ref<number>(-1)
+// 滑块偏移距离，默认和当前页面位置一致。增加hover效果
 const anchorLeft = computed(() => {
-  return 0
-  // 考虑两个dot按钮 和 上下页按钮 显示隐藏情况
-  // if(total.value === 0) return 0
-  // if(!showPrevBtn && !showPrevDot && !showNextBtn && !showNextDot) {
-  //   if(hoverIndex.value > -1) {
-  //     return 38 * (hoverIndex.value - 1)
-  //   } else {
-  //     return 38 * (current.value - 1)
-  //   }
-  // } else {
-
-  // }
+  if(total.value === 0) return 0
+  if(hoverIndex.value > -1) {
+    return 38 * hoverIndex.value
+  }
+  if(!showPrevBtn.value || current.value === 1) return 0 // 第一页
+  if(!showNextBtn.value) { // 在最后一页
+    if(showPrevDot.value) { // 显示前dot
+      return 38 * (maxPageCount.value + 1)
+    } else {
+      return 38 * current.value
+    }
+  }
+  // 下面判断不考虑在 第一页 和 最后一页 的情况
+  if(showPrevDot.value && showNextDot.value) { // 显示前后dot，说明在中间，那就正中间， 
+    return 38 * (maxPageCount.value + 4 - 1) / 2
+  } else if(showPrevDot.value) { // 显示前dot,不显示后dot,说明靠后
+    return 38 * (maxPageCount.value + 1 - (pageCount.value - current.value))
+  } else { 
+  // 1.显示后dot,不显示前dot, 说明靠前
+  // 2.dot 都不显示 说明在最大以内
+    return 38 * current.value
+  }
 })
+// hover页码时，滑块位置跟随 计算hover索引位置
+const hanleHover = (typeOrindex: string | number) => {
+  if (typeOrindex === 'prev') {
+    hoverIndex.value = 0
+    return
+  }
+  if (typeOrindex === 'next') { // 最后一个
+    if(showPrevDot.value && showNextDot.value) {
+      hoverIndex.value = maxPageCount.value + 2 + 1
+    } else if(!showPrevDot.value && !showNextDot.value) {
+      hoverIndex.value = pageCount.value
+    } else {
+      if(showPrevBtn.value) {
+        hoverIndex.value = maxPageCount.value + 2
+      } else {
+        hoverIndex.value = maxPageCount.value + 1
+      }
+    }
+    return
+  }
+  if(typeOrindex === -1) {
+    hoverIndex.value = -1
+    return
+  }
+  if(typeof typeOrindex === 'number') { // 滑入某个页码
+    if(!showPrevDot.value && !showNextDot.value) { // 小于最大页码数量
+      if(showPrevBtn.value) {
+        hoverIndex.value = typeOrindex + 1 - 1
+      } else {
+        hoverIndex.value = typeOrindex - 1
+      }
+    } else if(showPrevDot.value && showNextDot.value) {
+      // 当前页码在中间 上下按钮肯定存在，不需要写条件判断
+      if(typeOrindex === 1) { // 滑入第一页
+        hoverIndex.value = 1
+      } else if(typeOrindex === pageCount.value) { // 滑入最后一页
+        hoverIndex.value = maxPageCount.value + 2 + 1 - 1
+      } else { // 滑入中间的数字页码
+        // hoverIndex.value = typeOrindex + 2 - 1
+        let temp = current.value - typeOrindex
+        let n = halfMaxPageCount.value - temp // 距离中间位置的偏移数
+        hoverIndex.value = n + 2
+      }
+    } else if(!showPrevDot.value && showNextDot.value) { // 显示后dot时，当前页靠前 hover 只有最后一页 多加一个dot偏移
+      if(showPrevBtn.value) { // 当前不在第一页 显示上页按钮 多加1个
+        if(typeOrindex === pageCount.value) {
+          hoverIndex.value = maxPageCount.value + 2 - 1
+        } else {
+          hoverIndex.value = typeOrindex + 1 - 1
+        }
+      } else { // 当前在第一页
+        if(typeOrindex === pageCount.value) {
+          hoverIndex.value = maxPageCount.value + 1 - 1
+        } else {
+          hoverIndex.value = typeOrindex - 1
+        }
+      }
+    } else { // 显示前dot， 说明当前页靠后，一定存在prev按钮
+      if(typeOrindex === 1) {
+        hoverIndex.value = 1
+      } else {
+        hoverIndex.value = maxPageCount.value + 1 - (pageCount.value - typeOrindex)
+      }
+    }
+  }
+}
 // 总页数
 const pageCount = computed(() => Math.ceil(total.value / pageSize.value))
 const halfMaxPageCount = computed(() => (maxPageCount.value - 1) / 2)
@@ -132,9 +215,6 @@ const countList = computed(() => {
   console.log('list===', arr)
   return arr
 })
-const hanleHover = (index: number) => {
-  hoverIndex.value = index
-}
 const prevClick = () => {
   console.log('prev page')
   if (current.value === 1) return
@@ -220,9 +300,9 @@ const dotClick = (type: string) => {
       &.dot-next:hover {
         @extend .dot-prev;
       }
-      &.act {
+      /* &.act {
         color: red
-      }
+      } */
     }
 
     .pagination-anchor {
@@ -233,9 +313,7 @@ const dotClick = (type: string) => {
       height: 38px;
       border-radius: 50%;
       background: linear-gradient(#fff, #f7f8fa);
-      transition: -webkit-transform .3s linear;
       transition: transform .3s linear;
-      transition: transform .3s linear, -webkit-transform .3s linear;
       transform: translateX(var(--transleft));
       box-shadow: 0 6px 6px rgb(31, 45, 61, .05), 0 10px 10px rgb(31, 45, 61, .15), inset 0 -1px 2px hsl(0deg, 0%, 100%, 50%);
       z-index: 1;
