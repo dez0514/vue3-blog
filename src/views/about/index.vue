@@ -36,14 +36,14 @@
           <div class="title">博客说明</div>
         </div>
         <div class="about-content">
-          <div class="tips">颜色，效果均模仿 <a href='https://dzblog.cn/' target="_blank">Wintermelon's blog</a>保留版权。代码自己实现，练手玩玩无商用。学习vue3。</div>
+          <div class="tips">颜色，效果均模仿 <a href='https://dzblog.cn/' target="_blank">Wintermelon's blog</a> 保留版权。代码自己实现，练手玩玩无商用。学习vue3。</div>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import banner from '../../components/banner.vue'
+import banner from '../../components/banner/banner.vue'
 </script>
 <style lang="scss" scoped>
 .about {
@@ -55,8 +55,8 @@ import banner from '../../components/banner.vue'
   margin: 20px auto 0;
   width: 100%;
   border-radius: 13px;
-  box-shadow: 0 13px 15px rgba(31, 45, 61, 0.1);
-  background-color: #fff;
+  box-shadow: 0 13px 15px var(--gray_opacity_1);
+  background-color: var(--white);
 }
 .meta {
   position: relative;
@@ -64,7 +64,7 @@ import banner from '../../components/banner.vue'
   .title {
     font-size: 16px;
     font-weight: 400;
-    color: #20a0ff;
+    color: var(--primary);
     position: relative;
     display: inline-block;
   }
@@ -76,8 +76,8 @@ import banner from '../../components/banner.vue'
     position: absolute;
     bottom: -14px;
     left: -5px;
-    background: linear-gradient(90deg, #20baff, #20a0ff);
-    box-shadow: 0 0 6px #20a0ff;
+    background: linear-gradient(90deg, var(--analogous), var(--primary));
+    box-shadow: 0 0 6px var(--primary);
     z-index: 1;
   }
   .title:after {
@@ -91,27 +91,11 @@ import banner from '../../components/banner.vue'
     bottom: -13px;
     left: 0;
     z-index: 2;
-    background: -webkit-gradient(
-        linear,
-        left top,
-        right top,
-        from(#20a0ff),
-        color-stop(80%, rgba(203, 208, 218, 0.2)),
-        to(rgba(203, 208, 218, 0))
-      )
-      no-repeat 0 1px/100% 1px;
-    background: -webkit-linear-gradient(
-        left,
-        #20a0ff,
-        rgba(203, 208, 218, 0.2) 80%,
-        rgba(203, 208, 218, 0)
-      )
-      no-repeat 0 1px/100% 1px;
     background: linear-gradient(
         90deg,
-        #20a0ff,
-        rgba(203, 208, 218, 0.2) 80%,
-        rgba(203, 208, 218, 0)
+        var(--primary),
+        var(--title_gradient_2) 80%,
+        var(--title_gradient_0)
       )
       no-repeat 0 1px/100% 1px;
   }
@@ -131,24 +115,25 @@ import banner from '../../components/banner.vue'
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--gray_10);
   .link-title {
     flex: 1
   }
   .link-desc {
     flex: 1.6;
+    word-break: break-all;
   }
 }
 .list li:nth-child(4n + 1),
 .list li:nth-child(4n + 2) {
-  background-color: #f0f0f0;
+  background-color: var(--gray_10);
 }
 
 .list li {
   padding: 12px 10px;
 }
 .list li {
-  border-bottom: 1px solid #e6eaf0;
+  border-bottom: 1px solid var(--gray_8);
 }
 .tips {
   font-size: 14px;
@@ -182,10 +167,10 @@ import banner from '../../components/banner.vue'
     grid-template-columns: repeat(1, 100%);
   }
   .list li:nth-child(2n + 1) {
-    background-color: #f0f0f0;
+    background-color: var(--gray_10);
   }
   .list li:nth-child(2n) {
-    background-color: #fff;
+    background-color: var(--white);
   }
 }
 @media screen and (max-width: 450px) {

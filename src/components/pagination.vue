@@ -319,4 +319,9 @@ const dotClick = (type: string) => {
     }
   }
 }
+@media screen and (max-width: 990px) {
+ .pagination-wrapper {
+    transform: translate(-50%, calc(-100% - 5px));
+ }
+}
 </style>

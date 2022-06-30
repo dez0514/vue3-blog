@@ -82,10 +82,10 @@
   </swiper>
 </template>
 <script lang="ts" setup>
-import png1 from '../assets/pg1.png'
-import png2 from '../assets/pg2.png'
-import png3 from '../assets/pg3.png'
-import png4 from '../assets/pg4.png'
+import png1 from '../../assets/pg1.png'
+import png2 from '../../assets/pg2.png'
+import png3 from '../../assets/pg3.png'
+import png4 from '../../assets/pg4.png'
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import "swiper/css/bundle";

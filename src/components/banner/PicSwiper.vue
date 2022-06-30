@@ -15,22 +15,22 @@
     <!-- :autoplay="autoplayOptions"  :modules="modules" -->
     <swiper-slide>
       <div class="img-wrapper">
-        <img src="../assets/pg1.png" />
+        <img src="../../assets/pg1.png" />
       </div>
     </swiper-slide>
     <swiper-slide>
       <div class="img-wrapper">
-        <img src="../assets/pg2.png" />
+        <img src="../../assets/pg2.png" />
       </div>
     </swiper-slide>
     <swiper-slide>
       <div class="img-wrapper">
-        <img src="../assets/pg3.png" />
+        <img src="../../assets/pg3.png" />
       </div>
     </swiper-slide>
     <swiper-slide>
       <div class="img-wrapper">
-        <img src="../assets/pg4.png" />
+        <img src="../../assets/pg4.png" />
       </div>
     </swiper-slide>
   </swiper>
@@ -40,7 +40,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import "swiper/css/bundle";
 import { ref, onUnmounted, onMounted } from "vue"
-import { emitter } from '../utils/useEmit'
+import { emitter } from '../../utils/useEmit'
 // import { Pagination, A11y, Autoplay } from 'swiper'
 // import { PaginationOptions } from 'swiper/types/modules/pagination';
 // const autoplayOptions = {

@@ -19,14 +19,14 @@
         </div>
       </div>
     </div>
-    <pagination :total="100" v-model:currentPage="pageNumber"></pagination>
+    <pagination :total="100" v-model:current-page="pageNumber"></pagination>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue'
 import LeftMenuWrap from '../../components/leftMenuWrap.vue'
 import NavTags from '../../components/NavTags.vue'
-import banner from '../../components/banner.vue'
+import banner from '../../components/banner/banner.vue'
 import card from '../../components/card.vue'
 import pagination from '../../components/pagination.vue'
 // import cardLine from '../../components/cardLine.vue'

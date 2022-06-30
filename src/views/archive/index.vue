@@ -2,7 +2,7 @@
   <div class="archive">
     <banner />
     <div class="content">
-      <div style="width: 150px;flex-shrink: 0;" v-if="isPc">
+      <div style="width: 150px;flex-shrink: 0;padding-top: 20px;" v-if="isPc">
         <left-menu-wrap>
           <template #default>
             <nav-times />
@@ -25,7 +25,7 @@
 import { ref } from 'vue'
 import LeftMenuWrap from '../../components/leftMenuWrap.vue'
 import NavTimes from '../../components/NavTimes.vue'
-import banner from '../../components/banner.vue'
+import banner from '../../components/banner/banner.vue'
 import pagination from '../../components/pagination.vue'
 import cardLine from '../../components/cardLine.vue'
 import { configStore } from '../../store'

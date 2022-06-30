@@ -39,4 +39,14 @@
   display: inline-block;
   margin-right: 10px;
 }
+
+@media screen and (max-width: 990px) {
+  .footer {
+    height: 60px;
+    padding-top: 15px;
+  }
+  .bn-num {
+    margin-top: 5px;
+  }
+}
 </style>

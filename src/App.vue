@@ -70,7 +70,7 @@ onUnmounted(() => {
 	opacity: 0
 } 
 .rotate {
-  transform-origin: left 450px;
-  transform: translateX(250px) perspective(600px) rotateY(10deg);
+  /* transform-origin: left 450px; */
+  transform: perspective(600px) rotateY(10deg) translateX(250px);
 }
 </style>

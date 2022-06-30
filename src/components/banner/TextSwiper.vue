@@ -85,7 +85,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import "swiper/css/bundle";
 import { ref } from "vue"
-import { emitter } from '../utils/useEmit'
+import { emitter } from '../../utils/useEmit'
 const controlSwiper = ref(null)
 const onSwiper = (swiper: any) => {
   // console.log(swiper);

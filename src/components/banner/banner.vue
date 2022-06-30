@@ -15,7 +15,7 @@
   </div>
 </div>
 <div v-else>
-  <div :class="isPc ? 'pc-banner-wrap':'banner-wrap'">
+  <div :class="['mode_image', isPc ? 'pc-banner-wrap':'banner-wrap']">
     <bubble-cover></bubble-cover>
     <div class="title-wraps">
       <div class="title">标题测试</div>
@@ -25,11 +25,11 @@
 </div>
 </template>
 <script lang="ts" setup>
-import BubbleCover from './BubbleCover/index.vue' 
+import BubbleCover from '../BubbleCover/index.vue' 
 import PicSwiper from './PicSwiper.vue'
 import TextSwiper from './TextSwiper.vue'
 import PcSwiper from './pcSwiper.vue'
-import { configStore } from '../store'
+import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 import { toRefs } from 'vue'
 const configStores = configStore()
@@ -58,6 +58,9 @@ const { mode } = toRefs(props)
     top: 0;
     left: 0;
     width: 100%;
+  }
+  &.mode_image {
+    height: 220px;
   }
 }
 .title-wraps {
