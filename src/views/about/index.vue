@@ -49,6 +49,11 @@ import banner from '../../components/banner/banner.vue'
 .about {
   padding-bottom: 50px;
 }
+@media screen and (max-width: 990px) {
+  .about {
+    padding-bottom: 20px;
+  }
+}
 .about-wrap {
   position: relative;
   padding: 50px 0 50px;
