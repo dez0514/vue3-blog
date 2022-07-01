@@ -38,6 +38,22 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     component: () => import('@/views/messageboard/index.vue')
   },
   {
+    path: '/detail',
+    name: 'detail',
+    meta: {
+      title: '文章详情'
+    },
+    component: () => import('@/views/detail/index.vue')
+  },
+  {
+    path: '/search',
+    name: 'search',
+    meta: {
+      title: '文章详情'
+    },
+    component: () => import('@/views/search/index.vue')
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: '404',
     component: () => import('@/views/error/index.vue')

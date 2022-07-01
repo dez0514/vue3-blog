@@ -54,6 +54,11 @@ onUnmounted(() => {
     padding: 78px 40px 0 40px;
   }
 }
+@media screen and (max-width: 990px) {
+  .content {
+    min-height: calc(100vh - 60px);
+  }
+}
 .sider-mask {
   z-index: var(--zIndex_5);
   position: fixed;
