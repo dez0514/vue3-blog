@@ -21,8 +21,12 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { useRouter, useRoute } from "vue-router";
+const router = useRouter();
+const route = useRoute();
 const jumpToDetail = () => {
   console.log('====jump===')
+  router.push({ name: 'detail' })
 }
 </script>
 <style lang="scss" scoped>

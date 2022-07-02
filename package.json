@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@iconfu/svg-inject": "^1.2.3",
+    "@vfup/github-corner": "^0.1.3",
     "@vueuse/core": "^8.7.5",
     "axios": "^0.27.2",
     "fast-glob": "^3.2.11",
