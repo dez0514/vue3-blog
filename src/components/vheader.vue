@@ -12,7 +12,7 @@
             <div>{{ item.title }}</div>
           </div>
           <div class="anchor"
-            :style="{ '--menu_width': tabList[hoverIndex].width + 'px', '--tranlate-left': translateX }"></div>
+            :style="{ '--menu_width': hoverIndex === -1 ? 0 : tabList[hoverIndex].width + 'px', '--tranlate-left': translateX }"></div>
         </div>
         <div class="search-btn" @click="handleIsShowSearch(true)">
           <svg-icon icon-class="search"></svg-icon>
@@ -46,14 +46,13 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from "vue"
-import { useRouter, useRoute } from "vue-router";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue"
+import { useRouter } from "vue-router";
 import { configStore } from '../store'
 import { storeToRefs } from 'pinia'
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores)
 const router = useRouter();
-const route = useRoute();
 interface tabItem {
   title: string;
   name: string;
@@ -67,8 +66,8 @@ const tabList: tabItem[] = [
   { title: '留言板', name: 'messageboard', class: 'message', width: 91 }
 ]
 const showSearch = ref<boolean>(false)
-const tabIndex = ref<number>(0)
-const hoverIndex = ref<number>(0)
+const tabIndex = ref<number>(-1)
+const hoverIndex = ref<number>(-1)
 const scrollHeight = ref<number>(0)
 const keyword = ref<string>('')
 const translateX = computed(() => {
@@ -108,14 +107,15 @@ const handleScrollWindow = () => {
   // console.log('scrollTop==', scrollTop)
   scrollHeight.value = scrollTop
 }
+watch(() => router.currentRoute.value, (value) => {
+  if(isPc.value) {
+    console.log("路由变化了", value)
+    const index = tabList.findIndex(item => item.name === value.name)
+    tabIndex.value = index
+    hoverIndex.value = index
+  }
+})
 onMounted(() => {
-  setTimeout(() => {
-    const index = tabList.findIndex(item => item.name === route.name)
-    if (index > -1) {
-      tabIndex.value = index
-      hoverIndex.value = index
-    }
-  }, 300)
   window.addEventListener('scroll', handleScrollWindow)
 })
 onUnmounted(() => {

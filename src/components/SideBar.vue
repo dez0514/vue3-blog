@@ -75,16 +75,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted } from "vue"
-import { useRouter, useRoute } from "vue-router";
+import { ref, watch } from "vue"
+import { useRouter } from "vue-router";
 import { configStore } from '../store'
 import { storeToRefs } from 'pinia'
 import NavTimes from './NavTimes.vue'
 import png1 from '../assets/pg1.png'
 const configStores = configStore()
-const { isCollapse } = storeToRefs(configStores)
+const { isCollapse, isPc } = storeToRefs(configStores)
 const router = useRouter();
-const route = useRoute();
 interface tabItem {
   title: string;
   name: string;
@@ -168,13 +167,12 @@ const handleChangeRouter = (index: number, item: tabItem) => {
   router.push({ name: item.name })
   configStores.updateCollapse(false)
 }
-onMounted(() => {
-  setTimeout(() => {
-    const index = tabList.findIndex(item => item.name === route.name)
-    if (index > -1) {
-      tabIndex.value = index
-    }
-  }, 300)
+watch(() => router.currentRoute.value, (value) => {
+  if(!isPc.value) {
+    console.log("app路由变化了", value)
+    const index = tabList.findIndex(item => item.name === value.name)
+    tabIndex.value = index
+  }
 })
 </script>
 <style lang="scss" scoped>

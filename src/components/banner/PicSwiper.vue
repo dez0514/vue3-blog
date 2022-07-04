@@ -39,7 +39,7 @@
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import "swiper/css/bundle";
-import { ref, onUnmounted, onMounted } from "vue"
+import { ref, onUnmounted, onMounted, nextTick } from "vue"
 import { emitter } from '../../utils/useEmit'
 // import { Pagination, A11y, Autoplay } from 'swiper'
 // import { PaginationOptions } from 'swiper/types/modules/pagination';
@@ -131,10 +131,10 @@ const onSlideChange = (swiper: any) => {
   // console.log('slide change pic========', swiper.activeIndex, swiper.realIndex);
 };
 onMounted(() => {
-  setTimeout(() => {
+  nextTick(() => {
     emitter.on('change-prev-slide', () => changeSlides('prev'))
     emitter.on('change-next-slide', () => changeSlides('next'))
-  }, 300)
+  })
 })
 onUnmounted(()=>{
   destroyCallback()

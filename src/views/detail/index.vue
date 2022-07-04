@@ -2,7 +2,7 @@
   <div class="detail">
     <banner />
     <div class="content">
-      <div style="width: 250px;flex-shrink: 0;" v-show="isPc && isShowMenu">
+      <div :class="['menu-box', isShowMenu ? '':'hide']" v-show="isPc">
         <left-menu-wrap>
           <template #default>
             <div class="toc-wrap">
@@ -76,20 +76,30 @@ const handleChangeShowMenu = () => {
   position: relative;
   box-sizing: border-box;
   display: flex;
+  .menu-box {
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: all 0.5s;
+    width: 250px;
+    opacity: 1;
+    &.hide {
+      width: 0;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+  }
   .art-wrap {
     margin-top: 20px;
     flex: 1;
     box-sizing:border-box;
-    /* transition: all .5s; */
+    transition: all .5s;
     min-height: calc(100vh - 78px - 138px - 320px - 50px - 20px);
   }
   .art-wrap .article-content {
     position: relative;
-    /* overflow: hidden; */
     box-sizing: border-box;
     padding: 30px 40px;
     width: 100%;
-    /* height: 100%; */
     flex: 1;
     border-radius: 13px;
     box-shadow: 0 13px 15px var(--gray_opacity_1);
@@ -212,7 +222,6 @@ const handleChangeShowMenu = () => {
       border-bottom-left-radius: 5px;
       vertical-align: bottom;
       text-shadow: 0 1px #fff;
-      -webkit-transition: 0.25s;
       transition: 0.25s;
       cursor: pointer;
     }
