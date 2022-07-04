@@ -11,7 +11,7 @@
           </template>
         </left-menu-wrap>
       </div>
-      <div class="art-wrap">
+      <div :class="['art-wrap', isShowMenu ? '':'hideside']">
         <div class="article-content">
           <github-corner position="left" fill="#20a0ff" color="#fff" :blank="true" repo="https://github.com/dez0514" />
           <div class="meta">
@@ -89,11 +89,15 @@ const handleChangeShowMenu = () => {
     }
   }
   .art-wrap {
+    box-sizing:border-box;
+    padding-left: 20px;
     margin-top: 20px;
     flex: 1;
-    box-sizing:border-box;
     transition: all .5s;
     min-height: calc(100vh - 78px - 138px - 320px - 50px - 20px);
+    &.hideside {
+      padding-left: 0;
+    }
   }
   .art-wrap .article-content {
     position: relative;
