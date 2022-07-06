@@ -2,13 +2,14 @@
   <div class="search">
     <banner />
     <div class="content">
-      <div class="list-box" :style="{ padding: !isPc ? '15px 15px 0' : '30px 0 0'}">
+      <div class="list-box">
         <div class="list-wrap">
+          <!-- <card></card>
           <card></card>
           <card></card>
           <card></card>
-          <card></card>
-          <card></card>
+          <card></card> -->
+          <loading />
         </div>
       </div>
     </div>
@@ -20,6 +21,7 @@ import { ref } from 'vue'
 import banner from '../../components/banner/banner.vue'
 import card from '../../components/card.vue'
 import pagination from '../../components/pagination.vue'
+import loading from '../../components/loading.vue'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 const configStores = configStore()
@@ -37,7 +39,8 @@ const pageNumber = ref<number>(1)
   display: flex;
   .list-box {
     box-sizing:border-box;
-    min-height: 606px;
+    width: 100%;
+    min-height: calc(100vh - 82px - 138px - 320px - 50px);
   }
   .list-box .list-wrap {
     overflow: hidden;
