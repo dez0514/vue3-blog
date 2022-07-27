@@ -76,6 +76,6 @@ onUnmounted(() => {
 } 
 .rotate {
   /* transform-origin: left 450px; */
-  transform: perspective(600px) rotateY(10deg) translateX(250px);
+  transform: perspective(600px) rotateY(10deg) translateX(250px) translateY(-30px);
 }
 </style>
