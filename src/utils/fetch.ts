@@ -1,17 +1,18 @@
 import axios from 'axios'
-import { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { AxiosRequestConfig } from 'axios'
+// import { baseURL } from '../api/urls'
 
-const baseURL = ''
 const CONTENT_TYPE = {
   json: 'application/json;charset=utf-8',
   xwform: 'application/x-www-form-urlencoded',
 }
 
 const service = axios.create({
-  baseURL, // api的base_url
+  baseURL: '', // api的base_url
   timeout: 30000, // 请求超时时间
   headers: {
     'Content-Type': CONTENT_TYPE.json,
+    projectid: 'client' // 前端页面
   },
 })
 
@@ -50,4 +51,4 @@ service.interceptors.response.use(
 )
 
 const CancelToken = axios.CancelToken
-export { service, CancelToken, baseURL }
+export { service, CancelToken }

@@ -16,7 +16,7 @@
     "mitt": "^3.0.0",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.14",
-    "qs": "^6.10.3",
+    "qs": "^6.11.0",
     "swiper": "^8.2.4",
     "vue": "^3.2.25",
     "vue-router": "^4.0.15"
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/node": "^17.0.36",
     "@types/nprogress": "^0.2.0",
+    "@types/qs": "^6.9.7",
     "@vitejs/plugin-vue": "^2.3.3",
     "postcss-px-to-viewport": "^1.1.1",
     "sass": "^1.52.1",

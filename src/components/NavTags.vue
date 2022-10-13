@@ -22,14 +22,14 @@
                 </div>
             </div>
         </div>
-        <div class="title">导航</div>
-        <div class="bot-nav">
-            <div class="items-wrap" v-for="(item, index) in list" :key="index" @click="handleClickTab(index)">
+        <div class="title" v-show="tagList.length > 0">导航</div>
+        <div class="bot-nav" v-show="tagList.length > 0">
+            <div class="items-wrap" v-for="(item, index) in tagList" :key="index" @click="handleClickTab(index)">
                 <div class="nav-wrap">
                     <div class="nav-item" :class="tabIndex === index ? 'active' : ''">
                         <div class="item-icon">
                             <!-- 将来动态新增的小标签的小icon使用图片 -->
-                            <img class="svg-img" v-if="item.src" :src="item.src" alt="" onload="SVGInject(this)">
+                            <img class="svg-img" v-if="item.icon" :src="item.icon" alt="" onload="SVGInject(this)">
                             <svg-icon v-else icon-class="blog"></svg-icon>
                         </div>
                         <div class="item-txt">{{ item.name }}</div>
@@ -40,29 +40,34 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
-import testSvg from '../assets/note.svg'
-const list = [
-    { icon: "", name: "javascript" },
-    { icon: "", name: "react" },
-    { icon: "", name: "vue" },
-    { icon: "", name: "webpack" },
-    { icon: "", name: "node" },
-    { icon: "", name: "源码解读" },
-    { icon: "", name: "mongodb" },
-    // { icon: "", name: "test" },
-    // { icon: "", name: "test2" },
-    // { icon: "", name: "test3" },
-    // { icon: "", name: "test4" },
-    // { icon: "", name: "test6" },
-    { icon: "", name: "生活随笔", src: testSvg },
-    // { icon: "", name: "瞎搞", src: 'http://localhost:8081/imgs/note.svg' },
-]
+import { ref, onMounted } from 'vue'
+import { getAllTags } from '../api/tags'
+import { baseURL } from '../api/urls'
+import { tagItem } from '../types/index'
+
+const tagList = ref<tagItem[]>([])
 const tabIndex = ref<number>(-2)
 const handleClickTab = (index: number) => {
     if (tabIndex.value === index) return;
     tabIndex.value = index;
 }
+const getTagList = () => {
+  getAllTags().then((res: any) => {
+    if(res.code === 0) {
+      tagList.value = res.data.map((item: any) => {
+        return {
+          ...item,
+          icon: `${baseURL}/imgs/${item.icon}`
+        }
+      })
+    } else {
+
+    }
+  })
+}
+onMounted(() => {
+  getTagList()
+})
 </script>
 <style lang="scss" scoped>
 .top-nav {

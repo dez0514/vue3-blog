@@ -1,7 +1,7 @@
 <template>
   <div class="pagination-wrapper">
     <ul :style="{ '--transleft': `${anchorLeft}px` }" v-show="total > pageSize">
-      <li class="pagination-anchor"></li>
+      <!-- <li class="pagination-anchor"></li> -->
       <li class="pagination-item prev" @click="prevClick" v-show="showPrevBtn"
         @mouseenter="hanleHover('prev')"
         @mouseleave="hanleHover(-1)"
@@ -299,9 +299,12 @@ const dotClick = (type: string) => {
       &.dot-next:hover {
         @extend .dot-prev;
       }
-      /* &.act {
-        color: red
-      } */
+      &.act {
+        border-radius: 50%;
+        background: linear-gradient(#fff, #f7f8fa);
+        transition: all 0s;
+        /* box-shadow: 0 6px 6px rgb(31, 45, 61, .05), 0 10px 10px rgb(31, 45, 61, .15), inset 0 -1px 2px hsl(0deg, 0%, 100%, 50%); */
+      }
     }
 
     .pagination-anchor {

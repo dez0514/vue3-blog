@@ -11,11 +11,7 @@
       </div>
       <div class="list-box" :style="{ padding: !isPc ? '15px 15px 0' : '30px 0 0'}">
         <div class="list-wrap">
-          <card></card>
-          <card></card>
-          <card></card>
-          <card></card>
-          <card></card>
+          <card v-for="(item, index) in articleList" :key="index" :info="item"></card>
         </div>
       </div>
     </div>
@@ -23,18 +19,39 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import LeftMenuWrap from '../../components/leftMenuWrap.vue'
 import NavTags from '../../components/NavTags.vue'
 import banner from '../../components/banner/banner.vue'
 import card from '../../components/card.vue'
 import pagination from '../../components/pagination.vue'
 // import cardLine from '../../components/cardLine.vue'
+import { getArticlesPage } from '../../api/articles'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const pageNumber = ref<number>(1)
+const total = ref<number>(0)
+const articleList = ref([])
+const getArtList = () => {
+  const params = {
+    pageSize: 10,
+    pageNum: pageNumber.value
+  }
+  getArticlesPage(params).then((res: any) => {
+    console.log(res)
+    if(res.code === 0) {
+      articleList.value = res.data
+      total.value = Number(res.total)
+    } else {
+
+    }
+  })
+}
+onMounted(() => {
+  getArtList()
+})
 </script>
 <style lang="scss" scoped>
 .home {

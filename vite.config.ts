@@ -8,7 +8,7 @@ import postcsspxtoviewport from 'postcss-px-to-viewport'
 export default defineConfig({
   base: './',
   resolve: {
-    alias: {  
+    alias: {
       // 别名配置
       '@': resolve('src/'),
       '@components': resolve('src/components'),
@@ -16,17 +16,17 @@ export default defineConfig({
   },
   server: {
     // host: '192.168.0.102',
-    port: 3001
+    port: 3001,
     // open: true,
-    // proxy: {
-    //   '/api': {
-    //     target: 'http://localhost:7777', // 所要代理的目标地址
-    //     rewrite: path => path.replace(/^\/api/, ''), // 重写传过来的path路径，比如 `/api/index/1?id=10&name=zs`（注意:path路径最前面有斜杠（/），因此，正则匹配的时候不要忘了是斜杠（/）开头的；选项的 key 也是斜杠（/）开头的）
-    //     changeOrigin: true,  // true/false, Default: false - changes the origin of the host header to the target URL
-    //   }
-    // },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3002', // 所要代理的目标地址
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '/api')
+      }
+    },
   },
-  css:{
+  css: {
     preprocessorOptions: {
       scss: {
         additionalData: `@import "./src/styles/variable.scss";`// 引用公共样式，使用vite搭建项目只安装sass即可，不需要安装node-sass,sass-loader

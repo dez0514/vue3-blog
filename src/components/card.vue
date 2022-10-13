@@ -4,7 +4,7 @@
       <img src="../assets/test.jpg" alt="" />
     </div>
     <div class="box">
-      <div class="title">Promise的完全实现Promise的完全实现</div>
+      <div class="title">{{ info && info.title }}</div>
       <div class="meta">
         <time class="time">6月30日 · 2021年</time>
       </div>
@@ -22,8 +22,14 @@
 </template>
 <script lang="ts" setup>
 import { useRouter, useRoute } from "vue-router";
+import { toRefs } from 'vue';
 const router = useRouter();
-const route = useRoute();
+// const route = useRoute();
+const props = defineProps({
+  info: { type: Object }
+})
+const { info } = toRefs(props)
+// console.log('info===', info)
 const jumpToDetail = () => {
   console.log('====jump===')
   router.push({ name: 'detail' })
