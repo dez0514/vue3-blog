@@ -37,7 +37,9 @@ const articleList = ref([])
 const getArtList = () => {
   const params = {
     pageSize: 10,
-    pageNum: pageNumber.value
+    pageNum: pageNumber.value,
+    ishot: true,
+    tag: 'mysql'
   }
   getArticlesPage(params).then((res: any) => {
     console.log(res)

@@ -21,7 +21,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import { toRefs } from 'vue';
 const router = useRouter();
 // const route = useRoute();
