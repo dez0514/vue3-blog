@@ -1,2 +1,0 @@
-{#hasKitty}Cat’s name: {kitty}{/hasKitty}
-{#hasDog}Dog’s name: {dog}{/hasDog}
