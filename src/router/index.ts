@@ -54,6 +54,14 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     component: () => import('@/views/search/index.vue')
   },
   {
+    path: '/resume',
+    name: 'resume',
+    meta: {
+      title: '个人简历'
+    },
+    component: () => import('@/views/resume/index.vue')
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: '404',
     component: () => import('@/views/error/index.vue')
