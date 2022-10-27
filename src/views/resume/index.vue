@@ -9,9 +9,7 @@ import PizZip from 'pizzip'
 import PizZipUtils from 'pizzip/utils'
 import { saveAs } from 'file-saver'
 import ImageModule from 'docxtemplater-image-module-free'
-const loadFile = (url: any, callback: any) => {
-  PizZipUtils.getBinaryContent(url, callback)
-}
+
 const data = {
   "first_name":"Jane",
   "hasKitty": true,
@@ -20,7 +18,7 @@ const data = {
   "dog": null
 }
 const wordExport = (docData: any) => {
-  loadFile('resume.docx', (error: any, content: any) => {
+  PizZipUtils.getBinaryContent('resume.docx', (error: any, content: any) => {
     if (error) {
       throw error
     }
