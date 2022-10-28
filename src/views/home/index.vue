@@ -5,7 +5,7 @@
       <div style="width: 200px;flex-shrink: 0;" v-if="isPc">
         <left-menu-wrap>
           <template #default>
-            <nav-tags />
+            <nav-tags @change="getCurTag" />
           </template>
         </left-menu-wrap>
       </div>
@@ -33,13 +33,22 @@ const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const pageNumber = ref<number>(1)
 const total = ref<number>(0)
+const pageSize = ref<number>(10) 
 const articleList = ref([])
+const ishot = ref<boolean>(false)
+const tag = ref<string>('')
+const getCurTag = (obj: { tag: string, ishot: boolean }) => {
+  tag.value = obj.tag
+  ishot.value = obj.ishot
+  pageNumber.value = 1
+  getArtList()
+}
 const getArtList = () => {
   const params = {
-    pageSize: 10,
+    pageSize: pageSize.value,
     pageNum: pageNumber.value,
-    ishot: true,
-    tag: 'mysql'
+    ishot: ishot.value,
+    tag: tag.value
   }
   getArticlesPage(params).then((res: any) => {
     console.log(res)
