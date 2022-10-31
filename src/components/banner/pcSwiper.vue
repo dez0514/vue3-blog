@@ -5,91 +5,54 @@
     :pagination="false"
     :followFinger="false"
     @swiper="onSwiper"
+    @slideChange="onSlideChange"
     @resize="resize"
   >
-    <swiper-slide>
+    <swiper-slide v-for="(item, index) in list" :key="index">
       <div class="slide-content">
         <div class="slide-desc">
-          <div class="title">从0搭建一套属于自己的博客系统</div>
+          <div class="title">{{ item.title }}</div>
             <div class="tag-wrap">
-              <div class="tag">vue</div>
-              <div class="tag">react</div>
-              <div class="tag">mongo</div>
+              <div class="tag" v-for="(inner, idx) in item.tagList" :key="`${index}_${idx}`">{{ inner.name }}</div>
             </div>
             <div class="btn-read-wrap">
-              <div class="btn-read">
+              <div class="btn-read" @click="goDetail(item.articleId)">
                 <svg-icon class="icons" icon-class="right-arrow"></svg-icon>阅读全文
               </div>
             </div>
         </div>
-        <div class="img-wrap" :style="{ '--url': `url(${png1})` }"></div>
-      </div>
-    </swiper-slide>
-    <swiper-slide>
-      <div class="slide-content">
-        <div class="slide-desc">
-          <div class="title">标题文章测试1</div>
-            <div class="tag-wrap">
-              <div class="tag">vue</div>
-              <div class="tag">react</div>
-              <div class="tag">mongo</div>
-            </div>
-            <div class="btn-read-wrap">
-              <div class="btn-read">
-                <svg-icon class="icons" icon-class="right-arrow"></svg-icon>阅读全文
-              </div>
-            </div>
-        </div>
-        <div class="img-wrap" :style="{ '--url': `url(${png2})` }"></div>
-      </div>
-    </swiper-slide>
-    <swiper-slide>
-      <div class="slide-content">
-        <div class="slide-desc">
-          <div class="title">标题文章测试2</div>
-            <div class="tag-wrap">
-              <div class="tag">vue</div>
-              <div class="tag">react</div>
-              <div class="tag">mongo</div>
-            </div>
-            <div class="btn-read-wrap">
-              <div class="btn-read">
-                <svg-icon class="icons" icon-class="right-arrow"></svg-icon>阅读全文
-              </div>
-            </div>
-        </div>
-        <div class="img-wrap" :style="{ '--url': `url(${png3})` }"></div>
-      </div>
-    </swiper-slide>
-    <swiper-slide>
-      <div class="slide-content">
-        <div class="slide-desc">
-          <div class="title">标题文章测试3</div>
-            <div class="tag-wrap">
-              <div class="tag">vue</div>
-              <div class="tag">react</div>
-              <div class="tag">mongo</div>
-            </div>
-            <div class="btn-read-wrap">
-              <div class="btn-read">
-                <svg-icon class="icons" icon-class="right-arrow"></svg-icon>阅读全文
-              </div>
-            </div>
-        </div>
-        <div class="img-wrap" :style="{ '--url': `url(${png4})` }"></div>
+        <div class="img-wrap" v-show="item.banner" :style="{ '--url': `url(${item.banner})` }"></div>
       </div>
     </swiper-slide>
   </swiper>
 </template>
 <script lang="ts" setup>
-import png1 from '../../assets/pg1.png'
-import png2 from '../../assets/pg2.png'
-import png3 from '../../assets/pg3.png'
-import png4 from '../../assets/pg4.png'
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import "swiper/css/bundle";
-import { ref } from "vue"
+import { ref, toRefs } from "vue"
+import { useRouter } from "vue-router";
+const emit = defineEmits<{
+  (e: 'changeSlideIndex', index: number): void
+}>()
+const router = useRouter();
+interface tagItem {
+  name?: string;
+}
+interface bannerItem {
+  title?: string;
+  extraTitle?: string;
+  banner?: string;
+  tagList: tagItem[];
+  articleId?: string | number;
+}
+interface Props {
+  list?: bannerItem[];
+}
+const props = withDefaults(defineProps<Props>(), {
+  list: [] as any,
+})
+const { list  } = toRefs(props)
 const controlSwiper = ref(null)
 const onSwiper = (swiper: any) => {
   console.log(swiper);
@@ -98,6 +61,16 @@ const onSwiper = (swiper: any) => {
 const resize = (swiper: any) => {
   console.log('resize===', swiper)
   swiper.update();
+}
+const onSlideChange = (swiper: any) => {
+  console.log('slide change========', swiper.activeIndex, swiper.realIndex);
+  emit('changeSlideIndex', swiper.realIndex)
+
+};
+const goDetail = (id: string | number | undefined) => {
+  if(id) {
+    router.push(`/detail/${id}`)
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -111,12 +84,15 @@ const resize = (swiper: any) => {
 }
 
 .swiper-slide .slide-content {
+  overflow: hidden;
+  position: relative;
   display: flex;
   align-items: center;
   box-sizing: border-box;
   padding: 20px;
   width: 100%;
   height: 100%;
+  border-radius: 10px;
   .slide-desc {
     flex: 1;
     margin-right: 30px;

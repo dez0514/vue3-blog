@@ -17,7 +17,7 @@
         </div>
       </div>
     </div>
-    <pagination :total="total" :pageSize="pageSize" v-model:currentPage="pageNumber"></pagination>
+    <pagination :total="total" :page-size="pageSize" v-model:currentPage="pageNumber"></pagination>
   </div>
 </template>
 <script lang="ts" setup>
@@ -33,7 +33,7 @@ import { getArchivePage } from '../../api/articles'
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const pageNumber = ref<number>(1)
-const pageSize = ref<number>(6)
+const pageSize = ref<number>(10)
 const total = ref<number>(0)
 const articleList = ref<any>([])
 const curyear = ref<number>(0)

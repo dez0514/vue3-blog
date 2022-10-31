@@ -1,20 +1,24 @@
 <template>
   <div class="card-wrap" @click="jumpToDetail">
-    <div class="cover">
-      <img src="../assets/test.jpg" alt="" />
-    </div>
+    <div class="cover" :style="{
+      background: `gray url(${info?.banner}) no-repeat`,
+      backgroundPosition: 'center center',
+      backgroundSize: 'cover'}"
+    />
     <div class="box">
-      <div class="title">{{ info && info.title }}</div>
+      <div class="title">{{ info?.title }}</div>
       <div class="meta">
-        <time class="time">6月30日 · 2021年</time>
+        <time class="time">{{ cardTime }}</time>
       </div>
       <div class="tags">
         <div class="tags-scroll">
-          <div class="tag-strip" style="color: rgb(24, 144, 255)">React</div>
-          <div class="tag-strip" style="color: rgb(134, 137, 140)">源码解读</div>
-          <div class="tag-strip" style="color: rgb(219, 86, 64)">JavaScript</div>
-          <div class="tag-strip" style="color: rgb(120, 109, 93)">Node</div>
-          <div class="tag-strip" style="color: rgb(183, 235, 143)">Webpack</div>
+          <div class="tag-strip"
+            v-for="(item, index) in info?.tagList"
+            :key="index"
+            :style="{ color: item.color }"
+          >
+            {{ item.name }}
+          </div>
         </div>
       </div>
     </div>
@@ -22,7 +26,8 @@
 </template>
 <script lang="ts" setup>
 import { useRouter } from "vue-router";
-import { toRefs } from 'vue';
+import { toRefs, computed } from 'vue';
+import dayjs from 'dayjs';
 const router = useRouter();
 // const route = useRoute();
 const props = defineProps({
@@ -30,9 +35,17 @@ const props = defineProps({
 })
 const { info } = toRefs(props)
 // console.log('info===', info)
+const cardTime = computed(() => {
+  if(info && info.value && info.value.update_time) {
+    return dayjs(info.value.update_time).format('MM月DD日 · YYYY年')
+  } else if(info && info.value && info.value.create_time) {
+    return dayjs(info.value.create_time).format('MM月DD日 · YYYY年')
+  } else {
+    return ''
+  }
+})
 const jumpToDetail = () => {
-  console.log('====jump===')
-  router.push({ name: 'detail' })
+  router.push(`/detail/${info?.value?.id}`)
 }
 </script>
 <style lang="scss" scoped>
@@ -46,12 +59,7 @@ const jumpToDetail = () => {
 
   .cover {
     width: 100%;
-    display: block;
-
-    img {
-      display: block;
-      width: 100%;
-    }
+    padding-top: 100%;
   }
 
   .box {
@@ -90,6 +98,7 @@ const jumpToDetail = () => {
           display: inline-block;
           font-size: 10px;
           padding: 0 10px;
+          height: 23px;
           line-height: 20px;
           position: relative;
           transition: padding 0.3s;

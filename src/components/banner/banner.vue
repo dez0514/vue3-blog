@@ -1,8 +1,8 @@
 <template>
 <div v-if="mode === 'swiper'">
   <div class="pc-banner-wrap" v-if="isPc">
-    <bubble-cover></bubble-cover>
-    <pc-swiper></pc-swiper>
+    <bubble-cover :cover="curCover" :radius="true"></bubble-cover>
+    <pc-swiper :list="bannerList" @changeSlideIndex="getSlideIndex"></pc-swiper>
   </div>
   <div class="banner-wrap" v-else>
     <bubble-cover></bubble-cover>
@@ -15,11 +15,17 @@
   </div>
 </div>
 <div v-else>
-  <div :class="['mode_image', isPc ? 'pc-banner-wrap':'banner-wrap']">
-    <bubble-cover></bubble-cover>
+  <div :class="['mode_image', isPc ? 'pc-banner-wrap':'banner-wrap']"
+    :style="{
+      background: banner ? `url(${banner}) no-repeat` : '',
+      backgroundPosition: 'center center',
+      backgroundSize: 'cover'
+    }"
+  >
+    <bubble-cover :cover="banner"></bubble-cover>
     <div class="title-wraps">
-      <div class="title">标题测试</div>
-      <div class="little-title">测试，小标题</div>
+      <div class="title">{{ title }}</div>
+      <div class="little-title">{{ extraTitle }}</div>
     </div>
   </div>
 </div>
@@ -31,16 +37,47 @@ import TextSwiper from './TextSwiper.vue'
 import PcSwiper from './pcSwiper.vue'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
-import { toRefs } from 'vue'
+import { onMounted, ref, toRefs } from 'vue'
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores)
-interface Props {
-  mode?: 'swiper' | 'image'
+interface tagItem {
+  name?: string;
 }
+interface bannerItem {
+  title?: string;
+  extraTitle?: string;
+  banner?: string;
+  tagList: tagItem[];
+  articleId?: string | number;
+}
+interface Props {
+  mode?: 'swiper' | 'image';
+  bannerList?: bannerItem[];
+  title?: string;
+  extraTitle?: string;
+  banner?: string;
+  tagList?: tagItem[];
+}
+const curCover = ref<string>('')
 const props = withDefaults(defineProps<Props>(), {
-  mode: 'image'
+  mode: 'image',
+  title: '',
+  extraTitle: '',
+  banner: '',
+  bannerList: [] as any,
+  tagList: [] as any
 })
-const { mode } = toRefs(props)
+const { mode, title, extraTitle, banner, tagList, bannerList  } = toRefs(props)
+const getSlideIndex = (index: number) => {
+  if(bannerList.value && bannerList.value.length) {
+    curCover.value = bannerList.value[index].banner || ''
+  }
+}
+onMounted(() => {
+  if(bannerList.value && bannerList.value.length > 0) {
+    curCover.value = bannerList.value[0].banner || ''
+  }
+})
 </script>
 <style lang="scss" scoped>
 .pc-banner-wrap {
