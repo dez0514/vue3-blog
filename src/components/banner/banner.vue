@@ -8,20 +8,14 @@
     <bubble-cover></bubble-cover>
     <div>
       <div class="swiper-pics">
-        <pic-swiper></pic-swiper>
+        <pic-swiper :list="picList"></pic-swiper>
       </div>
-      <text-swiper></text-swiper>
+      <text-swiper :list="bannerList"></text-swiper>
     </div>
   </div>
 </div>
 <div v-else>
-  <div :class="['mode_image', isPc ? 'pc-banner-wrap':'banner-wrap']"
-    :style="{
-      background: banner ? `url(${banner}) no-repeat` : '',
-      backgroundPosition: 'center center',
-      backgroundSize: 'cover'
-    }"
-  >
+  <div :class="['mode_image', isPc ? 'pc-banner-wrap':'banner-wrap']">
     <bubble-cover :cover="banner"></bubble-cover>
     <div class="title-wraps">
       <div class="title">{{ title }}</div>
@@ -37,7 +31,7 @@ import TextSwiper from './TextSwiper.vue'
 import PcSwiper from './pcSwiper.vue'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref, toRefs } from 'vue'
+import { onMounted, ref, toRefs, computed } from 'vue'
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores)
 interface tagItem {
@@ -68,6 +62,9 @@ const props = withDefaults(defineProps<Props>(), {
   tagList: [] as any
 })
 const { mode, title, extraTitle, banner, tagList, bannerList  } = toRefs(props)
+const picList = computed(() => {
+  return bannerList.value.map(item => item.banner) || []
+})
 const getSlideIndex = (index: number) => {
   if(bannerList.value && bannerList.value.length) {
     curCover.value = bannerList.value[index].banner || ''

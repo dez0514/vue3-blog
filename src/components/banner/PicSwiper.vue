@@ -71,6 +71,12 @@ import { emitter } from '../../utils/useEmit'
 //   // return current + ' of ' + total;
 // }
 // const modules = [Pagination, A11y, Autoplay]
+interface Props {
+  list: (string | undefined)[];
+}
+const props = withDefaults(defineProps<Props>(), {
+  list: [] as any,
+})
 const controlSwiper = ref<any>(null)
 const changeSlides = (type: String) => {
   if(controlSwiper.value && !controlSwiper.value.destroyed && controlSwiper.value.slidePrev && controlSwiper.value.slideNext) {
