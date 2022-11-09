@@ -211,7 +211,7 @@ const countList = computed(() => {
       arr.push(i)
     }
   }
-  console.log('list===', arr)
+  // console.log('list===', arr)
   return arr
 })
 const prevClick = () => {

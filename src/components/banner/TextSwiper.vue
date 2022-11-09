@@ -10,68 +10,15 @@
     @swiper="onSwiper"
     @resize="resize"
   >
-    <swiper-slide>
+    <swiper-slide v-for="item in list" :key="item.articleId">
       <div class="slide-content">
         <div class="slide-desc">
-          <div class="title">从0搭建一套属于自己的博客系统</div>
+          <div class="title">{{ item.title }}</div>
             <div class="tag-wrap">
-              <div class="tag">vue</div>
-              <div class="tag">react</div>
-              <div class="tag">mongo</div>
+              <div class="tag" v-for="(inner, idx) in item.tagList" :key="`${item.articleId}_${idx}`">{{ inner?.name }}</div>
             </div>
             <div class="btn-read-wrap">
-              <div class="btn-read">
-                <svg-icon class="icons" icon-class="right-arrow"></svg-icon>阅读全文
-              </div>
-            </div>
-        </div>
-      </div>
-    </swiper-slide>
-    <swiper-slide>
-      <div class="slide-content">
-        <div class="slide-desc">
-          <div class="title">标题文章测试1</div>
-            <div class="tag-wrap">
-              <div class="tag">vue</div>
-              <div class="tag">react</div>
-              <div class="tag">mongo</div>
-            </div>
-            <div class="btn-read-wrap">
-              <div class="btn-read">
-                <svg-icon class="icons" icon-class="right-arrow"></svg-icon>阅读全文
-              </div>
-            </div>
-        </div>
-      </div>
-    </swiper-slide>
-    <swiper-slide>
-      <div class="slide-content">
-        <div class="slide-desc">
-          <div class="title">标题文章测试2</div>
-            <div class="tag-wrap">
-              <div class="tag">vue</div>
-              <div class="tag">react</div>
-              <div class="tag">mongo</div>
-            </div>
-            <div class="btn-read-wrap">
-              <div class="btn-read">
-                <svg-icon class="icons" icon-class="right-arrow"></svg-icon>阅读全文
-              </div>
-            </div>
-        </div>
-      </div>
-    </swiper-slide>
-    <swiper-slide>
-      <div class="slide-content">
-        <div class="slide-desc">
-          <div class="title">标题文章测试3</div>
-            <div class="tag-wrap">
-              <div class="tag">vue</div>
-              <div class="tag">react</div>
-              <div class="tag">mongo</div>
-            </div>
-            <div class="btn-read-wrap">
-              <div class="btn-read">
+              <div class="btn-read" @click="goDetail(item.articleId)">
                 <svg-icon class="icons" icon-class="right-arrow"></svg-icon>阅读全文
               </div>
             </div>
@@ -84,25 +31,44 @@
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import "swiper/css/bundle";
-import { ref } from "vue"
+import { ref, toRefs } from "vue"
 import { emitter } from '../../utils/useEmit'
+import { useRouter } from "vue-router";
+const router = useRouter();
 const controlSwiper = ref(null)
+const emit = defineEmits<{
+  (e: 'changeSlideIndex', articleId: number | string): void
+}>()
+interface tagItem {
+  name?: string;
+}
+interface bannerItem {
+  title?: string;
+  extraTitle?: string;
+  banner?: string;
+  tagList: tagItem[];
+  articleId: string | number;
+}
+interface Props {
+  list?: bannerItem[];
+}
+const props = withDefaults(defineProps<Props>(), {
+  list: [] as any,
+})
+const { list  } = toRefs(props)
 const onSwiper = (swiper: any) => {
   // console.log(swiper);
   controlSwiper.value = swiper
-  // init(swiper)
+  swiper.updateSlides();
+  swiper.slideTo(1, 0, false);
 };
-// const init = (swiper: any) => {
-//   console.log('init==', swiper);
-// }
 const resize = (swiper: any) => {
-  // console.log('resize===', swiper)
   swiper.update();
 }
 const onSlideChange = (swiper: any) => {
-  // console.log('slide change', controlSwiper.value); // realIndex,  activeIndex
-  // console.log('ccccc===', swiper.activeIndex)
   // emitter.emit('change-slide', swiper.activeIndex)
+  const articleId = list.value[swiper.realIndex].articleId
+  emit('changeSlideIndex', articleId)
 };
 const onSlidePrevStart = (swiper: any) => {
   emitter.emit('change-prev-slide')
@@ -110,7 +76,11 @@ const onSlidePrevStart = (swiper: any) => {
 const onSlideNextStart= (swiper: any) => {
   emitter.emit('change-next-slide')
 }
-
+const goDetail = (id: string | number | undefined) => {
+  if(id) {
+    router.push(`/detail/${id}`)
+  }
+}
 </script>
 <style lang="scss" scoped>
 .swiper-text-container {
@@ -129,7 +99,7 @@ const onSlideNextStart= (swiper: any) => {
   justify-content: center;
   
   box-sizing: border-box;
-  padding: 200px 10px 10px;
+  padding: 220px 10px 10px;
   width: 100%;
   height: 100%;
   .title {

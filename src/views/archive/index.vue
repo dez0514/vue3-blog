@@ -1,6 +1,6 @@
 <template>
   <div class="archive">
-    <banner />
+    <banner :banner="bannerBg" title="博客归档" />
     <div class="content">
       <div style="width: 150px;flex-shrink: 0;padding-top: 20px;" v-if="isPc">
         <left-menu-wrap>
@@ -30,6 +30,7 @@ import cardLine from '../../components/cardLine.vue'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 import { getArchivePage } from '../../api/articles'
+import bannerBg from '../../assets/write.jpg'
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const pageNumber = ref<number>(1)

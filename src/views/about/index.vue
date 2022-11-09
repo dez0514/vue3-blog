@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <banner />
+    <banner :banner="bannerBg" title="关于我" />
     <div class="about-wrap">
       <div class="about-box">
         <div class="meta">
@@ -44,6 +44,7 @@
 </template>
 <script lang="ts" setup>
 import banner from '../../components/banner/banner.vue'
+import bannerBg from '../../assets/me.jpg'
 </script>
 <style lang="scss" scoped>
 .about {

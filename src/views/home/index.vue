@@ -38,11 +38,11 @@ interface tagItem {
   name?: string;
 }
 interface bannerItem {
-  title?: string;
-  extraTitle?: string;
-  banner?: string;
+  title: string;
+  extraTitle: string;
+  banner: string;
   tagList: tagItem[];
-  articleId?: string | number;
+  articleId: string | number;
 }
 const bannerList = ref<bannerItem[]>([])
 const ishot = ref<boolean>(false)
@@ -61,7 +61,7 @@ const getArtList = (init: boolean = false) => {
     tag: tag.value
   }
   getArticlesPage(params).then((res: any) => {
-    console.log(res)
+    console.log('getlist==', res)
     if(res.code === 0) {
       articleList.value = res.data
       total.value = Number(res.total)

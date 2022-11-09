@@ -1,6 +1,6 @@
 <template>
   <div class="detail">
-    <banner />
+    <banner :banner="detailInfo?.banner" :title="detailInfo?.title" :tagList="detailInfo?.tagList" :shadow="true" :isBlur="true" />
     <div class="content">
       <div :class="['menu-box', isShowMenu ? '':'hide']" v-show="isPc">
         <left-menu-wrap>
@@ -50,7 +50,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import LeftMenuWrap from '../../components/leftMenuWrap.vue'
 import banner from '../../components/banner/banner.vue'
 import comment from '../../components/comment/index.vue'
@@ -59,13 +59,58 @@ import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 import { GithubCorner } from '@vfup/github-corner'
 import '@vfup/github-corner/dist/style.css'
+import { getArticleDetail } from '../../api/articles'
+import { useRoute } from 'vue-router'
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const isShowMenu = ref<boolean>(true)
 const pageNumber = ref<number>(1)
+const route = useRoute()
+const detailInfo = ref<any>(null)
 const handleChangeShowMenu = () => {
   isShowMenu.value = !isShowMenu.value
 }
+const getArticleById = (id: string | number) => {
+  getArticleDetail({ id }, { isLoading: false }).then((res: any) => {
+    console.log('detail===', res)
+    if (res.code === 0) {
+      detailInfo.value = { ...res.data }
+      // if(Object.keys(res.data).length === 0) {
+      //   return
+      // }
+      // const content = formartMd(res.data.content)
+      // console.log('format====', content)
+      // detailInfo.value = { ...res.data, content }
+      // nextTick(() => {
+      //   if (detailbox.value) {
+      //     detailMenuList.value = getMdTitleList(detailbox.value)
+      //     console.log('detailMenuList===', detailMenuList.value)
+      //     const mdDomId = window.location.hash // 锚点就是hash值
+      //     if (mdDomId) {
+      //       const headerId = mdDomId.slice(1) // 去掉 #
+      //       const hDom = document.getElementById(headerId)
+      //       if (hDom) { // 如果找到锚点对应的元素 就把他滚到最顶部
+      //         hDom.scrollIntoView(true)
+      //         const index = detailMenuList.value.findIndex((item: any) => item.id === headerId)
+      //         if (index > -1) {
+      //           activeMenuIndex.value = index
+      //         }
+      //       }
+      //     }
+      //   }
+      // })
+    } else {
+    }
+  }).catch(() => {
+  })
+}
+onMounted(() => {
+  if (route.params.id) {
+    if(typeof route.params.id === 'string' || typeof route.params.id === 'number') {
+      getArticleById(route.params.id)
+    }
+  }
+})
 </script>
 <style lang="scss" scoped>
 .detail {

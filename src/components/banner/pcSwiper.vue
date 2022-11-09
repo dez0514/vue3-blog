@@ -8,12 +8,12 @@
     @slideChange="onSlideChange"
     @resize="resize"
   >
-    <swiper-slide v-for="(item, index) in list" :key="index">
+    <swiper-slide v-for="item in list" :key="item.articleId">
       <div class="slide-content">
         <div class="slide-desc">
           <div class="title">{{ item.title }}</div>
             <div class="tag-wrap">
-              <div class="tag" v-for="(inner, idx) in item.tagList" :key="`${index}_${idx}`">{{ inner.name }}</div>
+              <div class="tag" v-for="(inner, idx) in item.tagList" :key="`${item.articleId}_${idx}`">{{ inner.name }}</div>
             </div>
             <div class="btn-read-wrap">
               <div class="btn-read" @click="goDetail(item.articleId)">
@@ -33,7 +33,7 @@ import "swiper/css/bundle";
 import { ref, toRefs } from "vue"
 import { useRouter } from "vue-router";
 const emit = defineEmits<{
-  (e: 'changeSlideIndex', index: number): void
+  (e: 'changeSlideIndex', articleId: number | string): void
 }>()
 const router = useRouter();
 interface tagItem {
@@ -44,7 +44,7 @@ interface bannerItem {
   extraTitle?: string;
   banner?: string;
   tagList: tagItem[];
-  articleId?: string | number;
+  articleId: string | number;
 }
 interface Props {
   list?: bannerItem[];
@@ -55,18 +55,23 @@ const props = withDefaults(defineProps<Props>(), {
 const { list  } = toRefs(props)
 const controlSwiper = ref(null)
 const onSwiper = (swiper: any) => {
-  console.log(swiper);
+  console.log('list===', list.value);
+  console.log('swiper===', swiper);
   controlSwiper.value = swiper
+  // loop = true 时的bug, 默认停在最后一页，手动切到第一页
+  swiper.updateSlides();
+  swiper.slideTo(1, 0, false);
+};
+const onSlideChange = (swiper: any) => {
+  console.log('slide change========', swiper.activeIndex, swiper.realIndex);
+  console.log('list===', list.value);
+  const articleId = list.value[swiper.realIndex].articleId
+  emit('changeSlideIndex', articleId)
 };
 const resize = (swiper: any) => {
   console.log('resize===', swiper)
   swiper.update();
 }
-const onSlideChange = (swiper: any) => {
-  console.log('slide change========', swiper.activeIndex, swiper.realIndex);
-  emit('changeSlideIndex', swiper.realIndex)
-
-};
 const goDetail = (id: string | number | undefined) => {
   if(id) {
     router.push(`/detail/${id}`)
