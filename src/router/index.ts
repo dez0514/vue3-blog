@@ -38,7 +38,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     component: () => import('@/views/messageboard/index.vue')
   },
   {
-    path: '/detail',
+    path: '/detail/:id',
     name: 'detail',
     meta: {
       title: '文章详情'

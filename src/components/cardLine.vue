@@ -1,34 +1,50 @@
 <template>
-  <div class="card-line">
-    <div class="cover" :style="{ backgroundImage: `url(${png})` }"
-      @click="jumpToDetail"></div>
+  <div class="card-line" @click="jumpToDetail">
+    <div class="cover" :style="{
+      background: `gray url(${info?.banner}) no-repeat`,
+      backgroundPosition: 'center center',
+      backgroundSize: 'cover'}"
+    />
     <div class="card-line-main">
-      <div class="title" @click="jumpToDetail">Promise的完全实现的完全实现的完全实现的完全实现</div>
-      <div class="time">6月30日 · 2021年</div>
+      <div class="title">{{ info?.title }}</div>
+      <div class="time">{{ cardTime }}</div>
       <div class="tags">
         <div class="tags-scroll">
-          <div class="tag-strip" style="color: rgb(24, 144, 255)">React</div>
-          <div class="tag-strip" style="color: rgb(134, 137, 140)">源码解读</div>
-          <div class="tag-strip" style="color: rgb(219, 86, 64)">JavaScript</div>
-          <div class="tag-strip" style="color: rgb(120, 109, 93)">Node</div>
-          <div class="tag-strip" style="color: rgb(183, 235, 143)">Webpack</div>
-          <div class="tag-strip" style="color: rgb(24, 144, 255)">React</div>
-          <div class="tag-strip" style="color: rgb(134, 137, 140)">源码解读</div>
-          <div class="tag-strip" style="color: rgb(219, 86, 64)">JavaScript</div>
-          <div class="tag-strip" style="color: rgb(120, 109, 93)">Node</div>
+          <div class="tag-strip"
+            v-for="(item, index) in info?.tagList"
+            :key="index"
+            :style="{ color: item.color }"
+          >
+            {{ item.name }}
+          </div>
         </div>
       </div>
-      <div class="desc">
-        开发中Promise是及其常用的语法，基本上对于异步的处理大都是通过Promise来进行完成。Promise规范有很多，ES6最终采用的是Promise/A+
-        规范,所以以下代码也基本是基于这个规范来进行编写的。
-      </div>
+      <div class="desc">{{ info?.content }}</div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import png from '../assets/test.jpg'
+import { toRefs, computed } from 'vue';
+import { useRouter } from "vue-router";
+import dayjs from 'dayjs';
+const router = useRouter();
+// const route = useRoute();
+const props = defineProps({
+  info: { type: Object }
+})
+const { info } = toRefs(props)
+// console.log('info===', info)
+const cardTime = computed(() => {
+  if(info && info.value && info.value.update_time) {
+    return dayjs(info.value.update_time).format('MM月DD日 · YYYY年')
+  } else if(info && info.value && info.value.create_time) {
+    return dayjs(info.value.create_time).format('MM月DD日 · YYYY年')
+  } else {
+    return ''
+  }
+})
 const jumpToDetail = () => {
-  console.log('gooo====')
+  router.push(`/detail/${info?.value?.id}`)
 }
 </script>
 <style lang="scss" scoped>

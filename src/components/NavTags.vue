@@ -1,7 +1,7 @@
 <template>
     <div class="tags-nav">
         <div class="top-nav">
-            <div class="items-wrap" @click="handleClickTab(-2)">
+            <div class="items-wrap" @click="handleClickTab(-2, '')">
                 <div class="nav-wrap">
                     <div class="nav-item" :class="tabIndex === -2 ? 'active' : ''">
                         <div class="item-icon">
@@ -11,7 +11,7 @@
                     </div>
                 </div>
             </div>
-            <div class="items-wrap" @click="handleClickTab(-1)">
+            <div class="items-wrap" @click="handleClickTab(-1, '')">
                 <div class="nav-wrap">
                     <div class="nav-item" :class="tabIndex === -1 ? 'active' : ''">
                         <div class="item-icon">
@@ -24,7 +24,7 @@
         </div>
         <div class="title" v-show="tagList.length > 0">导航</div>
         <div class="bot-nav" v-show="tagList.length > 0">
-            <div class="items-wrap" v-for="(item, index) in tagList" :key="index" @click="handleClickTab(index)">
+            <div class="items-wrap" v-for="(item, index) in tagList" :key="index" @click="handleClickTab(index, item.name)">
                 <div class="nav-wrap">
                     <div class="nav-item" :class="tabIndex === index ? 'active' : ''">
                         <div class="item-icon">
@@ -44,12 +44,16 @@ import { ref, onMounted } from 'vue'
 import { getAllTags } from '../api/tags'
 import { baseURL } from '../api/urls'
 import { tagItem } from '../types/index'
-
+const emit = defineEmits<{
+  (e: 'change', obj: { tag: string, ishot: boolean }): void
+}>()
 const tagList = ref<tagItem[]>([])
 const tabIndex = ref<number>(-2)
-const handleClickTab = (index: number) => {
+const handleClickTab = (index: number, name: string) => {
     if (tabIndex.value === index) return;
     tabIndex.value = index;
+    const ishot = index === -1
+    emit('change', { tag: name, ishot: ishot })
 }
 const getTagList = () => {
   getAllTags().then((res: any) => {

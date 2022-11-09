@@ -9,19 +9,46 @@ import PizZip from 'pizzip'
 import PizZipUtils from 'pizzip/utils'
 import { saveAs } from 'file-saver'
 import ImageModule from 'docxtemplater-image-module-free'
-
-const data = {
-  "first_name":"Jane",
-  "hasKitty": true,
-  "kitty": "Minie",
-  "hasDog": false,
-  "dog": null
+const resumeData = {
+  username: 'The Shy',
+  cellphone: 18888888888,
+  email: '123@qq.com',
+  gender: 'male',
+  birthday: '2000.10.28',
+  location: 'shanghai',
+  school: 'xxx',
+  jobs: 'web',
+  skills: 'vue react node',
+  workExperience: [
+    {
+      dateRange: '2020.06-至今',
+      company: '好未来科技',
+      jobs: 'web'
+    },
+    {
+      dateRange: '2018.06-2020.06',
+      company: '好未来科技2',
+      jobs: 'java'
+    }
+  ],
+  projects: [
+    {
+      name: '可视化编辑平台',
+      content: '为解决功能相似或简易静态页面的重复工作量，面向运营和开发人员，通过拖拽搭建h5页面，结合创建、编辑、上线于一体的低代码平台。支持复杂的自定义组件生态，模板定制等功能，并集成用户权限管理、项目数据看板、组件管理等功能。',
+      technology: 'react/koa2/mongodb',
+      desc: '核心开发'
+    },
+    {
+      name: '前端埋点管理平台',
+      content: '为解决功能相似或简易静态页面的重复工作量，面向运营和开发人员，通过拖拽搭建h5页面，结合创建、编辑、上线于一体的低代码平台。支持复杂的自定义组件生态，模板定制等功能，并集成用户权限管理、项目数据看板、组件管理等功能。',
+      technology: 'react/koa2/mongodb',
+      desc: '核心开发'
+    }
+  ]
 }
 const wordExport = (docData: any) => {
   PizZipUtils.getBinaryContent('/resume.docx', (error: any, content: any) => {
-    if (error) {
-      throw error
-    }
+    if (error) throw error
     // 有图片的话，需加上下面这段代码
     let opts: any = {}
     opts.centered = false
@@ -41,11 +68,8 @@ const wordExport = (docData: any) => {
     }
     let imageModule = new ImageModule(opts)
     console.log(content)
-    var zip = new PizZip(content)
-    console.log(zip)
-    let doc = new docxtemplater().loadZip(zip)
-    // .attachModule(imageModule).compile()
-    // 有图片的话,需加载图片处理模块
+    let zip = new PizZip(content)
+    let doc = new docxtemplater().loadZip(zip).attachModule(imageModule).compile()
     doc.resolveData(docData).then(() => {
       console.log('ready')
       doc.render()
@@ -53,11 +77,11 @@ const wordExport = (docData: any) => {
         type: 'blob',
         mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
       })
-      saveAs(out, '测试文件' + '.docx')
+      saveAs(out, 'resume.docx')
     })
   })
 }
 const handleClickDownload = () => {
-  wordExport(data)
+  wordExport(resumeData)
 }
 </script>

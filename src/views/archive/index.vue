@@ -1,28 +1,27 @@
 <template>
   <div class="archive">
-    <banner />
+    <banner :banner="bannerBg" title="博客归档" />
     <div class="content">
       <div style="width: 150px;flex-shrink: 0;padding-top: 20px;" v-if="isPc">
         <left-menu-wrap>
           <template #default>
-            <nav-times />
+            <nav-times @change="getNavTime" />
           </template>
         </left-menu-wrap>
       </div>
       <div class="list-box" :style="{ padding: !isPc ? '15px 15px 0' : '30px 0 0'}">
         <div class="list-wrap">
-          <card-line></card-line>
-          <card-line></card-line>
-          <card-line></card-line>
-          <card-line></card-line>
+          <div v-for="(item, index) in articleList" :key="index">
+            <card-line :info="item"></card-line>
+          </div>
         </div>
       </div>
     </div>
-    <pagination :total="100" v-model:currentPage="pageNumber"></pagination>
+    <pagination :total="total" :page-size="pageSize" v-model:currentPage="pageNumber"></pagination>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import LeftMenuWrap from '../../components/leftMenuWrap.vue'
 import NavTimes from '../../components/NavTimes.vue'
 import banner from '../../components/banner/banner.vue'
@@ -30,9 +29,40 @@ import pagination from '../../components/pagination.vue'
 import cardLine from '../../components/cardLine.vue'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
+import { getArchivePage } from '../../api/articles'
+import bannerBg from '../../assets/write.jpg'
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const pageNumber = ref<number>(1)
+const pageSize = ref<number>(10)
+const total = ref<number>(0)
+const articleList = ref<any>([])
+const curyear = ref<number>(0)
+const curmonth = ref<number>(0)
+const getNavTime = ({ year, month } : { year: number, month: number }) => {
+  console.log('get===', year, month)
+  curyear.value = year
+  curmonth.value = month
+  pageNumber.value = 1
+  getArchiveList()
+}
+const getArchiveList = () => {
+  const params = {
+    year: curyear.value,
+    month: curmonth.value,
+    pageSize: pageSize.value,
+    pageNum: pageNumber.value
+  }
+  getArchivePage(params).then((res: any) => {
+    if(res.code === 0) {
+      articleList.value = res.data
+      total.value = res.total
+    }
+  })
+}
+onMounted(() => {
+  getArchiveList()
+})
 </script>
 <style lang="scss" scoped>
 .archive {
@@ -45,7 +75,7 @@ const pageNumber = ref<number>(1)
   display: flex;
   .list-box {
     box-sizing:border-box;
-    min-height: 606px;
+    min-height: 350px; // 606px;
     width: calc(100% - 150px);
   }
   .list-box .list-wrap {

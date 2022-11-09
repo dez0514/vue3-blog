@@ -1,11 +1,11 @@
 <template>
   <div class="home">
-    <banner mode="swiper" />
+    <banner mode="swiper" :banner-list="bannerList"/>
     <div class="content">
       <div style="width: 200px;flex-shrink: 0;" v-if="isPc">
         <left-menu-wrap>
           <template #default>
-            <nav-tags />
+            <nav-tags @change="getCurTag" />
           </template>
         </left-menu-wrap>
       </div>
@@ -15,7 +15,7 @@
         </div>
       </div>
     </div>
-    <pagination :total="100" v-model:current-page="pageNumber"></pagination>
+    <pagination :total="total" :page-size="pageSize" v-model:current-page="pageNumber"></pagination>
   </div>
 </template>
 <script lang="ts" setup>
@@ -25,7 +25,6 @@ import NavTags from '../../components/NavTags.vue'
 import banner from '../../components/banner/banner.vue'
 import card from '../../components/card.vue'
 import pagination from '../../components/pagination.vue'
-// import cardLine from '../../components/cardLine.vue'
 import { getArticlesPage } from '../../api/articles'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
@@ -33,26 +32,57 @@ const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const pageNumber = ref<number>(1)
 const total = ref<number>(0)
+const pageSize = ref<number>(10) 
 const articleList = ref([])
-const getArtList = () => {
+interface tagItem {
+  name?: string;
+}
+interface bannerItem {
+  title: string;
+  extraTitle: string;
+  banner: string;
+  tagList: tagItem[];
+  articleId: string | number;
+}
+const bannerList = ref<bannerItem[]>([])
+const ishot = ref<boolean>(false)
+const tag = ref<string>('')
+const getCurTag = (obj: { tag: string, ishot: boolean }) => {
+  tag.value = obj.tag
+  ishot.value = obj.ishot
+  pageNumber.value = 1
+  getArtList()
+}
+const getArtList = (init: boolean = false) => {
   const params = {
-    pageSize: 10,
+    pageSize: pageSize.value,
     pageNum: pageNumber.value,
-    ishot: true,
-    tag: 'mysql'
+    ishot: ishot.value,
+    tag: tag.value
   }
   getArticlesPage(params).then((res: any) => {
-    console.log(res)
+    console.log('getlist==', res)
     if(res.code === 0) {
       articleList.value = res.data
       total.value = Number(res.total)
+      if (init) {
+        bannerList.value = articleList.value.map((item: any) => {
+          return {
+            title: item.title,
+            extraTitle: item.extra_title,
+            banner: item.banner,
+            tagList: item.tagList,
+            articleId: item.id
+          }
+        })
+      }
     } else {
 
     }
   })
 }
 onMounted(() => {
-  getArtList()
+  getArtList(true)
 })
 </script>
 <style lang="scss" scoped>
@@ -65,6 +95,7 @@ onMounted(() => {
   box-sizing: border-box;
   display: flex;
   .list-box {
+    flex: 1;
     box-sizing:border-box;
     min-height: 606px;
   }

@@ -13,24 +13,9 @@
     @destroy="destroyCallback"
   >
     <!-- :autoplay="autoplayOptions"  :modules="modules" -->
-    <swiper-slide>
+    <swiper-slide v-for="(item, index) in list" :key="index">
       <div class="img-wrapper">
-        <img src="../../assets/pg1.png" />
-      </div>
-    </swiper-slide>
-    <swiper-slide>
-      <div class="img-wrapper">
-        <img src="../../assets/pg2.png" />
-      </div>
-    </swiper-slide>
-    <swiper-slide>
-      <div class="img-wrapper">
-        <img src="../../assets/pg3.png" />
-      </div>
-    </swiper-slide>
-    <swiper-slide>
-      <div class="img-wrapper">
-        <img src="../../assets/pg4.png" />
+        <img :src="item?.banner" />
       </div>
     </swiper-slide>
   </swiper>
@@ -39,7 +24,7 @@
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import "swiper/css/bundle";
-import { ref, onUnmounted, onMounted, nextTick } from "vue"
+import { ref, onUnmounted, onMounted, nextTick, toRefs } from "vue"
 import { emitter } from '../../utils/useEmit'
 // import { Pagination, A11y, Autoplay } from 'swiper'
 // import { PaginationOptions } from 'swiper/types/modules/pagination';
@@ -71,11 +56,23 @@ import { emitter } from '../../utils/useEmit'
 //   // return current + ' of ' + total;
 // }
 // const modules = [Pagination, A11y, Autoplay]
+interface Item {
+  banner?: string;
+  articleId: string | number;
+}
+interface Props {
+  list: Item[];
+}
+const props = withDefaults(defineProps<Props>(), {
+  list: [] as any,
+})
+const { list } = toRefs(props)
 const controlSwiper = ref<any>(null)
 const changeSlides = (type: String) => {
   if(controlSwiper.value && !controlSwiper.value.destroyed && controlSwiper.value.slidePrev && controlSwiper.value.slideNext) {
     // 条件判断 确保 controlSwiper 已经实例化再执行联动。controlSwiper.value.destroyed 为true时 说明新的swiper还没初始化完毕。
-    // console.log('controlSwiper emit===', controlSwiper.value)
+    console.log('controlSwiper emit===', controlSwiper.value)
+    console.log('list pic ====', list.value)
     if(type === 'prev') {
       controlSwiper.value.slidePrev()
     } else if (type === 'next') {
@@ -86,6 +83,8 @@ const changeSlides = (type: String) => {
 const onSwiper = (swiper: any) => {
   // console.log(swiper);
   controlSwiper.value = swiper
+  swiper.updateSlides();
+  swiper.slideTo(1, 0, false);
   init(swiper)
 };
 const destroyCallback = () => {
@@ -128,7 +127,7 @@ const setTransition = (swiper: any, transition: any) => {
   }
 }
 const onSlideChange = (swiper: any) => {
-  // console.log('slide change pic========', swiper.activeIndex, swiper.realIndex);
+  console.log('slide change pic========', swiper.activeIndex, swiper.realIndex);
 };
 onMounted(() => {
   nextTick(() => {

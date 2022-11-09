@@ -2,9 +2,9 @@
   <div :class="['year-list', inside ? 'inside' : '']">
     <div :class="['year-title', (yearIndex === -1 || monthIndex === -1) ? 'active' : '']" @click="handleCheckOpen(-1)">全部</div>
     <div v-for="(item, index) in dateList" :key="index">
-      <div  :class="['year-title', yearIndex === index ? 'active' : '']" @click="handleCheckOpen(index)">{{item.title}}</div>
-      <div :class="['month-list', openIndex === index ? 'is_show' : '']" :style="{'--month-list-height' : item.children.length * 40 + 'px' }" v-if="item.children && item.children.length > 0">
-        <div v-for="(inner, idx) in item.children" :key="idx" @click="handleCheckMonth(index, idx)">
+      <div :class="['year-title', yearIndex === index ? 'active' : '']" @click="handleCheckOpen(index)">{{item.title}}</div>
+      <div :class="['month-list', openIndex === index ? 'is_show' : '']" :style="{'--month-list-height' : item.monthArr.length * 40 + 'px' }" v-if="item.monthArr && item.monthArr.length > 0">
+        <div v-for="(inner, idx) in item.monthArr" :key="idx" @click="handleCheckMonth(index, idx, item.year, inner.value)">
           <div :class="['month-title', (yearIndex === index && monthIndex === idx) ? 'active' : '']">{{inner.title}}</div>
         </div>
       </div>
@@ -12,7 +12,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, toRefs } from "vue"
+import { onMounted, ref, toRefs } from "vue"
+import { getArchiveTime } from '../api/articles'
 const props = defineProps({
   inside: { type: Boolean, default: false } // 在app sidebar中使用时，背景白色，pc端 外面使用时 无背景色
 })
@@ -20,36 +21,10 @@ const { inside } = toRefs(props)
 const openIndex = ref<number>(-1) // 只是控制展开，不高亮
 const yearIndex = ref<number>(-1) // 选月份的时候选年
 const monthIndex = ref<number>(-1)
-const dateList = [
-  {
-    title: '2022年',
-    children: [
-      { title: '全年' },
-      { title: '1月' },
-      { title: '2月' },
-      { title: '5月' },
-      { title: '6月' }
-    ]
-  },
-  {
-    title: '2021年',
-    children: [
-      { title: '全年' },
-      { title: '3月' },
-      { title: '4月' },
-      { title: '5月' },
-      { title: '6月' }
-    ]
-  },
-  {
-    title: '2020年',
-    children: [
-      { title: '全年' },
-      { title: '3月' },
-      { title: '4月' }
-    ]
-  }
-]
+const dateList = ref<any>([])
+const emit = defineEmits<{
+  (e: 'change', obj: { year: number, month: number }): void
+}>()
 // 只是控制是否展开
 const handleCheckOpen = (openindex: number) => {
   if(openIndex.value === openindex) return
@@ -57,13 +32,39 @@ const handleCheckOpen = (openindex: number) => {
   if(openindex === -1) {
     monthIndex.value = -1
     yearIndex.value = -1
+    // 点全部也要emit出去
+    emit('change', { year: 0, month: 0 })
   }
 }
-const handleCheckMonth = (yearindex: number, monthindex:number) => {
+const handleCheckMonth = (yearindex: number, monthindex:number, year: number, month:number) => {
   if(yearIndex.value === yearindex && monthIndex.value === monthindex) return
   monthIndex.value = monthindex
   yearIndex.value = yearindex
+  console.log(year, month)
+  // 将年月emit出去
+  emit('change', { year, month })
 }
+const getTimeList = () => {
+  getArchiveTime().then((res: any) => {
+    console.log(res)
+    if(res.code === 0) {
+      res.data.forEach((item: any) => {
+        item.title = `${item.year}年`
+        item.monthArr = item.monthArr.map((inner:string) => {
+          return {
+            title: `${Number(inner)}月`,
+            value: Number(inner)
+          }
+        })
+        item.monthArr.unshift({ title: '全年', value: 0 })
+      })
+      dateList.value = res.data
+    }
+  })
+}
+onMounted(() => {
+  getTimeList()
+})
 </script>
 <style lang="scss" scoped>
 .year-title {
