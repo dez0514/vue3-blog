@@ -1,6 +1,6 @@
 <template>
   <div class="detail">
-    <banner :banner="detailInfo?.banner" :title="detailInfo?.title" :tagList="detailInfo?.tagList" :shadow="true" :isBlur="true" />
+    <banner :banner="detailInfo?.banner" :title="detailInfo?.title" :tagList="detailInfo?.tagList" :shadow="true" :isBlur="true" :showRightImg="true" />
     <div class="content">
       <div :class="['menu-box', isShowMenu ? '':'hide']" v-show="isPc">
         <left-menu-wrap>

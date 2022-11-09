@@ -18,12 +18,13 @@
     <div :class="['mode_image', isPc ? 'pc-banner-wrap' : 'banner-wrap']">
       <bubble-cover :cover="banner" :radius="true" :shadow="shadow" :isBlur="isBlur"></bubble-cover>
       <div class="title-wraps">
+        <div class="app-img-wrap" v-if="!isPc && banner && showRightImg" :style="{ '--url': `url(${banner})` }"></div>
         <div class="title">{{ title }}</div>
         <div class="tag-wrap" v-if="tagList.length > 0">
           <div class="tag" v-for="(item, idx) in tagList" :key="idx">{{ item.name }}</div>
         </div>
-        <div class="little-title">{{ extraTitle }}</div>
-        <div class="img-wrap" v-show="banner" :style="{ '--url': `url(${banner})` }"></div>
+        <div class="little-title" v-if="extraTitle">{{ extraTitle }}</div>
+        <div class="img-wrap" v-if="isPc && banner && showRightImg" :style="{ '--url': `url(${banner})` }"></div>
       </div>
     </div>
   </div>
@@ -57,6 +58,7 @@ interface Props {
   tagList?: tagItem[];
   shadow?: boolean;
   isBlur?: boolean;
+  showRightImg?: boolean;
 }
 const curCover = ref<string>('')
 const props = withDefaults(defineProps<Props>(), {
@@ -67,7 +69,8 @@ const props = withDefaults(defineProps<Props>(), {
   bannerList: [] as any,
   tagList: [] as any,
   shadow: false,
-  isBlur: false
+  isBlur: false,
+  showRightImg: false
 })
 const { mode, title, extraTitle, banner, tagList, bannerList, shadow, isBlur } = toRefs(props)
 const picList = computed(() => {
@@ -109,10 +112,6 @@ onMounted(() => {
     top: 0;
     left: 0;
     width: 100%;
-  }
-
-  &.mode_image {
-    height: 220px;
   }
 }
 
@@ -176,7 +175,6 @@ onMounted(() => {
     color: var(--white);
   }
 }
-
 .img-wrap {
   position: absolute;
   right: 60px;
@@ -188,5 +186,13 @@ onMounted(() => {
   background: var(--url) no-repeat;
   background-position: 0 0;
   background-size: 100% 100%;
+}
+.app-img-wrap {
+  @extend .img-wrap;
+  position: relative;
+  right: 0;
+  width: 172px;
+  height: 172px;
+  margin-bottom: 30px;
 }
 </style>

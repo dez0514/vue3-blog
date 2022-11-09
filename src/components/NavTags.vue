@@ -61,7 +61,7 @@ const getTagList = () => {
       tagList.value = res.data.map((item: any) => {
         return {
           ...item,
-          icon: `${baseURL}/imgs/${item.icon}`
+          icon: item.icon ? `${baseURL}/imgs/${item.icon}` : ''
         }
       })
     } else {
