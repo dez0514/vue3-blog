@@ -18,7 +18,7 @@ const data = {
   "dog": null
 }
 const wordExport = (docData: any) => {
-  PizZipUtils.getBinaryContent('resume.docx', (error: any, content: any) => {
+  PizZipUtils.getBinaryContent('/resume.docx', (error: any, content: any) => {
     if (error) {
       throw error
     }
