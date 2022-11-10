@@ -15,7 +15,7 @@
             <li><span>籍贯</span>：<span>湖北 黄冈</span></li>
             <li><span>qq</span>：<span>2573433803</span></li>
             <li><span>email</span>：<span>2573433803@qq.com</span></li>
-            <li><span>职业</span>：<span>小切图仔</span></li>
+            <li><span>职业</span>：<span>切图仔</span></li>
             <li><span>爱好</span>：<span>篮球、LOL、追剧</span></li>
             <li><span>歌手</span>：<span>陈信宏、周杰伦、许嵩</span></li>
             <li><span>电影</span>：<span>都看亿点</span></li>

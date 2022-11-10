@@ -116,7 +116,7 @@ const jumpToDetail = () => {
     .tag-strip {
       display: inline-block;
       font-size: 10px;
-      padding: 0 10px;
+      padding: 0 10px 3px;
       line-height: 20px;
       position: relative;
       display: inline-block;
