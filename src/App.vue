@@ -6,6 +6,9 @@
     </div>
     <vfooter></vfooter>
   </div>
+  <div v-show="showToTop" class="to-top" @click="handleToTop">
+    <svg-icon class="icon" icon-class="top"></svg-icon>
+  </div>
   <transition name="fade" v-if="!isPc">
 	  <div class="sider-mask" v-show="isCollapse" @click="hideSide"></div>
   </transition>
@@ -18,12 +21,17 @@ import vheader from './components/vheader.vue'
 import vfooter from './components/vfooter.vue'
 import SideBar from './components/SideBar.vue'
 import { configStore } from './store'
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { storeToRefs } from 'pinia'
+import { setScrollTop } from './utils/dom'
 const configStores = configStore()
 const { isPc, isCollapse } = storeToRefs(configStores)
+const showToTop = ref<boolean>(false)
 const hideSide = () => {
   configStores.updateCollapse(false)
+}
+const handleToTop = () => {
+  setScrollTop(0, { animate: true, duration: 1000 })
 }
 const resize = () => {
   // console.log(document.body.clientWidth)
@@ -34,11 +42,21 @@ const resize = () => {
     configStores.updateCollapse(false)
   }
 }
+const handleScrollPage = () => {
+  const distance = document.documentElement.scrollTop
+  if (distance > 100) {
+    showToTop.value = true
+  } else {
+    showToTop.value = false
+  }
+}
 onMounted(() => {
   window.addEventListener('resize', () => resize())
+  window.addEventListener('scroll', handleScrollPage)
 })
 onUnmounted(() => {
-  window.removeEventListener('resize', () => {})
+  window.removeEventListener('resize', () => resize())
+  window.removeEventListener('scroll', handleScrollPage)
 })
 </script>
 <style lang="scss" scoped>
@@ -77,5 +95,14 @@ onUnmounted(() => {
 .rotate {
   /* transform-origin: left 450px; */
   transform: perspective(600px) rotateY(10deg) translateX(250px) translateY(-30px);
+}
+.to-top {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  cursor: pointer;
+  .icon {
+    font-size: 34px;
+  }
 }
 </style>

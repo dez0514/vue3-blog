@@ -13,6 +13,8 @@
 }
 
 .md-container {
+  box-sizing: border-box;
+  width: 100%;
   line-height: 1.6;
   word-wrap: break-word;
   color: var(--md_font_color);
@@ -170,12 +172,14 @@
   }
 
   pre {
-    padding: 1em;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 2em 1em 1em;
     border: none;
-    overflow: auto;
     line-height: 1.45;
     max-height: 35em;
-    position: relative;
     background: var(--md_pre_bg_color);
     border-radius: 10px;
     -moz-background-size: 30px, 30px;
@@ -183,11 +187,22 @@
     -webkit-background-size: 30px, 30px;
     background-size: 30px, 30px;
   }
+  pre:before {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    display: block;
+    height: 15px;
+    width: 50px;
+    background: url('../../assets/pre.png') 0 0 no-repeat;
+    background-size: 100% 100%;
+  }
 
   .copy-code-btn {
     position: absolute;
     right: 10px;
-    top: 6px;
+    top: 10px;
     color: var(--md_copy_btn_color);
     transition: color 0.3s;
     cursor: pointer;
@@ -199,6 +214,10 @@
   }
 
   pre code {
+    display: block;
+    overflow: hidden;
+    width: 100%;
+    overflow-x: auto;
     background: none;
     font-size: 1em;
     overflow-wrap: normal;

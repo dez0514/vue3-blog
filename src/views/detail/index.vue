@@ -1,5 +1,5 @@
 <template>
-  <div class="detail">
+  <div id="detail" class="detail">
     <banner :banner="detailInfo?.banner" :title="detailInfo?.title" :tagList="detailInfo?.tagList" :shadow="true" :isBlur="true" :showRightImg="true" />
     <div class="content">
       <div :class="['menu-box', isShowMenu ? '':'hide']" v-show="isPc && detailMenuList.length > 0">
@@ -7,15 +7,17 @@
           <template #default>
             <div class="toc-wrap">
               <div class="menu-list">
-                <div v-for="(item,index) in detailMenuList" :key="index" :class="['menu-item', item.nodeName, activeMenuIndex === index ? 'active':'']" @click="handleClickMenu(index)">
-                  <a :href="`#heading${item.hrefIndex}`">{{ item.text }}</a>
+                <div v-for="(item,index) in detailMenuList" :key="index">
+                  <div :class="['menu-item', item.nodeName, activeMenuIndex === index ? 'active':'']" @click="handleClickMenu(index, item)">
+                    <span :id="`heading${item.hrefIndex}`">{{ item.text }}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </template>
         </left-menu-wrap>
       </div>
-      <div :class="['art-wrap', (isPc && isShowMenu && detailMenuList.length > 0) ? '':'hideside']">
+      <div id="art_wrap" :class="['art-wrap', (isPc && isShowMenu && detailMenuList.length > 0) ? '':'hideside']">
         <div :class="['article-content', isPc ? '_pc' : '']">
           <github-corner position="left" fill="#20a0ff" color="#fff" :blank="true" repo="https://github.com/dez0514" />
           <div class="meta">
@@ -66,6 +68,8 @@ import '@vfup/github-corner/dist/style.css'
 import { getArticleDetail } from '../../api/articles'
 import { useRoute } from 'vue-router'
 import { formartMd, getMdTitleList, MdTitle } from '../../utils/marked'
+import { setScrollTop, getOffsetTop } from '../../utils/dom'
+import debounce from 'lodash/debounce'
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const isShowMenu = ref<boolean>(true)
@@ -75,13 +79,22 @@ const detailInfo = ref<any>(null)
 const detailMenuList = ref<MdTitle[]>([])
 const activeMenuIndex = ref<number>(0)
 const detailbox = ref(null as HTMLDivElement | null)
-const curScrollTop = ref<number>(0)
+// const curScrollTop = ref<number>(0)
 const handleChangeShowMenu = () => {
   isShowMenu.value = !isShowMenu.value
 }
-const handleClickMenu = (index: number) => {
+const handleClickMenu = (index: number, item: MdTitle) => {
   if (activeMenuIndex.value === index) return
   activeMenuIndex.value = index
+  // 不用锚点, 锚点会刷新页面
+  // 最终滚动位置 = 标题距离art_wrap的距离 + art_wrap距离页面顶部的距离 - routerView的paddingTop
+  // 其实pc就等于 banner高度320 + 间距20
+  const pageOffset = getOffsetTop(document.getElementById('detail'))
+  const parentOffset = getOffsetTop(document.getElementById('art_wrap'))
+  const top = item.scrollTop + parentOffset - pageOffset
+  setScrollTop(top, { animate: true, duration: 1000 })
+  console.log(item)
+  console.log(`heading${item.hrefIndex}`)
 }
 const getArticleById = (id: string | number) => {
   getArticleDetail({ id }, { isLoading: false }).then((res: any) => {
@@ -115,32 +128,38 @@ const getArticleById = (id: string | number) => {
   }).catch(() => {
   })
 }
-const handleScrollPage = (e: any) => {
-  console.log(document.documentElement.scrollTop)
-  // curScrollTop.value = dom.scrollTop // 记录一下滚动距离
-  // const temp = detailMenuList.value.map((item:any) => Math.abs(item.scrollTop - dom.scrollTop))
-  // const min = Math.min(...temp)
-  // const index = temp.findIndex((item:number) => item === min)
-  // activeMenuIndex.value = index
-  // if (dom.clientHeight + dom.scrollTop + 30 >= dom.scrollHeight) {
-  //   activeMenuIndex.value = detailMenuList.value.length - 1
-  // }
+const handleScrollPage = () => {
+  const distance = document.documentElement.scrollTop // 滚动条卷起高度
+  console.log(distance)
+  const pageOffset = getOffsetTop(document.getElementById('detail'))
+  const parentOffset = getOffsetTop(document.getElementById('art_wrap'))
+  // 和点击时一样pc时：parentOffset - pageOffset = 340
+  // 滚动distance 小于 340 时，一直停在第一个标题， 之后就取距离哪个标题近，哪个标题高亮
+  // 记录剩下的距离
+  const top = distance <= parentOffset - pageOffset ? 0 : distance - (parentOffset - pageOffset)
+  //注意：item.scrollTop 是该标题元素 距离 art_wrap 顶部的距离
+  const temp = detailMenuList.value.map((item:any) => Math.abs(item.scrollTop - top))
+  const min = Math.min(...temp)
+  const index = temp.findIndex((item:number) => item === min)
+  activeMenuIndex.value = index
 }
+const debounceScroll = debounce(handleScrollPage, 100)
 onMounted(() => {
   if (route.params.id) {
     if(typeof route.params.id === 'string' || typeof route.params.id === 'number') {
       getArticleById(route.params.id)
     }
   }
-  window.addEventListener('scroll', handleScrollPage)
+  window.addEventListener('scroll', debounceScroll)
 })
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScrollPage)
+  window.removeEventListener('scroll', debounceScroll)
 })
 </script>
 <style lang="scss" scoped>
 .detail {
   position: relative;
+  overflow: hidden;
   padding-bottom: 50px;
 }
 .content {
@@ -164,6 +183,7 @@ onUnmounted(() => {
     padding-left: 20px;
     margin-top: 20px;
     flex: 1;
+    width: 0;
     transition: all .5s;
     min-height: calc(100vh - 78px - 138px - 320px - 50px - 20px);
     &.hideside {
@@ -270,6 +290,9 @@ onUnmounted(() => {
   }
 }
 .article-content-wrap {
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
   padding-top: 72px;
 }
 .article-comment-wrap {
@@ -298,7 +321,7 @@ onUnmounted(() => {
     text-shadow: 0 1px var(--white);
     transition: 0.25s;
     cursor: pointer;
-    a {
+    span {
       max-width: 180px;
       white-space: nowrap;
       overflow: hidden;
@@ -338,7 +361,7 @@ onUnmounted(() => {
       text-shadow: 0 -1px var(--primary_dark_2);
       filter: drop-shadow(0 1px 0 var(--primary_dark_1)) drop-shadow(6px 7px 8px var(--primary_opacity_4));
       box-shadow: none;
-      a {
+      span {
         color: var(--white);
       }
       &::after {
@@ -356,7 +379,7 @@ onUnmounted(() => {
     margin-top: 5px;
     padding-left: 25px;
     filter: none;
-    a {
+    span {
       text-shadow: none;
     }
     &::after {
@@ -379,7 +402,7 @@ onUnmounted(() => {
       transition: .3s;
     }
     &.active {
-      a {
+      span {
         color: var(--primary);
         text-shadow: none; 
       }

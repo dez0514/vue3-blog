@@ -1,5 +1,5 @@
 
-import { createRouter, createWebHistory, RouteRecordRaw, RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw, RouteLocationNormalized, NavigationGuardNext, RouterScrollBehavior } from 'vue-router';
 import Home from '@/views/home/index.vue'
 import NProgress from 'nprogress'
 
@@ -73,6 +73,21 @@ const router = createRouter({
   routes: [
     ...constantRoutes
   ],
+  // @ts-ignore 
+  scrollBehavior (to, from, savedPosition) {
+    // console.log('save===', to, from)
+    if (to.name === 'detail' && savedPosition) {
+      // console.log('savedPosition==', savedPosition)
+      // return savedPosition
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(savedPosition)
+        }, 200)
+      })
+    } else {
+      return { x: 0, y: 0 }
+    }
+  }
 });
 
 router.beforeEach((
