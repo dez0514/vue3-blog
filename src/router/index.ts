@@ -49,7 +49,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     path: '/search',
     name: 'search',
     meta: {
-      title: '文章详情'
+      title: '搜索'
     },
     component: () => import('@/views/search/index.vue')
   },

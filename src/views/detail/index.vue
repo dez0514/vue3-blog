@@ -159,7 +159,7 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .detail {
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
   padding-bottom: 50px;
 }
 .content {

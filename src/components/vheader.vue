@@ -35,10 +35,10 @@
   </div>
   <div :class="['search-wrap', isPc? 'padding-extra' : '', showSearch ? 'trans' : '']">
     <div class="search-content">
-      <div class="input-search-icon">
+      <div class="input-search-icon" @click="handleJumpSearch">
         <svg-icon icon-class="search"></svg-icon>
       </div>
-      <input v-model="keyword" class="search-input" placeholder="搜搜想看的..." type="text" />
+      <input v-model="keyword" class="search-input" placeholder="搜搜想看的..." type="text" @keyup.enter.native="handleJumpSearch" />
       <div class="close-btn" @click="handleCloseSearch">
         <svg-icon icon-class="close"></svg-icon>
       </div>
@@ -89,6 +89,11 @@ const handleIsShowSearch = (isShow: boolean) => {
 const handleCloseSearch = () => {
   handleIsShowSearch(false)
   keyword.value = ''
+}
+const handleJumpSearch = () => {
+  if(!keyword.value) return
+  router.push({ name: 'search', query: { keyword: keyword.value } })
+  handleCloseSearch()
 }
 const handleChangeRouter = (index: number, item: tabItem) => {
   tabIndex.value = index
