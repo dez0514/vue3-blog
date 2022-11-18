@@ -3,85 +3,80 @@
     <div class="resume-container">
       <div class="resume-left">
         <div class="head">
-          <img class="avatar" src="../../assets/resume-avatar.jpg" alt="">
-          <div class="name">zzz的简历</div>
+          <img class="avatar" :src="(info && info.avatar) ? info.avatar : avatar" alt="">
+          <div class="name">{{info?.name}}的简历</div>
         </div>
         <div class="base-info">
           <div class="info-title">基本信息</div>
           <div class="base-item">
             <span class="tit">名字：</span>
-            <span>zwd</span>
+            <span>{{info?.name}}</span>
           </div>
           <div class="base-item">
             <span class="tit">性别：</span>
-            <span>男</span>
+            <span>{{info?.gendar}}</span>
           </div>
           <div class="base-item">
             <span class="tit">毕业院校：</span>
-            <span>xxx</span>
+            <span>{{info?.school}}</span>
           </div>
           <div class="base-item">
             <span class="tit">专业：</span>
-            <span>xxx</span>
+            <span>{{info?.profession}}</span>
           </div>
           <div class="base-item">
             <span class="tit">毕业时间：</span>
-            <span>2017年6月</span>
+            <span>{{info?.graduationDate}}</span>
           </div>
           <div class="base-item">
             <span class="tit">博客：</span>
-            <a href="#" class="link">xxx</a>
+            <a :href="info?.blog" class="link">{{info?.blog}}</a>
           </div>
           <div class="base-item">
             <span class="tit">GitHub：</span>
-            <a href="www.github.com/dez0514" class="link">www.github.com/dez0514</a>
+            <a :href="info?.github" class="link">{{info?.github}}</a>
           </div>
         </div>
         <div class="base-info">
           <div class="info-title grayyellow">联系方式</div>
           <div class="base-item">
             <span class="tit">电话：</span>
-            <span>xxx</span>
+            <span>{{info?.phone}}</span>
           </div>
           <div class="base-item">
             <span class="tit">邮箱：</span>
-            <span>xxx</span>
+            <span>{{info?.email}}</span>
           </div>
           <div class="base-item">
             <span class="tit">微信：</span>
-            <span>xxx</span>
+            <span>{{info?.wechat}}</span>
           </div>
           <div class="base-item">
             <span class="tit">QQ：</span>
-            <span>xxx</span>
+            <span>{{info?.qq}}</span>
           </div>
         </div>
         <div class="base-info">
           <div class="info-title yellow">应聘岗位</div>
-          <div class="job-name">前端研发工程师</div>
+          <div class="job-name">{{info?.job}}</div>
         </div>
-        <div class="extra-word">
-          我是一个对前端由衷热爱、有趣的前端工程师。 我目前正在寻找前端工程师岗位的工作机会，希望在前端开发领域，让我所掌握的技能落实到实处，献上一点绵薄之力！
-        </div>
+        <div class="extra-word">{{info?.extra}}</div>
       </div>
       <div class="resume-right">
         <div class="right-title">项目与工作经验</div>
         <div class="company-list">
-          <div class="componay-item">
-            <div class="company-name">北京世纪好未来科技教育有限公司（时间-时间）</div>
+          <div class="componay-item" v-for="(item, index) in companyList" :key="index">
+            <div class="company-name">{{ item?.companyName }}{{item.durings ? '(' + item.durings + ')' : ''}}</div>
             <div class="project-list">
-              <div class="project-item">
-                <div class="name">前端埋点管理平台</div>
-                <div class="intro">前端项目埋点录入编辑、sdk上报、数据看板于一体的管理平台，规范埋点和自动生成通用数据看板，并可快速生成自定义看板。包含登录/添加协同用户模块，上传oss/版本管理模块，通用echarts图表和自定义图表模块等.</div>
-                <div class="technology">技术栈：vue/koa2/mongodb</div>
+              <div class="project-item" v-for="(inner, idx) in item.projectList" :key="`${index}_${idx}`">
+                <div class="name">{{inner?.name}}</div>
+                <div class="intro">{{inner?.intro}}</div>
+                <div class="technology">技术栈：{{inner?.technology}}</div>
                 <div class="desc-list">
-                  <div class="desc-item">1、担任产品、设计、交互、前端、后端多个角色，独自完成平台的设计和搭建；</div>
-                  <div class="desc-item">2、开发兼容web/node、微信支付宝百度头条等小程序的日志上报sdk；</div>
-                  <div class="desc-item">3、通过koa2框架搭建node服务，并实现oauth第三方授权登录，mongodb存储数据等功能</div>
+                  <div class="desc-item" v-html="inner?.details"></div>
                 </div>
                 <div class="pic-list">
-                  <img src="https://aimee.mangoya.cn/img/foodweb.png" alt="" @click="handleSetIsReview('https://aimee.mangoya.cn/img/foodweb.png', true)" />
-                  <img src="https://aimee.mangoya.cn/img/foodweb.png" alt="" @click="handleSetIsReview('https://aimee.mangoya.cn/img/foodweb.png', true)" />
+                  <img v-for="(third, thirdidx) in inner.picList" :key="`${index}_${idx}_${thirdidx}`" :src="third" alt="" @click="handleSetIsReview(third, true)" />
                 </div>
               </div>
             </div>
@@ -91,7 +86,7 @@
     </div>
     <div class="tip">
       <span class="link" @click="handleClickDownload">word下载</span>
-      <span>最后更新时间：xxx</span>
+      <span>最后更新时间：{{ (info && info.update_time) ? (info && info.update_time) : ((info && info.create_time) || '') }}</span>
     </div>
     <div v-show="isReview && reviewSrc" class="review-img" @click="handleSetIsReview('', false)">
       <img :src="reviewSrc" alt="">
@@ -99,50 +94,43 @@
   </div>
 </template>
 <script lang="ts" setup>
+import avatar from '../../assets/resume-avatar.jpg';
 import docxtemplater from 'docxtemplater'
 import PizZip from 'pizzip'
 import PizZipUtils from 'pizzip/utils'
 import { saveAs } from 'file-saver'
 import ImageModule from 'docxtemplater-image-module-free'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { getResume } from '../../api/resume'
 const isReview = ref<boolean>(false)
 const reviewSrc = ref<string>('')
-const resumeData = {
-  username: 'The Shy',
-  cellphone: 18888888888,
-  email: '123@qq.com',
-  gender: 'male',
-  birthday: '2000.10.28',
-  location: 'shanghai',
-  school: 'xxx',
-  jobs: 'web',
-  skills: 'vue react node',
-  workExperience: [
-    {
-      dateRange: '2020.06-至今',
-      company: '好未来科技',
-      jobs: 'web'
-    },
-    {
-      dateRange: '2018.06-2020.06',
-      company: '好未来科技2',
-      jobs: 'java'
+const info = ref<any>(null)
+const companyList = ref<any>([])
+const getResumeData = () => {
+  getResume().then((res: any) => {
+    if(res.code === 0) {
+      info.value = res.data
+      let obj: any = {}
+      res.data.projectList.forEach((item:any) => {
+        const picList = item.imgList.split(';').filter((fitem: any) => fitem !== '')
+        if(!obj || !obj[item.companyId]) {
+          obj[item.companyId] = { 
+            companyId: item.companyId,
+            companyName: item.companyName,
+            durings: item.durings,
+            sort: item.companySort,
+            projectList: [
+              { ...item, picList }
+            ]
+          }
+        } else {
+          obj[item.companyId].projectList.push({ ...item, picList })
+        }
+      })
+      companyList.value = Object.values(obj)
+    } else {
     }
-  ],
-  projects: [
-    {
-      name: '可视化编辑平台',
-      content: '为解决功能相似或简易静态页面的重复工作量，面向运营和开发人员，通过拖拽搭建h5页面，结合创建、编辑、上线于一体的低代码平台。支持复杂的自定义组件生态，模板定制等功能，并集成用户权限管理、项目数据看板、组件管理等功能。',
-      technology: 'react/koa2/mongodb',
-      desc: '核心开发'
-    },
-    {
-      name: '前端埋点管理平台',
-      content: '为解决功能相似或简易静态页面的重复工作量，面向运营和开发人员，通过拖拽搭建h5页面，结合创建、编辑、上线于一体的低代码平台。支持复杂的自定义组件生态，模板定制等功能，并集成用户权限管理、项目数据看板、组件管理等功能。',
-      technology: 'react/koa2/mongodb',
-      desc: '核心开发'
-    }
-  ]
+  })
 }
 const handleSetIsReview = (url: string, showflag: boolean) => {
   reviewSrc.value = url
@@ -184,8 +172,39 @@ const wordExport = (docData: any) => {
   })
 }
 const handleClickDownload = () => {
+  const workExperience = companyList.value.map((item :any) => {
+    return {
+      dateRange: item.durings,
+      company: item.companyName,
+      jobs: info.value?.job
+    }
+  })
+  const projects = info.value?.projectList.map((item :any) => {
+    return {
+      name: item.name,
+      content: item.intro,
+      technology: item.technology,
+      desc: item.details
+    }
+  })
+  const resumeData = {
+    username: info.value?.name,
+    cellphone: info.value?.phone,
+    email: info.value?.email,
+    gender: info.value?.gendar,
+    school: info.value?.school,
+    jobs: info.value?.job,
+    birthday: info.value?.birthday,
+    location: info.value?.location,
+    skills: info.value?.skills,
+    workExperience: workExperience,
+    projects: projects
+  }
   wordExport(resumeData)
 }
+onMounted(() => {
+  getResumeData()
+})
 </script>
 <style lang="scss" scoped>
 .resume-container {
