@@ -124,10 +124,10 @@ const getResumeData = () => {
             ]
           }
         } else {
-          obj[item.companyId].projectList.push({ ...item, picList })
+          obj[item.companyId].projectList.push({ ...item, picList }).sort((a: any, b: any) => a.sort - b.sort)
         }
       })
-      companyList.value = Object.values(obj)
+      companyList.value = Object.values(obj).sort((a: any, b: any) => a.sort - b.sort)
     } else {
     }
   })
