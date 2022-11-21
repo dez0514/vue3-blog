@@ -33,6 +33,29 @@
           </div>
         </div>
         <div class="meta margin-top">
+          <div class="title">瞎搞</div>
+        </div>
+        <div class="about-content repo-list">
+          <div class="repo" v-for="(item, index) in repoList" :key="index" @click="handleClickRepo(item.html_url)">
+            <div class="name">{{ item.name }}</div>
+            <div class="time">{{ item.created_at }}</div>
+            <div class="repo-icon-wrap">
+              <div class="repo-icon-item">
+                <svg-icon class="icon" icon-class="star"></svg-icon>
+                {{ item.stargazers_count || 0 }}
+              </div>
+              <div class="repo-icon-item">
+                <svg-icon class="icon" icon-class="branch"></svg-icon>
+                {{ item.forks_count || 0 }}
+              </div>
+              <div class="repo-icon-item">
+                <svg-icon class="icon" icon-class="eyes"></svg-icon>
+                {{ item.subscribers_count || 0 }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="meta margin-top">
           <div class="title">博客说明</div>
         </div>
         <div class="about-content">
@@ -45,6 +68,31 @@
 <script lang="ts" setup>
 import banner from '../../components/banner/banner.vue'
 import bannerBg from '../../assets/me.jpg'
+import { getRepos } from '../../api/user'
+import { onMounted, ref } from 'vue';
+import dayjs from 'dayjs';
+const repoList = ref<any[]>([])
+const handleClickRepo = (url: string) => {
+  window.open(url, '_github')
+}
+const getRepoList = () => {
+  getRepos().then((res: any) => {
+    if(res.code === 0) {
+      repoList.value = res.data.map((item: any) => {
+        return {
+          ...item,
+          created_at: item.created_at ? dayjs(item.created_at).format('MM月DD日 · YYYY年') : '',
+          updated_at: item.updated_at ? dayjs(item.updated_at).format('MM月DD日 · YYYY年') : ''
+        }
+      })
+    } else {
+
+    }
+  })
+}
+onMounted(() => {
+  getRepoList()
+})
 </script>
 <style lang="scss" scoped>
 .about {
@@ -153,6 +201,40 @@ import bannerBg from '../../assets/me.jpg'
 .margin-top {
   margin-top: 30px;
 }
+.repo-list {
+  display: grid;
+  grid-template-columns: repeat(4, calc((100% - 120px) / 4));
+  gap: 40px;
+  .repo {
+    /* max-width: 300px; */
+    padding: 14px;
+    -webkit-box-shadow: 0 0 7px var(--gray_opacity_1);
+    box-shadow: 0 0 7px var(--gray_opacity_1);
+    -webkit-transition: .25s;
+    transition: .25s;
+    cursor: pointer;
+    color: var(--gray_4);
+    .name {
+      font-size: 18px;
+    }
+    .time {
+      margin: 3px 0;
+      font-size: 12px;
+    }
+    .repo-icon-wrap {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      .repo-icon-item {
+        margin-right: 10px;
+      }
+    }
+    &:hover {
+      box-shadow: 0 0 20px var(--gray_opacity_1);
+      transform: translateX(4px);
+    }
+  }
+}
 @media screen and (max-width: 990px) {
   .about-wrap {
     border-radius: 0;
@@ -166,6 +248,11 @@ import bannerBg from '../../assets/me.jpg'
     padding-top: 20px;
     padding-left: 12px;
     padding-right: 12px;
+  }
+  .repo-list {
+    display: grid;
+    grid-template-columns: repeat(2, calc((100% - 20px) / 2));
+    gap: 20px;
   }
   .list {
     margin-top: 14px;
@@ -182,6 +269,11 @@ import bannerBg from '../../assets/me.jpg'
 @media screen and (max-width: 450px) {
   .list li {
     font-size: 14px;
+  }
+  .repo-list {
+    display: grid;
+    grid-template-columns: repeat(1, calc(100%));
+    gap: 10px;
   }
 }
 </style>
