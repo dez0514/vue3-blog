@@ -24,3 +24,18 @@ export interface articleItem {
   views?: number | string;
   likes?: number | string;
 }
+export type IreplyType = '' | 'comment' | 'reply'
+export interface replyItem {
+  reply_type?: IreplyType;
+  reply_id?: string | number;
+  from_uid?: string | number;
+  to_uid?: string | number;
+  comment_id?: string | number;
+}
+
+export type ITopicType = '' | 'messageboard' | 'articleComment';
+export interface commentItem {
+  topic_type?: ITopicType;
+  topic_id?: string | number;
+  from_uid?: string | number;
+}

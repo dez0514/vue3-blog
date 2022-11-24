@@ -66,3 +66,23 @@ todo:
 4. 关于
 5. 文章详情 解析markdown, 代码块显示，文章大纲导航处理
 6. 留言板
+
+
+ts 定义接口或者type:
+可以使用命名空间
+```
+declare namespace TypeInterName {
+  type IColorType = 'red' | 'blue'
+  type IWType = string
+  interface IBaseState {
+    color: IColorType;
+    [key: string]: any; // 这种写法可以兼容 额外字段
+  }
+  interface IformSate {
+    ....
+  }
+}
+
+使用命名空间（不能重复）了就不需要导出或引入， 页面直接使用 TypeInterName.IBaseState
+```
+as 可以强制转换 类型。

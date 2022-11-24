@@ -8,13 +8,20 @@
         </div>
       </div>
     </div>
-    <text-editor />
+    <text-editor :source="commentState" />
     <comment-list />
   </div>
 </template>
 <script lang="ts" setup>
 import TextEditor from './textEditor.vue';
 import commentList from './commentList.vue';
+import { commentItem } from '../../types'
+import { reactive } from 'vue'
+const commentState = reactive<commentItem>({
+  topic_type: '', // 留言 || 文章评论
+  topic_id:  '', // 文章id || ''
+  from_uid:  '' // 永远都是当前登录的用户
+})
 </script>
 <style lang="scss" scoped>
 .comment-wrapper {

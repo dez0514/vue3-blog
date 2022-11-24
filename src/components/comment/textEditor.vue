@@ -1,6 +1,6 @@
 <template>
   <div>
-    <textarea class="comment-mde" ref="commentmde" v-model="content" @input="onTextChange" placeholder="写点痕迹..."
+    <textarea class="comment-mde" ref="commentmde" v-model="content" @input="onTextChange" placeholder="同道中人，理性留言..."
       rows="5"></textarea>
     <div class="btn-wraps">
       <div class="btn-box">
@@ -25,7 +25,7 @@
           <div>可使用部分markdown语法</div>
         </div>
         <div class="btn cancel">取消回复</div>
-        <div class="btn submit">
+        <div class="btn submit" @click="handleSubmit">
           <svg-icon class="icon" icon-class="publish"></svg-icon>
           <div>发布评论</div>
         </div>
@@ -34,8 +34,28 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, toRefs } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import { ITopicType, IreplyType } from '../../types'
+interface Props {
+  topic_type?: ITopicType; 
+  topic_id?: string | number;
+  reply_type?: IreplyType;
+  reply_id?: string | number;
+  from_uid?: string | number;
+  to_uid?: string | number;
+  comment_id?: string | number;
+}
+const props = withDefaults(defineProps<Props>(), {
+  topic_type: '',
+  topic_id: '',
+  reply_type: '',
+  reply_id:  '',
+  from_uid:  '',
+  to_uid: '',
+  comment_id: ''
+})
+const { topic_type, topic_id, reply_type, reply_id, from_uid, to_uid, comment_id } = toRefs(props)
 const emoji = ref(null)
 const content = ref<string>('')
 const showEmoji = ref<boolean>(false)
@@ -133,6 +153,23 @@ onClickOutside(emoji, () => {
     showEmoji.value = false
   }
 })
+const handleSubmit = () => {
+  if (!content.value) {
+    // notification
+    return
+  }
+  const params = {
+    topic_type,
+    topic_id,
+    reply_type,
+    reply_id,
+    from_uid,
+    to_uid,
+    comment_id,
+    content: content.value
+  }
+  console.log('params==', params)
+}
 </script>
 <style lang="scss" scoped>
 .comment-editor {

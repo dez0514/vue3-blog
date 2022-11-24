@@ -7,72 +7,47 @@
         </div>
         <div class="main">
           <div class="name-wrap">
-            <div class="nick">百度百度</div>
-            <div class="time">2021.07.03</div>
-            <div class="reply-btn">
+            <div class="nick">{{ item.from_uid }}</div>
+            <div class="time">{{ item.create_time }}</div>
+            <div class="reply-btn" @click="hanleReply(item, 'comment', item.id)">
               <svg-icon class="icon" icon-class="reply" />
             </div>
           </div>
           <div class="content">
-            <div class="desc">
-              大佬
-              请问react今日头条中的views/Article/index.js中的articleInfo的数据怎么获取到的？是使用@connect吗,请问react今日头条中的views/Article/index.js中的articleInfo的数据怎么获取到的？是使用@connect吗
-            </div>
+            <div class="desc">{{item.content}}</div>
           </div>
         </div>
       </div>
-      <div class="edit-box">
-        <text-editor />
+      <div class="edit-box" v-if="replyState.to_uid === item.from_uid">
+        <text-editor :source="replyState" />
       </div>
       <div class="children">
         <ul>
-          <li>
+          <li v-for="(inner, idx) in item.replyList" :key="`${index}_${idx}`">
             <div class="wrapper">
               <div class="side">
                 <div class="avatar"></div>
               </div>
               <div class="main">
                 <div class="name-wrap">
-                  <div class="nick">百度百度</div>
-                  <div class="time">2021.07.03</div>
-                  <div class="reply-btn">
+                  <div class="nick">
+                    <span>{{ inner.from_uid }}</span>
+                    <span class="reply-txt">回复</span>
+                    <span>{{ inner.to_uid }}</span>
+                  </div>
+                  <div class="time">{{ inner.create_time }}</div>
+                  <div class="reply-btn" @click="hanleReply(inner, 'reply', item.id)">
                     <svg-icon class="icon" icon-class="reply" />
                   </div>
                 </div>
                 <div class="content">
-                  <div class="desc">
-                    大佬
-                    请问react今日头条中的views/Article/index.js中的articleInfo的数据怎么获取到的？是使用@connect吗,请问react今日头条中的views/Article/index.js中的articleInfo的数据怎么获取到的？是使用@connect吗
-                  </div>
+                  <div class="desc">{{ inner.content }}</div>
                 </div>
               </div>
             </div>
-            <div class="edit-box">
-              <text-editor />
+            <div class="edit-box" v-if="replyState.to_uid === inner.from_uid">
+              <text-editor :source="replyState" />
             </div>
-          </li>
-          <li>
-            <div class="wrapper">
-              <div class="side">
-                <div class="avatar"></div>
-              </div>
-              <div class="main">
-                <div class="name-wrap">
-                  <div class="nick">百度百度</div>
-                  <div class="time">2021.07.03</div>
-                  <div class="reply-btn">
-                    <svg-icon class="icon" icon-class="reply" />
-                  </div>
-                </div>
-                <div class="content">
-                  <div class="desc">
-                    大佬
-                    请问react今日头条中的views/Article/index.js中的articleInfo的数据怎么获取到的？是使用@connect吗,请问react今日头条中的views/Article/index.js中的articleInfo的数据怎么获取到的？是使用@connect吗
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="edit-box"></div>
           </li>
         </ul>
       </div>
@@ -80,8 +55,66 @@
   </div>
 </template>
 <script lang="ts" setup>
-import TextEditor from './textEditor.vue';
-const commentsList = [{}, {}]
+import TextEditor from './textEditor.vue'
+import { reactive, ref } from 'vue'
+import { replyItem, IreplyType } from '../../types'
+const replyState = reactive<replyItem>({
+  reply_type: '',
+  reply_id:  '',
+  from_uid:  '', // 永远都是当前登录的用户
+  to_uid: '', // 点这条的回复按钮，这条的from_uid就是要提交的to_uid
+  comment_id: '' // 在那条评论下回复的
+})
+const commentsList = ref<any>([])
+commentsList.value = [
+  {
+    id: 1,
+    topic_id: '',
+    topic_type: 'messageboard',
+    from_uid: 'zwd',
+    create_time: '2022.11.24',
+    content: '评论内容',
+    replyList: [
+      {
+        id: 1,
+        comment_id: 1, 
+        reply_type: 'comment', 
+        reply_id: 1, // ===comment_id
+        content: '回复评论', 
+        from_uid: 'dez', 
+        to_uid: 'zwd', 
+      },
+      {
+        id: 2,
+        comment_id: 1, 
+        reply_type: 'comment', 
+        reply_id: 1, // ===comment_id
+        content: '回复自己的评论', 
+        from_uid: 'zwd', 
+        to_uid: 'zwd', 
+      },
+      {
+        id: 3,
+        comment_id: 1, 
+        reply_type: 'reply', 
+        reply_id: 2, // ===第二条的id(此条是回复上一条回复的回复)
+        content: '回复第二条回复的回复', 
+        from_uid: 'cz', 
+        to_uid: 'dez', 
+      }
+    ]
+  }
+]
+const hanleReply = (obj: any, replyType: IreplyType, commentId : string | number) => {
+  // 回复事件：回复评论、回复回复
+  console.log(obj)
+  replyState.reply_type = replyType
+  replyState.reply_id = obj.id
+  replyState.from_uid = 'zwd' // 永远都是当前登录的用户
+  replyState.to_uid = obj.from_uid // 点这条的回复按钮，这条的from_uid就是要提交的to_uid
+  replyState.comment_id = commentId // 在那条评论下回复的
+  // 此处不触发接口，点发布才会触发提交动作
+}
 </script>
 <style lang="scss" scoped>
 .comments-list-wrap {
@@ -119,7 +152,12 @@ const commentsList = [{}, {}]
         font-size: 14px;
         color: #738192;
       }
-
+      .reply-txt {
+        margin: 0 6px;
+        font-size: 12px;
+        color: var(--gray_4);
+        font-weight: 500;
+      }
       .time {
         font-size: 12px;
         transition: 0.25s;
