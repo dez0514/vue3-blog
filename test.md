@@ -34,6 +34,7 @@ npm i vue-router pinia axios qs 等。。。
 
 #### 注意：defineProps
 用完之后，props 最好 const { 属性名... } = toRefs(props) 解构一下并转化成响应式。js里使用加 .value
+默认值为数组或者对象是 还得加箭头 () => [], () => {}
 
 #### pinia
 ```
@@ -86,3 +87,18 @@ declare namespace TypeInterName {
 使用命名空间（不能重复）了就不需要导出或引入， 页面直接使用 TypeInterName.IBaseState
 ```
 as 可以强制转换 类型。
+
+type可以表达式合并：
+type Item = '' | '3' | '5'
+type ItemC = '' | '1' | '2'
+type ItemAll = Item & ItemC
+
+interface可以这么合并
+interface IAt {
+  a: string;
+}
+interface IBt {
+  b: string;
+}
+const obj: IAt & IBt = { a: '', b: '' }
+const arr: (IAt & IBt)[] = [{ a: '', b: '' }]

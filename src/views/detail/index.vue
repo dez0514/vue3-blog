@@ -48,15 +48,15 @@
           </div>
         </div>
         <div class="article-comment-wrap">
-          <comment />
+          <comment topic-type="articleComment" :topic-id="articleId" :data-list="[]" />
         </div>
       </div>
     </div>
-    <pagination :total="100" v-model:current-page="pageNumber"></pagination>
+    <pagination :total="total" :page-size="pageSize" v-model:current-page="pageNumber"></pagination>
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, nextTick, onUnmounted } from 'vue'
+import { onMounted, ref, nextTick, onUnmounted, computed } from 'vue'
 import LeftMenuWrap from '../../components/leftMenuWrap.vue'
 import banner from '../../components/banner/banner.vue'
 import comment from '../../components/comment/index.vue'
@@ -74,7 +74,13 @@ const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const isShowMenu = ref<boolean>(true)
 const pageNumber = ref<number>(1)
+const total = ref<number>(0)
+const pageSize = ref<number>(10)
 const route = useRoute()
+const articleId = computed(() => {
+  return route.params.id as string
+})
+// console.log('articleId===', articleId.value)
 const detailInfo = ref<any>(null)
 const detailMenuList = ref<MdTitle[]>([])
 const activeMenuIndex = ref<number>(0)

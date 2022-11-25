@@ -4,24 +4,52 @@
       <div class="flag-con">
         <div class="flag-desc">
           <svg-icon icon-class="message" />
-          <div class="count">0条留言</div>
+          <div class="count">{{dataList.length}}条{{topicType === 'messageboard' ? '留言' : '评论'}}</div>
         </div>
       </div>
     </div>
-    <text-editor :source="commentState" />
-    <comment-list />
+    <!-- 评论框 没有回复按钮 -->
+    <div v-if="!hideCommentEditor" class="comment-editor-wrap">
+      <text-editor v-model="commentStr" :source="commentState" @submitEmit="submitCallback" />
+    </div>
+    <comment-list :list="dataList"  @setCommentEditorStatus="setCommentEditor" />
   </div>
 </template>
 <script lang="ts" setup>
 import TextEditor from './textEditor.vue';
 import commentList from './commentList.vue';
-import { commentItem } from '../../types'
-import { reactive } from 'vue'
-const commentState = reactive<commentItem>({
-  topic_type: '', // 留言 || 文章评论
-  topic_id:  '', // 文章id || ''
-  from_uid:  '' // 永远都是当前登录的用户
+import { ITopicType, ICommentList } from '../../types'
+import { computed, toRefs, ref } from 'vue'
+const emit = defineEmits<{
+  (e: 'refreshList'): void,
+}>()
+interface Props {
+  topicType?: ITopicType;
+  topicId?: string | number;
+  dataList?: ICommentList[];
+}
+const props = withDefaults(defineProps<Props>(), {
+  topicType: '',
+  topicId: '',
+  dataList: () => [] // 数组要用箭头
 })
+const commentStr = ref<string>('')
+const hideCommentEditor = ref<boolean>(false) // 是否隐藏评论框。点击回复时，隐藏评论框显示回复框
+const { topicType, topicId } = toRefs(props)
+const commentState = computed(() => {
+  return {
+    topic_type: topicType.value,
+    topic_id: topicId.value
+  }
+})
+const setCommentEditor = (state: boolean) => {
+  console.log('state===', state)
+  hideCommentEditor.value = state
+  commentStr.value = ''
+}
+const submitCallback = () => {
+  emit('refreshList')
+}
 </script>
 <style lang="scss" scoped>
 .comment-wrapper {
@@ -33,22 +61,28 @@ const commentState = reactive<commentItem>({
   box-shadow: 0 13px 15px var(--gray_opacity_1);
   background-color: var(--white);
 }
+.comment-editor-wrap {
+  margin-bottom: 20px;
+}
 .flag-wrap {
   filter: drop-shadow(5px 6px 5px rgba(32, 160, 255, 0.3));
   position: absolute;
   top: 30px;
   left: -10px;
 }
+
 @media screen and (max-width: 990px) {
   .comment-wrapper {
     box-sizing: border-box;
     padding: 70px 10px 10px;
     border-radius: 0;
   }
+
   .flag-wrap {
     top: 15px;
   }
 }
+
 .flag-wrap::before {
   content: "";
   position: absolute;

@@ -2,14 +2,14 @@
   <div class="home">
     <banner mode="swiper" :banner-list="bannerList"/>
     <div class="content">
-      <div style="width: 200px;flex-shrink: 0;" v-if="isPc">
+      <div class="left-menu-con" v-if="isPc">
         <left-menu-wrap>
           <template #default>
             <nav-tags @change="getCurTag" />
           </template>
         </left-menu-wrap>
       </div>
-      <div class="list-box" :style="{ padding: !isPc ? '15px 15px 0' : '30px 0 0'}">
+      <div :class="['list-box', isPc ? '' : 'app']">
         <div class="list-wrap">
           <card v-for="(item, index) in articleList" :key="index" :info="item"></card>
         </div>
@@ -94,10 +94,18 @@ onMounted(() => {
   position: relative;
   box-sizing: border-box;
   display: flex;
+  .left-menu-con {
+    width: 200px;
+    flex-shrink: 0;
+  }
   .list-box {
     flex: 1;
     box-sizing:border-box;
     min-height: 606px;
+    padding: 30px 0 0;
+    &.app {
+      padding: 15px 15px 0;
+    }
   }
   .list-box .list-wrap {
     overflow: hidden;

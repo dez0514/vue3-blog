@@ -18,8 +18,8 @@
           </div>
         </div>
       </div>
-      <div class="edit-box" v-if="replyState.to_uid === item.from_uid">
-        <text-editor :source="replyState" />
+      <div class="edit-box" v-if="replyState.comment_id === item.id && replyState.to_uid === item.from_uid && replyState.reply_id === item.id">
+        <text-editor  v-model="commentStr" :source="replyState" :showCancelBtn="true"  @cancelReplyEmit="cancelReplyCallback" />
       </div>
       <div class="children">
         <ul>
@@ -45,8 +45,8 @@
                 </div>
               </div>
             </div>
-            <div class="edit-box" v-if="replyState.to_uid === inner.from_uid">
-              <text-editor :source="replyState" />
+            <div class="edit-box" v-if="replyState.comment_id === item.id && replyState.to_uid === inner.from_uid && replyState.reply_id === inner.id">
+              <text-editor  v-model="commentStr" :source="replyState" :showCancelBtn="true" @cancelReplyEmit="cancelReplyCallback" />
             </div>
           </li>
         </ul>
@@ -56,71 +56,52 @@
 </template>
 <script lang="ts" setup>
 import TextEditor from './textEditor.vue'
-import { reactive, ref } from 'vue'
-import { replyItem, IreplyType } from '../../types'
+import { reactive, toRefs, ref } from 'vue'
+import { replyItem, IreplyType, ICommentList } from '../../types'
+interface Props {
+  list?: ICommentList[];
+}
+// const { list = [] } = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  list: () => [],
+})
+const emit = defineEmits<{
+  (e: 'setCommentEditorStatus', status: boolean): void,
+}>()
+const commentStr = ref<string>('')
+const commentsList = toRefs(props).list
 const replyState = reactive<replyItem>({
   reply_type: '',
   reply_id:  '',
-  from_uid:  '', // 永远都是当前登录的用户
-  to_uid: '', // 点这条的回复按钮，这条的from_uid就是要提交的to_uid
+  to_uid: '', // 点这条的回复按钮，这条数据的from_uid就变成了要提交的to_uid
   comment_id: '' // 在那条评论下回复的
 })
-const commentsList = ref<any>([])
-commentsList.value = [
-  {
-    id: 1,
-    topic_id: '',
-    topic_type: 'messageboard',
-    from_uid: 'zwd',
-    create_time: '2022.11.24',
-    content: '评论内容',
-    replyList: [
-      {
-        id: 1,
-        comment_id: 1, 
-        reply_type: 'comment', 
-        reply_id: 1, // ===comment_id
-        content: '回复评论', 
-        from_uid: 'dez', 
-        to_uid: 'zwd', 
-      },
-      {
-        id: 2,
-        comment_id: 1, 
-        reply_type: 'comment', 
-        reply_id: 1, // ===comment_id
-        content: '回复自己的评论', 
-        from_uid: 'zwd', 
-        to_uid: 'zwd', 
-      },
-      {
-        id: 3,
-        comment_id: 1, 
-        reply_type: 'reply', 
-        reply_id: 2, // ===第二条的id(此条是回复上一条回复的回复)
-        content: '回复第二条回复的回复', 
-        from_uid: 'cz', 
-        to_uid: 'dez', 
-      }
-    ]
-  }
-]
-const hanleReply = (obj: any, replyType: IreplyType, commentId : string | number) => {
+const hanleReply = (clickItem: any, replyType: IreplyType, commentId : string | number) => {
+  commentStr.value = '' // 清空框的内容
   // 回复事件：回复评论、回复回复
-  console.log(obj)
   replyState.reply_type = replyType
-  replyState.reply_id = obj.id
-  replyState.from_uid = 'zwd' // 永远都是当前登录的用户
-  replyState.to_uid = obj.from_uid // 点这条的回复按钮，这条的from_uid就是要提交的to_uid
-  replyState.comment_id = commentId // 在那条评论下回复的
+  replyState.reply_id = clickItem?.id
+  replyState.to_uid = clickItem.from_uid
+  replyState.comment_id = commentId
+  // 通知隐藏评论框
+  emit('setCommentEditorStatus', true)
   // 此处不触发接口，点发布才会触发提交动作
+}
+const cancelReplyCallback = () => {
+  commentStr.value = '' // 清空框的内容
+  // 点击取消回复时触发：清空回复时的赋值
+  replyState.reply_type = ''
+  replyState.reply_id = ''
+  replyState.to_uid = ''
+  replyState.comment_id = ''
+  // 通知显示评论框
+  emit('setCommentEditorStatus', false)
 }
 </script>
 <style lang="scss" scoped>
 .comments-list-wrap {
   overflow: hidden;
   width: 100%;
-  margin-top: 20px;
 }
 
 .wrapper {

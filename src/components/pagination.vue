@@ -71,7 +71,7 @@ const emit = defineEmits<{
 }>()
 const current = computed({
   get: () => currentPage.value,
-  set: (value: number) => emit('update:currentPage', value) // 需要在父组件中显示传入update方法
+  set: (value: number) => emit('update:currentPage', value) // 不需要在父组件中'显式'传入update方法
 })
 const hoverIndex = ref<number>(-1)
 // 滑块偏移距离，默认和当前页面位置一致。增加hover效果

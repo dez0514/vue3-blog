@@ -1,6 +1,6 @@
 <template>
   <div>
-    <textarea class="comment-mde" ref="commentmde" v-model="content" @input="onTextChange" placeholder="同道中人，理性留言..."
+    <textarea class="comment-mde" ref="commentmde" v-model="contentHtml" @input="onTextChange" placeholder="同道中人，理性留言..."
       rows="5"></textarea>
     <div class="btn-wraps">
       <div class="btn-box">
@@ -24,7 +24,7 @@
           <svg-icon class="icon" icon-class="tip"></svg-icon>
           <div>可使用部分markdown语法</div>
         </div>
-        <div class="btn cancel">取消回复</div>
+        <div v-show="showCancelBtn" class="btn cancel" @click="handleCancelReply">取消回复</div>
         <div class="btn submit" @click="handleSubmit">
           <svg-icon class="icon" icon-class="publish"></svg-icon>
           <div>发布评论</div>
@@ -34,30 +34,56 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, toRefs } from 'vue'
+import { ref, toRefs, computed } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { ITopicType, IreplyType } from '../../types'
-interface Props {
+const emit = defineEmits<{
+  (e: 'submitEmit'): void,
+  (e: 'cancelReplyEmit'): void,
+  (e: 'update:modelValue', params: string): void
+}>()
+interface ISourceType {
   topic_type?: ITopicType; 
   topic_id?: string | number;
   reply_type?: IreplyType;
   reply_id?: string | number;
-  from_uid?: string | number;
   to_uid?: string | number;
   comment_id?: string | number;
 }
+interface Props {
+  source: ISourceType,
+  showCancelBtn?: boolean;
+  modelValue: string;
+}
 const props = withDefaults(defineProps<Props>(), {
-  topic_type: '',
-  topic_id: '',
-  reply_type: '',
-  reply_id:  '',
-  from_uid:  '',
-  to_uid: '',
-  comment_id: ''
+  source: () => {
+    return {
+      topic_type: '',
+      topic_id: '',
+      reply_type: '',
+      reply_id:  '',
+      to_uid: '',
+      comment_id: ''
+    }
+  },
+  showCancelBtn: false,
+  modelValue: ''
 })
-const { topic_type, topic_id, reply_type, reply_id, from_uid, to_uid, comment_id } = toRefs(props)
+const { source, showCancelBtn, modelValue } = toRefs(props)
+const { topic_type, topic_id, reply_type, reply_id, to_uid, comment_id } = source.value
+const from_uid = ref<string>('zwd') // 获取登录用户
+// 偷懒写法 content 在组件内控制的，多个text-editor切换显示用v-if, 否则各自的值不会清空，始终只有一个text-editor
+// const content = ref<string>('')
+const contentHtml = computed({
+  get() {
+    return modelValue.value
+  },
+  set(value: string) {
+    emit('update:modelValue', value)
+  }
+})
+console.log('contentHtml===', contentHtml.value)
 const emoji = ref(null)
-const content = ref<string>('')
 const showEmoji = ref<boolean>(false)
 interface faceItem {
   title: string;
@@ -153,22 +179,27 @@ onClickOutside(emoji, () => {
     showEmoji.value = false
   }
 })
+const handleCancelReply = () => {
+  // 通知清空点击回复按钮时的赋值情况
+  emit('cancelReplyEmit')
+}
 const handleSubmit = () => {
-  if (!content.value) {
+  if (!contentHtml.value) {
     // notification
     return
   }
   const params = {
-    topic_type,
-    topic_id,
-    reply_type,
-    reply_id,
-    from_uid,
-    to_uid,
-    comment_id,
-    content: content.value
+    topic_type: topic_type,
+    topic_id: topic_id,
+    reply_type: reply_type,
+    reply_id: reply_id,
+    to_uid: to_uid,
+    comment_id: comment_id,
+    content: contentHtml.value,
+    from_uid: from_uid.value
   }
   console.log('params==', params)
+  emit('submitEmit')
 }
 </script>
 <style lang="scss" scoped>
