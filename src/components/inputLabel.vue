@@ -1,8 +1,8 @@
 <template>
-  <div :class="['input-label', className, !!value ? 'has' : '', disabled ? 'disabled' : '']">
-    <input :value="value" :type="type" :disabled="disabled" />
+  <div :class="['input-label', className, !!content ? 'has' : '', disabled ? 'disabled' : '']">
+    <input v-model="content" :type="type" :disabled="disabled" />
     <div v-if="hasTip" className="input-label__tip">
-      <svg-icon v-if="prefixIcon" :icon-class="prefixIcon" />
+      <svg-icon v-if="prefixIcon" class="icon" :icon-class="prefixIcon" />
       <span v-if="placeholder">{{ placeholder }}</span>
     </div>
     <div v-if="required" class="input-label__required">*</div>
@@ -11,7 +11,7 @@
 <script lang="ts" setup>
 import { toRefs, computed } from 'vue'
 interface Props {
-  value?: string
+  modelValue: string
   required?: boolean
   disabled?: boolean
   prefixIcon?: string
@@ -22,9 +22,20 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   required: false
 })
-const { value, type, required, prefixIcon, placeholder, className, disabled } = toRefs(props)
+const { modelValue, type, required, prefixIcon, placeholder, className, disabled } = toRefs(props)
+const emit = defineEmits<{
+  (e: 'update:modelValue', params: string): void
+}>()
 const hasTip = computed(() => {
   return placeholder?.value && prefixIcon?.value
+})
+const content = computed({
+  get() {
+    return modelValue.value
+  },
+  set(value: string) {
+    emit('update:modelValue', value)
+  }
 })
 </script>
 <style lang="less" scoped>

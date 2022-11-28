@@ -9,8 +9,12 @@
   <div v-show="showToTop" class="to-top" @click="handleToTop">
     <svg-icon class="icon" icon-class="top"></svg-icon>
   </div>
-  <transition name="fade" v-if="!isPc">
-	  <div class="sider-mask" v-show="isCollapse" @click="hideSide"></div>
+  <div class="login-btn" @click="handleClickLoginBtn">
+    <svg-icon class="icon" :icon-class="global_isLogin ? 'me': 'memb'"></svg-icon>
+  </div>
+  <login-card v-model:visiable="showLogin" />
+  <transition name="fade">
+	  <div class="system-mask" v-show="isShowMask" @click="hideMaskAll"></div>
   </transition>
   <side-bar v-if="!isPc"></side-bar>
 </template>
@@ -20,15 +24,27 @@
 import vheader from './components/vheader.vue'
 import vfooter from './components/vfooter.vue'
 import SideBar from './components/SideBar.vue'
+import loginCard from './components/loginCard.vue'
 import { configStore } from './store'
 import { onMounted, onUnmounted, ref } from 'vue';
 import { storeToRefs } from 'pinia'
 import { setScrollTop } from './utils/dom'
+import { useLoginInfo } from './utils/useLoginInfo'
+const { global_isLogin } = useLoginInfo()
 const configStores = configStore()
-const { isPc, isCollapse } = storeToRefs(configStores)
+const { isPc, isCollapse, isShowMask } = storeToRefs(configStores)
 const showToTop = ref<boolean>(false)
-const hideSide = () => {
-  configStores.updateCollapse(false)
+const showLogin = ref<boolean>(false)
+const handleChangeShowLogin = (flag: boolean) => {
+  showLogin.value = flag
+}
+const handleClickLoginBtn = () => {
+  configStores.updateConfig({ isShowMask: true })
+  handleChangeShowLogin(true)
+}
+const hideMaskAll = () => {
+  configStores.updateConfig({ isCollapse: false, isShowMask: false })
+  handleChangeShowLogin(false)
 }
 const handleToTop = () => {
   setScrollTop(0, { animate: true, duration: 1000 })
@@ -36,10 +52,10 @@ const handleToTop = () => {
 const resize = () => {
   // console.log(document.body.clientWidth)
   const ispc = document.body.clientWidth > 990
-  configStores.updateIsPc(ispc)
+  configStores.updateConfig({ isPc: ispc })
   if(ispc) {
     // 防止侧边栏没隐藏
-    configStores.updateCollapse(false)
+    configStores.updateConfig({ isCollapse: false, isShowMask: false })
   }
 }
 const handleScrollPage = () => {
@@ -77,7 +93,7 @@ onUnmounted(() => {
     min-height: calc(100vh - 60px);
   }
 }
-.sider-mask {
+.system-mask {
   z-index: var(--zIndex_5);
   position: fixed;
   top: 0;
@@ -103,6 +119,30 @@ onUnmounted(() => {
   cursor: pointer;
   .icon {
     font-size: 34px;
+  }
+}
+.login-btn {
+  z-index: var(--zIndex_2);
+  position: fixed;
+  bottom: 118px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--text_color);
+  background-color: var(--white);
+  transition: .5s;
+  box-shadow: 0 13px 15px -5px var(--gray_opacity_2);
+  line-height: 38px;
+  text-align: center;
+  cursor: pointer;
+  .icon {
+    font-size: 16px;
+  }
+  &:hover {
+    background-color: var(--primary);
+    color: var(--white);
+    box-shadow: 0 13px 15px -5px var(--primary_opacity_5);
   }
 }
 </style>

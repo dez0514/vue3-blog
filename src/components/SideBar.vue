@@ -165,7 +165,7 @@ const hotList = [
 const handleChangeRouter = (index: number, item: tabItem) => {
   tabIndex.value = index
   router.push({ name: item.name })
-  configStores.updateCollapse(false)
+  configStores.updateConfig({ isCollapse: false, isShowMask: false })
 }
 watch(() => router.currentRoute.value, (value) => {
   if(!isPc.value) {

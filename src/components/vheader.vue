@@ -81,7 +81,7 @@ const translateX = computed(() => {
   return 0
 })
 const hanleShowSider = () => {
-  configStores.updateCollapse(true)
+  configStores.updateConfig({ isCollapse: true, isShowMask: true })
 }
 const handleIsShowSearch = (isShow: boolean) => {
   showSearch.value = isShow

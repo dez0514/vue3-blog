@@ -1,8 +1,21 @@
 export interface ConfigState {
   isCollapse: boolean;
   isPc: boolean;
+  isShowMask: boolean;
 }
-
+export interface UpdateState {
+  isCollapse?: boolean;
+  isPc?: boolean;
+  isShowMask?: boolean;
+}
+export interface TypeUserState {
+  userEmail: string;
+  userNick: string;
+}
+export interface UpdateUserState {
+  userEmail?: string;
+  userNick?: string;
+}
 export interface tagItem {
   id?: number | string;
   icon: string;
