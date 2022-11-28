@@ -64,6 +64,7 @@ const formData = reactive({
 const disabled = ref<boolean>(global_isLogin.value)
 const isEdit = ref<boolean>(false)
 const saveLoading = ref<boolean>(false)
+const logLoading = ref<boolean>(false)
 const isShow = computed({
   get() {
     return visiable.value;
@@ -99,18 +100,26 @@ const handleUpdateInfo = () => {
   }, 3000)
 }
 const handleLogin = () => {
+  if(logLoading.value) return
+  logLoading.value = true
   const info = {
     email: formData.email,
     nickname: formData.nickname,
     url: formData.url
   }
   setLoginInfo(info)
+  setTimeout(() => {
+    logLoading.value = false
+  }, 3000)
 }
 const handleLogout = () => {
   prompt('确定要登出吗？', () => {
     setTimeout(() => {
       console.log('5s后退出')
-      setLoginInfo()
+      setLoginInfo(null)
+      formData.email = ''
+      formData.nickname = ''
+      formData.url = ''
     }, 5000)
   })
 }
