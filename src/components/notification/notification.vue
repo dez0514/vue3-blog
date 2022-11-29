@@ -34,7 +34,7 @@ onMounted(() => {
   visiable.value = true
   setTimeout(() => {
     visiable.value = false
-    props.onRemove()
+    // props.onRemove()
   }, duration.value)
 })
 </script>
@@ -121,12 +121,8 @@ onMounted(() => {
   opacity: 1;
 }
 .goslide-enter-active,
-.goslide-leave-active{
+.goslide-leave-active {
   /*定义进入和离开过渡状态的透明度变化的时间和变化曲线*/
-  transform-origin: right;
-  margin-bottom: 15px;
-  transform: translateX(0);
-  opacity: 1;
   transition: margin-bottom 0.35s, opacity 0.2s 0.1s, transform 0.7s cubic-bezier(0, 1.5, 0.6, 1) 0.1s;
 }
 
