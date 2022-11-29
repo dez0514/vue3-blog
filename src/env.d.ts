@@ -8,3 +8,7 @@ declare module '*.vue' {
 }
 
 declare module 'docxtemplater-image-module-free';
+declare module '@/assets/libs/live2d.min.js'
+declare interface Window {
+  loadlive2d: any
+}

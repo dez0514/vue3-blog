@@ -6,11 +6,12 @@
     <div class="card-title">LOGIN</div>
     <div class="login-main">
       <div class="login-input-wrap">
-        <InputLabel required class="modal-login__input" v-model="formData.email" prefixIcon="email" placeholder="邮箱" type="email"
-          :disabled="disabled" />
+        <InputLabel required class="modal-login__input" v-model="formData.email" prefixIcon="email" placeholder="邮箱"
+          type="email" :disabled="disabled" />
       </div>
       <div class="login-input-wrap">
-        <InputLabel class="modal-login__input" v-model="formData.nickname" prefixIcon="me" placeholder="昵称" :disabled="disabled" />
+        <InputLabel class="modal-login__input" v-model="formData.nickname" prefixIcon="me" placeholder="昵称"
+          :disabled="disabled" />
       </div>
       <div class="login-input-wrap">
         <InputLabel class="modal-login__input" v-model="formData.url" prefixIcon="link" placeholder="网址" type="url"
@@ -27,12 +28,12 @@
         <div v-show="isEdit" class="btn cancel" @click="handleCancelEdit">取消</div>
       </div>
       <div class="third-login">
-        <div v-if="!global_isLogin">
-          <Tooltip content="第三方登录不一定能获取到邮箱，如未能获取到邮箱，请尽量绑定邮箱，以便能及时接收消息">
+        <div v-if="!global_isLogin" style="width: 100%">
+          <Tooltip content="第三方登录不一定能获取到邮箱，如未能获取到邮箱，请尽量绑定邮箱，以便能及时接收消息" :contentStyle="toolTipStyle">
             <div class="log-text">第三方登录</div>
           </Tooltip>
         </div>
-        <div class="logout-text" v-if="global_isLogin" @click="handleLogout">退出</div>
+        <div v-if="global_isLogin" class="logout-text" @click="handleLogout">退出</div>
       </div>
     </div>
   </div>
@@ -42,9 +43,16 @@
 import InputLabel from './inputLabel.vue'
 import Tooltip from './tooltip.vue'
 import prompt from './prompt'
-import { toRefs, computed, ref, reactive } from 'vue'
+import notification from './notification'
+import { toRefs, computed, ref, reactive, CSSProperties } from 'vue'
 import { configStore } from '../store'
 import { useLoginInfo } from '../utils/useLoginInfo'
+import { checkStr } from '../utils'
+const toolTipStyle: CSSProperties = {
+  width: '308px',
+  whiteSpace: 'normal',
+  lineHeight: '18px'
+}
 const configStores = configStore()
 interface Props {
   visiable: boolean;
@@ -54,7 +62,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const { visiable } = toRefs(props)
 const emits = defineEmits(['update:visiable']);
-const { global_isLogin, global_loginInfo, setLoginInfo  } = useLoginInfo()
+const { global_isLogin, global_loginInfo, setLoginInfo } = useLoginInfo()
 // console.log('loginInfo===', global_loginInfo)
 const formData = reactive({
   email: global_loginInfo.email,
@@ -71,7 +79,7 @@ const isShow = computed({
   },
   set(val: boolean) {
     emits('update:visiable', val);
-    if(!val) {
+    if (!val) {
       configStores.updateConfig({ isShowMask: false })
     }
   },
@@ -88,39 +96,79 @@ const handleCancelEdit = () => {
   disabled.value = true
   saveLoading.value = false
 }
+const check = () => {
+  let msg = ''
+  if (!formData.email) {
+    msg = '请输入邮箱'
+  }
+  if (!checkStr(formData.email, 'email')) {
+    msg = '请输入正确的邮箱'
+  }
+  if (formData.url && !checkStr(formData.url, 'URL')) {
+    msg = '请输入正确的网址'
+  }
+  if (msg) {
+    // notification.error(msg)
+    console.log('msg===', msg)
+    notification({
+      type: 'error',
+      message: msg,
+      duration: 5000
+    })
+    return true
+  }
+  return false
+}
 // 保存
 const handleUpdateInfo = () => {
-  if(saveLoading.value) return
+  if (saveLoading.value) return
+  if (check()) {
+    return
+  }
   saveLoading.value = true
   setTimeout(() => {
     isEdit.value = false
     disabled.value = true
-    handleLogin()
+    const info = {
+      email: formData.email,
+      nickname: formData.nickname,
+      url: formData.url
+    }
+    setLoginInfo(info)
     saveLoading.value = false
   }, 3000)
 }
 const handleLogin = () => {
-  if(logLoading.value) return
-  logLoading.value = true
-  const info = {
-    email: formData.email,
-    nickname: formData.nickname,
-    url: formData.url
+  if (logLoading.value) return
+  // 校验有效邮箱
+  if (check()) {
+    return
   }
-  setLoginInfo(info)
+  logLoading.value = true
   setTimeout(() => {
+    const info = {
+      email: formData.email,
+      nickname: formData.nickname,
+      url: formData.url
+    }
+    setLoginInfo(info)
     logLoading.value = false
+    handleClose()
   }, 3000)
 }
 const handleLogout = () => {
   prompt('确定要登出吗？', () => {
-    setTimeout(() => {
-      console.log('5s后退出')
-      setLoginInfo(null)
-      formData.email = ''
-      formData.nickname = ''
-      formData.url = ''
-    }, 5000)
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log('5s后退出')
+        disabled.value = false
+        setLoginInfo(null)
+        formData.email = ''
+        formData.nickname = ''
+        formData.url = ''
+        resolve(1)
+      }, 5000)
+    })
   })
 }
 </script>
@@ -136,11 +184,13 @@ const handleLogout = () => {
 
 .login-main {
   padding: 0 25px;
+
   .btn-wraps {
     display: flex;
     justify-content: center;
     align-items: center;
   }
+
   .btn {
     background: var(--bg_theme_btn);
     width: 150px;
@@ -155,18 +205,22 @@ const handleLogout = () => {
     font-size: 16px;
     transition: box-shadow .3s;
     cursor: pointer;
+
     &.cancel {
       width: 105px;
       color: var(--text_color);
       background: var(--gray_opacity_1);
       box-shadow: 0 6px 12px var(--gray_opacity_2);
     }
+
     &.save {
       width: 105px;
     }
+
     &:hover {
       box-shadow: 0 8px 15px var(--primary_opacity_7);
     }
+
     &.cancel:hover {
       box-shadow: 0 6px 12px var(--gray_opacity_3);
     }
@@ -208,6 +262,7 @@ const handleLogout = () => {
 .third-login {
   margin-top: 14px;
   text-align: center;
+
   .log-text {
     font-size: 12px;
     text-align: center;
@@ -218,6 +273,7 @@ const handleLogout = () => {
       text-decoration: underline;
     }
   }
+
   .logout-text {
     @extend .log-text;
   }

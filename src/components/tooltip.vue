@@ -1,20 +1,22 @@
 <template>
   <div class="tooltip-box" :style="{ '--tooltip_color': color || 'var(--primary)' }">
     <slot></slot>
-    <div :class="['tooltip-arrow', `tooltip-arrow__${direction}`]">{{ content }}</div>
+    <div :class="['tooltip-arrow', `tooltip-arrow__${direction}`]" :style="{ ...contentStyle }">{{ content }}</div>
   </div>
 </template>
 <script lang="ts" setup>
-import { toRefs, useSlots, onMounted } from 'vue'
+import { toRefs, useSlots, onMounted, CSSProperties } from 'vue'
 interface Props {
   content: any;
   direction?: 'top' | 'right' | 'bottom' | 'left';
   color?: string;
+  contentStyle: CSSProperties
 }
 const props = withDefaults(defineProps<Props>(), {
   content: '',
   direction: 'top',
-  color: ''
+  color: '',
+  contentStyle: () => ({})
 })
 const { content, direction, color } = toRefs(props)
 const slots = useSlots();
@@ -23,36 +25,28 @@ onMounted(() => {
 });
 </script>
 <style lang="less" scoped>
-/* stylelint-disable no-descending-specificity */
-
 .mixinColor (@color) {
   .tooltip-arrow {
     background-color: @color;
   }
-
   .tooltip-arrow__top::before {
     border-top-color: @color !important;
   }
-
   .tooltip-arrow__bottom::before {
     border-bottom-color: @color !important;
   }
-
   .tooltip-arrow__left::before {
     border-left-color: @color !important;
   }
-
   .tooltip-arrow__right::before {
     border-right-color: @color !important;
   }
 }
-
 .tooltip-box {
   position: relative;
   display: inline-block;
   width: 100%;
   .mixinColor(var(--tooltip_color));
-
   .tooltip-arrow {
     min-width: 60px;
     position: absolute;
@@ -126,29 +120,24 @@ onMounted(() => {
       transform: translateY(-50%);
     }
   }
-
   &:hover {
     .tooltip-arrow__top {
       opacity: 1;
       margin-bottom: 0;
     }
-
     .tooltip-arrow__bottom {
       opacity: 1;
       margin-top: 0;
     }
-
     .tooltip-arrow__left {
       opacity: 1;
       margin-right: 0;
     }
-
     .tooltip-arrow__right {
       opacity: 1;
       margin-left: 0;
     }
   }
 }
-/* stylelint-enable */
 </style>
 

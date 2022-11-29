@@ -67,6 +67,7 @@ const handleScrollPage = () => {
   }
 }
 onMounted(() => {
+  configStores.updateConfig({ isCollapse: false, isShowMask: false })
   window.addEventListener('resize', () => resize())
   window.addEventListener('scroll', handleScrollPage)
 })

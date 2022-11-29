@@ -4,7 +4,7 @@
     <div class="modal-prompt">
       <div class="modal-prompt__header">
         <div class="modal-prompt__name">{{ title }}</div>
-        <svg-icon icon-class="close" class="modal-prompt__close" @click="handleClose" />
+        <svg-icon icon-class="close" class="modal-prompt__close" @click="handleCancel" />
       </div>
       <div class="modal-prompt__content">{{ content }}</div>
       <div class="modal-prompt__footer">
@@ -20,34 +20,35 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { toRefs } from 'vue'
+import { toRefs, ref } from 'vue'
 import SvgIcon from '../SvgIcon.vue'
 interface Props {
   title?: string;
   content?: string;
-  loading?: boolean;
-  onClose?: () => void
   onCancel?: () => void
   onConfirm?: () => void
 }
 const props = withDefaults(defineProps<Props>(), {
   title: '提示',
   content: '',
-  loading: false,
-  onClose: () => {},
   onCancel: () => {},
   onConfirm: () => {}
 })
-const { title, content, loading } = toRefs(props)
-const handleClose = () => {
-  props.onClose()
-}
+const { title, content } = toRefs(props)
+const loading = ref<boolean>(false)
 const handleCancel = () => {
+  if(loading.value) return
   props.onCancel()
-  props.onClose()
 }
-const handleConfirm = () => {
-  props.onConfirm()
+const handleConfirm = async () => {
+  try {
+    loading.value = true
+    await props.onConfirm()
+    loading.value = false
+    props.onCancel()
+  } catch {
+    loading.value = false
+  }
 }
 </script>
 <style lang="less" scoped>
