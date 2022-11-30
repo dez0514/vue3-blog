@@ -3,6 +3,6 @@ export interface NotificationProps {
   message: string
   duration?: number
 }
-// export interface NoticeItem extends NotificationProps {
-//   id: string
-// }
+export interface NoticeItem extends NotificationProps {
+  id: string
+}

@@ -28,7 +28,7 @@
         <div v-show="isEdit" class="btn cancel" @click="handleCancelEdit">取消</div>
       </div>
       <div class="third-login">
-        <div v-if="!global_isLogin" style="width: 100%">
+        <div v-if="!global_isLogin">
           <Tooltip content="第三方登录不一定能获取到邮箱，如未能获取到邮箱，请尽量绑定邮箱，以便能及时接收消息" :contentStyle="toolTipStyle">
             <div class="log-text">第三方登录</div>
           </Tooltip>
@@ -43,7 +43,7 @@
 import InputLabel from './inputLabel.vue'
 import Tooltip from './tooltip.vue'
 import prompt from './prompt'
-import notification from './notification'
+import notification from './notification/index'
 import { toRefs, computed, ref, reactive, CSSProperties } from 'vue'
 import { configStore } from '../store'
 import { useLoginInfo } from '../utils/useLoginInfo'
@@ -110,10 +110,10 @@ const check = () => {
   if (msg) {
     // notification.error(msg)
     console.log('msg===', msg)
-    notification({
+    notification.show({
       type: 'error',
       message: msg,
-      duration: 5000
+      duration: 3000
     })
     return true
   }
@@ -264,6 +264,7 @@ const handleLogout = () => {
   text-align: center;
 
   .log-text {
+    display: inline-block;
     font-size: 12px;
     text-align: center;
     transition: opacity .5s;

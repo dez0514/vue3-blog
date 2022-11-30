@@ -45,7 +45,6 @@ onMounted(() => {
 .tooltip-box {
   position: relative;
   display: inline-block;
-  width: 100%;
   .mixinColor(var(--tooltip_color));
   .tooltip-arrow {
     min-width: 60px;
