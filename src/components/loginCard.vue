@@ -29,9 +29,19 @@
       </div>
       <div class="third-login">
         <div v-if="!global_isLogin">
-          <Tooltip content="第三方登录不一定能获取到邮箱，如未能获取到邮箱，请尽量绑定邮箱，以便能及时接收消息" :contentStyle="toolTipStyle">
-            <div class="log-text">第三方登录</div>
-          </Tooltip>
+          <div v-show="!isShowThirdLog">
+            <Tooltip content="第三方登录不一定能获取到邮箱，如未能获取到邮箱，请尽量绑定邮箱，以便能及时接收消息" :contentStyle="toolTipStyle">
+              <div class="log-text" @click="handleThirdText">第三方登录</div>
+            </Tooltip>
+          </div>
+          <div v-show="isShowThirdLog" class="third-icon-wrap">
+            <Tooltip content="github">
+              <svg-icon class="third-icon" icon-class="third-github" @click="handleClickThirdIcon('github')"></svg-icon>
+            </Tooltip>
+            <Tooltip content="QQ">
+              <svg-icon class="third-icon" icon-class="third-qq" @click="handleClickThirdIcon('qq')"></svg-icon>
+            </Tooltip>
+          </div>
         </div>
         <div v-if="global_isLogin" class="logout-text" @click="handleLogout">退出</div>
       </div>
@@ -48,6 +58,7 @@ import { toRefs, computed, ref, reactive, CSSProperties } from 'vue'
 import { configStore } from '../store'
 import { useLoginInfo } from '../utils/useLoginInfo'
 import { checkStr } from '../utils'
+import rootConfig from '../utils/config'
 const toolTipStyle: CSSProperties = {
   width: '308px',
   whiteSpace: 'normal',
@@ -71,6 +82,7 @@ const formData = reactive({
 })
 const disabled = ref<boolean>(global_isLogin.value)
 const isEdit = ref<boolean>(false)
+const isShowThirdLog = ref<boolean>(false)
 const saveLoading = ref<boolean>(false)
 const logLoading = ref<boolean>(false)
 const isShow = computed({
@@ -86,6 +98,10 @@ const isShow = computed({
 });
 const handleClose = () => {
   isShow.value = false
+  isShowThirdLog.value = false
+}
+const handleThirdText = () => {
+  isShowThirdLog.value = true
 }
 const handleClickToEdit = () => {
   isEdit.value = true
@@ -171,6 +187,25 @@ const handleLogout = () => {
     })
   })
 }
+const handleClickThirdIcon = (name: string) => {
+    const newWidth = 600
+    const newHeight = 600
+    const winWidth = screen.width
+    const winHeight = screen.height
+    const left = (winWidth - newWidth) / 2
+    const top = (winHeight - newHeight) / 2
+    const windowSize = `width=${newWidth},height=${newHeight},left=${left},top=${top},status=no,toolbar=no,menubar=no,location=no,resizable=no,scrollbars=0,titlebar=no`
+    console.log(left, top)
+    if (name === 'github') {
+      const oauth = rootConfig.github.oauth
+      const url = `${oauth.url}?client_id=${oauth.client_id}&redirect_uri=${encodeURIComponent(oauth.redirect_uri)}`
+      window.open(url, 'GithubLogin', windowSize)
+    } else if (name === 'qq') {
+      const oauth = rootConfig.qq.oauth
+      const url = `${oauth.url}?response_type=code&client_id=${oauth.appId}&redirect_uri=${encodeURIComponent(oauth.redirect_uri)}&state=state`
+      window.open(url, 'TencentLogin', windowSize)
+    }
+  }
 </script>
 <style  lang="scss" scoped>
 .card-title {
@@ -262,7 +297,19 @@ const handleLogout = () => {
 .third-login {
   margin-top: 14px;
   text-align: center;
-
+  .third-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    .third-icon {
+      margin: 0 4px;
+      cursor: pointer;
+      &:hover {
+        color: var(--primary);
+      }
+    }
+  }
   .log-text {
     display: inline-block;
     font-size: 12px;
