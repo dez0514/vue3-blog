@@ -4,40 +4,39 @@ const userSession = getSessionStorage('userinfo')
 const userinfo = {
   email: (userSession && userSession.email) || '',
   nickname: (userSession && userSession.nickname) || '',
-  url: (userSession && userSession.url) || ''
+  weburl: (userSession && userSession.weburl) || ''
 }
 interface Iloginfo {
   email: string;
   nickname: string;
-  url: string;
+  weburl: string;
 }
 const global_loginInfo = reactive<Iloginfo>({
   email: userinfo.email,
   nickname: userinfo.nickname,
-  url: userinfo.url
+  weburl: userinfo.weburl
 })
-const islogin = !!(userinfo && userinfo.email)
+const islogin = !!(userinfo && userinfo.email && userinfo.nickname)
 const global_isLogin = ref<boolean>(islogin)
 export const useLoginInfo = () => {
   const setLoginInfo = (info: any) => {
     const infoData = {
       email: (info && info.email) || '',
       nickname: (info && info.nickname) || '',
-      url: (info && info.url) || ''
+      weburl: (info && info.weburl) || ''
     }
     if(infoData && infoData.email) {
       global_isLogin.value = true
       global_loginInfo.email = infoData.email
       global_loginInfo.nickname = infoData.nickname
-      global_loginInfo.url = infoData.url
+      global_loginInfo.weburl = infoData.weburl
       setSessionStorage('userinfo', infoData)
-      // setSessionStorage('isLogin', false)
     } else {
       global_isLogin.value = false
       global_loginInfo.email = ''
       global_loginInfo.nickname = ''
-      global_loginInfo.url = ''
-      setSessionStorage('userinfo', infoData)
+      global_loginInfo.weburl = ''
+      setSessionStorage('userinfo', null)
     }
   }
   return {

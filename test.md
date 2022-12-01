@@ -102,3 +102,20 @@ interface IBt {
 }
 const obj: IAt & IBt = { a: '', b: '' }
 const arr: (IAt & IBt)[] = [{ a: '', b: '' }]
+
+#### vue3 挂载全局这么用:
+```
+// main.ts 中：
+const app = createApp(App);
+app.config.globalProperties.xxx = xxxx
+```
+使用：
+```
+// 引入vue的 getCurrentInstance 方法
+import { getCurrentInstance } from "vue";
+// 获取当前组件实例
+const { appContext } = getCurrentInstance();
+// 打印看一下结构
+console.log(appContext)
+// appContext.config.globalProperties
+```

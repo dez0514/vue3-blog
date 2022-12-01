@@ -7,14 +7,14 @@
     <div class="login-main">
       <div class="login-input-wrap">
         <InputLabel required class="modal-login__input" v-model="formData.email" prefixIcon="email" placeholder="邮箱"
-          type="email" :disabled="disabled" />
+          type="email" :disabled="(disabled || isEdit)" />
       </div>
       <div class="login-input-wrap">
         <InputLabel class="modal-login__input" v-model="formData.nickname" prefixIcon="me" placeholder="昵称"
           :disabled="disabled" />
       </div>
       <div class="login-input-wrap">
-        <InputLabel class="modal-login__input" v-model="formData.url" prefixIcon="link" placeholder="网址" type="url"
+        <InputLabel class="modal-login__input" v-model="formData.weburl" prefixIcon="link" placeholder="网址" type="url"
           :disabled="disabled" />
       </div>
       <div class="btn" v-if="!global_isLogin" @click="handleLogin">登录</div>
@@ -28,7 +28,7 @@
         <div v-show="isEdit" class="btn cancel" @click="handleCancelEdit">取消</div>
       </div>
       <div class="third-login">
-        <div v-if="!global_isLogin">
+        <div v-if="(!global_isLogin && hasThirdLogin)">
           <div v-show="!isShowThirdLog">
             <Tooltip content="第三方登录不一定能获取到邮箱，如未能获取到邮箱，请尽量绑定邮箱，以便能及时接收消息" :contentStyle="toolTipStyle">
               <div class="log-text" @click="handleThirdText">第三方登录</div>
@@ -59,6 +59,7 @@ import { configStore } from '../store'
 import { useLoginInfo } from '../utils/useLoginInfo'
 import { checkStr } from '../utils'
 import rootConfig from '../utils/config'
+import { clientLogin, updateInfos  } from '../api/user'
 const toolTipStyle: CSSProperties = {
   width: '308px',
   whiteSpace: 'normal',
@@ -78,8 +79,9 @@ const { global_isLogin, global_loginInfo, setLoginInfo } = useLoginInfo()
 const formData = reactive({
   email: global_loginInfo.email,
   nickname: global_loginInfo.nickname,
-  url: global_loginInfo.url
+  weburl: global_loginInfo.weburl
 })
+const hasThirdLogin = ref<boolean>(false) // 隐藏第三方登录
 const disabled = ref<boolean>(global_isLogin.value)
 const isEdit = ref<boolean>(false)
 const isShowThirdLog = ref<boolean>(false)
@@ -96,9 +98,15 @@ const isShow = computed({
     }
   },
 });
+
 const handleClose = () => {
   isShow.value = false
   isShowThirdLog.value = false
+  formData.email = global_loginInfo.email
+  formData.nickname = global_loginInfo.nickname
+  formData.weburl = global_loginInfo.weburl
+  disabled.value = global_isLogin.value
+  isEdit.value = false
 }
 const handleThirdText = () => {
   isShowThirdLog.value = true
@@ -120,12 +128,10 @@ const check = () => {
   if (!checkStr(formData.email, 'email')) {
     msg = '请输入正确的邮箱'
   }
-  if (formData.url && !checkStr(formData.url, 'URL')) {
+  if (formData.weburl && !checkStr(formData.weburl, 'URL')) {
     msg = '请输入正确的网址'
   }
   if (msg) {
-    // notification.error(msg)
-    console.log('msg===', msg)
     notification.show({
       type: 'error',
       message: msg,
@@ -142,17 +148,32 @@ const handleUpdateInfo = () => {
     return
   }
   saveLoading.value = true
-  setTimeout(() => {
-    isEdit.value = false
-    disabled.value = true
-    const info = {
-      email: formData.email,
-      nickname: formData.nickname,
-      url: formData.url
-    }
-    setLoginInfo(info)
+  const params = {
+    email: formData.email,
+    nickname: formData.nickname,
+    weburl: formData.weburl
+  }
+  updateInfos(params).then((res: any) => {
     saveLoading.value = false
-  }, 3000)
+    if(res.code === 0) {
+      isEdit.value = false
+      disabled.value = true
+      const info = {
+        email: res.data.email,
+        nickname: res.data.nickname,
+        weburl: res.data.weburl
+      }
+      setLoginInfo(info)
+    } else {
+      notification.show({
+        type: 'error',
+        message: res.message,
+        duration: 3000
+      })
+    }
+  }).catch(() => {
+    saveLoading.value = false
+  })
 }
 const handleLogin = () => {
   if (logLoading.value) return
@@ -161,30 +182,46 @@ const handleLogin = () => {
     return
   }
   logLoading.value = true
-  setTimeout(() => {
-    const info = {
-      email: formData.email,
-      nickname: formData.nickname,
-      url: formData.url
-    }
-    setLoginInfo(info)
+  const params = {
+    email: formData.email,
+    nickname: formData.nickname,
+    weburl: formData.weburl
+  }
+  clientLogin(params).then((res: any) => {
     logLoading.value = false
-    handleClose()
-  }, 3000)
+    if(res.code === 0) {
+      const info = {
+        email: res.data.email,
+        nickname: res.data.nickname,
+        weburl: res.data.weburl
+      }
+      setLoginInfo(info)
+      handleClose()
+      disabled.value = true
+    } else {
+      notification.show({
+        type: 'error',
+        message: res.message,
+        duration: 3000
+      })
+    }
+  }).catch(() => {
+    logLoading.value = false
+    notification.show({
+      type: 'error',
+      message: '网络错误！',
+      duration: 3000
+    })
+  })
 }
 const handleLogout = () => {
   prompt('确定要登出吗？', () => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        console.log('5s后退出')
-        disabled.value = false
-        setLoginInfo(null)
-        formData.email = ''
-        formData.nickname = ''
-        formData.url = ''
-        resolve(1)
-      }, 5000)
-    })
+    disabled.value = false
+    setLoginInfo(null)
+    formData.email = ''
+    formData.nickname = ''
+    formData.weburl = ''
+    handleClose()
   })
 }
 const handleClickThirdIcon = (name: string) => {

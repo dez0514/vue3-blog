@@ -1,3 +1,16 @@
+import Cookies from 'js-cookie'
+
+export const getCookie = (keyname: string) => {
+  return Cookies.get(keyname)
+}
+
+export const setCookie = (keyname: string, value: string) => {
+  Cookies.set(keyname, value)
+}
+export const removeCookie = (keyname: string) => {
+  Cookies.remove(keyname)
+}
+
 export const getSessionStorage = (keyname: string) => {
   const value = sessionStorage.getItem(keyname)
   try {
@@ -21,6 +34,8 @@ export const setSessionStorage = (keyname: string, value: any) => {
     sessionStorage.setItem(keyname, JSON.stringify(value))
   }
 }
+
+
 
 export const checkStr = (str: string | undefined | null, type: string) => {
   if (typeof str !== 'string') {

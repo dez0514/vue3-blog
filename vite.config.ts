@@ -23,6 +23,11 @@ export default defineConfig({
         target: 'http://localhost:3002', // 所要代理的目标地址
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, '/api')
+      },
+      '/blogSystemFile': {
+        target: 'http://localhost:3002',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/blogSystemFile/, '')
       }
     },
   },
