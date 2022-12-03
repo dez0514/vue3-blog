@@ -47,6 +47,13 @@ export interface replyItem {
   to_uid?: string | number;
   comment_id?: string | number;
   create_time?: string;
+  from_avatar?: string;
+  from_nickname?: string;
+  to_avatar?: string;
+  to_nickname?: string;
+  update_time?: string;
+  from_weburl?: string;
+  to_weburl?: string;
 }
 
 export type ITopicType = '' | 'messageboard' | 'articleComment';
@@ -64,4 +71,8 @@ export interface ICommentList {
   create_time: string;
   content?: string;
   replyList?: replyItem[]
+  avatar?: string;
+  nickname?: string;
+  weburl?: string;
+  update_time?: string;
 }

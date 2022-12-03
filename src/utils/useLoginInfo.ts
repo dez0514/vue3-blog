@@ -1,8 +1,10 @@
 import { ref, reactive } from 'vue'
-import { getSessionStorage, setSessionStorage } from './index'
+import { getSessionStorage, setSessionStorage, getCookie } from './index'
 const userSession = getSessionStorage('userinfo')
+const userEmail = getCookie('email')
+// console.log('cookie email===', userEmail)
 const userinfo = {
-  email: (userSession && userSession.email) || '',
+  email: userEmail || (userSession && userSession.email) || '',
   nickname: (userSession && userSession.nickname) || '',
   weburl: (userSession && userSession.weburl) || ''
 }

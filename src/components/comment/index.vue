@@ -12,7 +12,7 @@
     <div v-if="!hideCommentEditor" class="comment-editor-wrap">
       <text-editor v-model="commentStr" :source="commentState" @submitEmit="submitCallback" />
     </div>
-    <comment-list :list="dataList"  @setCommentEditorStatus="setCommentEditor" />
+    <comment-list :list="dataList"  @setCommentEditorStatus="setCommentEditor" @getListEmit="submitCallback" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -43,11 +43,13 @@ const commentState = computed(() => {
   }
 })
 const setCommentEditor = (state: boolean) => {
-  console.log('state===', state)
+  // console.log('state===', state)
   hideCommentEditor.value = state
   commentStr.value = ''
 }
 const submitCallback = () => {
+  // console.log('=====submit callback=====')
+  // 注意：回复的 'submitCallback' 是在 commentList.vue 里
   emit('refreshList')
 }
 </script>

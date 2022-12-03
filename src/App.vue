@@ -9,7 +9,7 @@
   <div v-show="showToTop" class="to-top" @click="handleToTop">
     <svg-icon class="icon" icon-class="top"></svg-icon>
   </div>
-  <div class="login-btn" @click="handleClickLoginBtn">
+  <div v-show="showLogBtn" class="login-btn" @click="handleClickLoginBtn">
     <svg-icon class="icon" :icon-class="global_isLogin ? 'me': 'memb'"></svg-icon>
   </div>
   <login-card v-model:visiable="showLogin" />
@@ -30,11 +30,14 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { storeToRefs } from 'pinia'
 import { setScrollTop } from './utils/dom'
 import { useLoginInfo } from './utils/useLoginInfo'
-const { global_isLogin } = useLoginInfo()
+import { getInfosByEmail } from './api/user'
+import { getCookie, getSessionStorage, removeCookie } from './utils'
+const { global_isLogin, setLoginInfo } = useLoginInfo()
 const configStores = configStore()
 const { isPc, isCollapse, isShowMask } = storeToRefs(configStores)
 const showToTop = ref<boolean>(false)
 const showLogin = ref<boolean>(false)
+const showLogBtn = ref<boolean>(false)
 const handleChangeShowLogin = (flag: boolean) => {
   showLogin.value = flag
 }
@@ -66,10 +69,43 @@ const handleScrollPage = () => {
     showToTop.value = false
   }
 }
+const initUserInfo = () => {
+  // 如果cookie里有信息 session没有， 就获取信息存session
+  const email = getCookie('email')
+  if(email) {
+    showLogBtn.value = false
+    const userSession = getSessionStorage('userinfo')
+    if(!userSession || !userSession.email || !userSession.nickname) {
+      showLogBtn.value = false
+      getInfosByEmail({ email }).then((res: any) => {
+        if(res.code === 0) {
+          const info = {
+            email: res.data.email,
+            nickname: res.data.nickname,
+            weburl: res.data.weburl
+          }
+          setLoginInfo(info)
+          showLogBtn.value = true
+        } else {
+          showLogBtn.value = true
+          removeCookie('email')
+        }
+      }).catch(() => {
+        showLogBtn.value = true
+        removeCookie('email')
+      })
+    } else {
+      showLogBtn.value = true
+    }
+  } else {
+    showLogBtn.value = true
+  }
+}
 onMounted(() => {
   configStores.updateConfig({ isCollapse: false, isShowMask: false })
   window.addEventListener('resize', () => resize())
   window.addEventListener('scroll', handleScrollPage)
+  initUserInfo()
 })
 onUnmounted(() => {
   window.removeEventListener('resize', () => resize())

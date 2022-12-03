@@ -3,12 +3,14 @@
     <div v-for="(item, index) in commentsList" :key="index">
       <div class="wrapper">
         <div class="side">
-          <div class="avatar"></div>
+          <div class="avatar">
+            <div class="avatar-img" :style="{'background-image': `url(${item.avatar})`}"></div>
+          </div>
         </div>
         <div class="main">
           <div class="name-wrap">
-            <div class="nick">{{ item.from_uid }}</div>
-            <div class="time">{{ item.create_time }}</div>
+            <div :class="['nick', item.weburl ? 'has_url' : '']" @click="handleJumpWebUrl(item.weburl)">{{ item.nickname }}</div>
+            <div class="time">{{ parseTime(item.create_time) }}</div>
             <div class="reply-btn" @click="hanleReply(item, 'comment', item.id)">
               <svg-icon class="icon" icon-class="reply" />
             </div>
@@ -19,23 +21,25 @@
         </div>
       </div>
       <div class="edit-box" v-if="replyState.comment_id === item.id && replyState.to_uid === item.from_uid && replyState.reply_id === item.id">
-        <text-editor  v-model="commentStr" :source="replyState" :showCancelBtn="true"  @cancelReplyEmit="cancelReplyCallback" />
+        <text-editor  v-model="commentStr" :source="replyState" :showCancelBtn="true"  @cancelReplyEmit="cancelReplyCallback"  @submitEmit="submitCallback" />
       </div>
       <div class="children">
         <ul>
           <li v-for="(inner, idx) in item.replyList" :key="`${index}_${idx}`">
             <div class="wrapper">
               <div class="side">
-                <div class="avatar"></div>
+                <div class="avatar">
+                  <div class="avatar-img" :style="{'background-image': `url(${inner.from_avatar})`}"></div>
+                </div>
               </div>
               <div class="main">
                 <div class="name-wrap">
                   <div class="nick">
-                    <span>{{ inner.from_uid }}</span>
+                    <span :class="inner.from_weburl ? 'has_url' : ''" @click="handleJumpWebUrl(inner.from_weburl)">{{ inner.from_nickname }}</span>
                     <span class="reply-txt">回复</span>
-                    <span>{{ inner.to_uid }}</span>
+                    <span :class="inner.to_weburl ? 'has_url' : ''" @click="handleJumpWebUrl(inner.to_weburl)">{{ inner.to_nickname }}</span>
                   </div>
-                  <div class="time">{{ inner.create_time }}</div>
+                  <div class="time">{{ parseTime(inner.create_time) }}</div>
                   <div class="reply-btn" @click="hanleReply(inner, 'reply', item.id)">
                     <svg-icon class="icon" icon-class="reply" />
                   </div>
@@ -46,7 +50,7 @@
               </div>
             </div>
             <div class="edit-box" v-if="replyState.comment_id === item.id && replyState.to_uid === inner.from_uid && replyState.reply_id === inner.id">
-              <text-editor  v-model="commentStr" :source="replyState" :showCancelBtn="true" @cancelReplyEmit="cancelReplyCallback" />
+              <text-editor  v-model="commentStr" :source="replyState" :showCancelBtn="true" @cancelReplyEmit="cancelReplyCallback"  @submitEmit="submitCallback" />
             </div>
           </li>
         </ul>
@@ -58,6 +62,8 @@
 import TextEditor from './textEditor.vue'
 import { reactive, toRefs, ref } from 'vue'
 import { replyItem, IreplyType, ICommentList } from '../../types'
+import dayjs from 'dayjs';
+
 interface Props {
   list?: ICommentList[];
 }
@@ -67,6 +73,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const emit = defineEmits<{
   (e: 'setCommentEditorStatus', status: boolean): void,
+  (e: 'getListEmit'): void,
 }>()
 const commentStr = ref<string>('')
 const commentsList = toRefs(props).list
@@ -76,6 +83,13 @@ const replyState = reactive<replyItem>({
   to_uid: '', // 点这条的回复按钮，这条数据的from_uid就变成了要提交的to_uid
   comment_id: '' // 在那条评论下回复的
 })
+const parseTime = (timeStr: string | null | undefined) => {
+  if(timeStr) {
+    return dayjs(timeStr).format('MM月DD日 · YYYY年')
+  } else {
+    return ''
+  }
+}
 const hanleReply = (clickItem: any, replyType: IreplyType, commentId : string | number) => {
   commentStr.value = '' // 清空框的内容
   // 回复事件：回复评论、回复回复
@@ -97,6 +111,15 @@ const cancelReplyCallback = () => {
   // 通知显示评论框
   emit('setCommentEditorStatus', false)
 }
+const handleJumpWebUrl = (url: string | undefined) => {
+  if(url) {
+    window.open(url, '_blank')
+  }
+}
+const submitCallback = () => {
+  // console.log('=====reply submit callback======')
+  emit('getListEmit')
+}
 </script>
 <style lang="scss" scoped>
 .comments-list-wrap {
@@ -108,11 +131,21 @@ const cancelReplyCallback = () => {
   display: flex;
 
   .side .avatar {
+    overflow: hidden;
     width: 42px;
     height: 42px;
     border: 1px solid #e6eaf0;
     border-radius: 6px;
     background-color: pink;
+    .avatar-img {
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      border: 2px solid #e6eaf0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: 50%;
+    }
   }
 
   .main {
@@ -132,6 +165,10 @@ const cancelReplyCallback = () => {
         font-weight: 600;
         font-size: 14px;
         color: #738192;
+      }
+      .has_url:hover {
+        color: var(--primary);
+        cursor: pointer;
       }
       .reply-txt {
         margin: 0 6px;

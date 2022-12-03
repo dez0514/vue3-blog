@@ -57,7 +57,7 @@ import notification from './notification/index'
 import { toRefs, computed, ref, reactive, CSSProperties } from 'vue'
 import { configStore } from '../store'
 import { useLoginInfo } from '../utils/useLoginInfo'
-import { checkStr } from '../utils'
+import { checkStr, removeCookie } from '../utils'
 import rootConfig from '../utils/config'
 import { clientLogin, updateInfos  } from '../api/user'
 const toolTipStyle: CSSProperties = {
@@ -89,6 +89,9 @@ const saveLoading = ref<boolean>(false)
 const logLoading = ref<boolean>(false)
 const isShow = computed({
   get() {
+    if(visiable.value) {
+      initData() // 显示的时候也要填一下信息
+    }
     return visiable.value;
   },
   set(val: boolean) {
@@ -98,15 +101,17 @@ const isShow = computed({
     }
   },
 });
-
-const handleClose = () => {
-  isShow.value = false
+const initData = () => {
   isShowThirdLog.value = false
   formData.email = global_loginInfo.email
   formData.nickname = global_loginInfo.nickname
   formData.weburl = global_loginInfo.weburl
   disabled.value = global_isLogin.value
   isEdit.value = false
+}
+const handleClose = () => {
+  isShow.value = false
+  initData()
 }
 const handleThirdText = () => {
   isShowThirdLog.value = true
@@ -221,6 +226,7 @@ const handleLogout = () => {
     formData.email = ''
     formData.nickname = ''
     formData.weburl = ''
+    removeCookie('email')
     handleClose()
   })
 }

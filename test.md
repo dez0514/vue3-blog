@@ -119,3 +119,8 @@ const { appContext } = getCurrentInstance();
 console.log(appContext)
 // appContext.config.globalProperties
 ```
+
+#### 前台页面简单登录逻辑(登录是为了评论功能)
+1. 如果 cookie， session 都没有信息就显示未登录
+2. cookie 如果cookie里有登录信息就 利用此信息 调接口获取完整信息 存session， 显示已登录
+3. 如果 cookie 没有信息，session 有完整信息 显示为已登录， 没有完整信息那就清除信息，显示为未登录

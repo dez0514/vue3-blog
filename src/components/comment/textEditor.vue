@@ -34,9 +34,13 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, toRefs, computed } from 'vue'
+import { ref, toRefs, computed, nextTick } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { ITopicType, IreplyType } from '../../types'
+import { addComment, addReply } from '../../api/comments'
+import { useLoginInfo } from '../../utils/useLoginInfo'
+import notification from '../notification/index'
+const { global_loginInfo } = useLoginInfo()
 const emit = defineEmits<{
   (e: 'submitEmit'): void,
   (e: 'cancelReplyEmit'): void,
@@ -71,7 +75,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const { source, showCancelBtn, modelValue } = toRefs(props)
 const { topic_type, topic_id, reply_type, reply_id, to_uid, comment_id } = source.value
-const from_uid = ref<string>('zwd') // 获取登录用户
+const from_uid = ref<string>('') // 获取登录用户
 // 偷懒写法 content 在组件内控制的，多个text-editor切换显示用v-if, 否则各自的值不会清空，始终只有一个text-editor
 // const content = ref<string>('')
 const contentHtml = computed({
@@ -183,23 +187,59 @@ const handleCancelReply = () => {
   // 通知清空点击回复按钮时的赋值情况
   emit('cancelReplyEmit')
 }
-const handleSubmit = () => {
-  if (!contentHtml.value) {
-    // notification
-    return
+const handleSubmit = async () => {
+  try {
+    from_uid.value = global_loginInfo.email
+    if (!from_uid.value) {
+      notification.show({
+        type: 'error',
+        message: '请先登录'
+      })
+      return
+    }
+    if (!contentHtml.value) {
+      notification.show({
+        type: 'error',
+        message: '随便写写'
+      })
+      return
+    }
+    // 提交接口 addComment, addReply
+    if(!comment_id) { // 评论
+      const cParams = {
+        topicId: topic_id,
+        topicType: topic_type,
+        content: contentHtml.value,
+        fromUid: from_uid.value
+      }
+      console.log('cParams==', cParams)
+      const res: any = await addComment(cParams)
+      if(res.code === 0) {
+        emit('submitEmit')
+      }
+    } else { // 回复
+      const rParams = {
+        commentId: comment_id,
+        replyId: reply_id,
+        replyType: reply_type,
+        fromUid: from_uid.value,
+        toUid: to_uid,
+        content: contentHtml.value
+      }
+      console.log('rParams==', rParams)
+      const res: any = await addReply(rParams)
+      console.log('res reply==', res)
+      if(res.code === 0) {
+        emit('cancelReplyEmit')
+        emit('submitEmit')
+      }
+    }
+  } catch {
+    notification.show({
+      type: 'error',
+      message: '网络错误！'
+    })
   }
-  const params = {
-    topic_type: topic_type,
-    topic_id: topic_id,
-    reply_type: reply_type,
-    reply_id: reply_id,
-    to_uid: to_uid,
-    comment_id: comment_id,
-    content: contentHtml.value,
-    from_uid: from_uid.value
-  }
-  console.log('params==', params)
-  emit('submitEmit')
 }
 </script>
 <style lang="scss" scoped>

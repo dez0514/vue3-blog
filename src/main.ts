@@ -23,8 +23,8 @@ const copyCode = () => {
     }
   })
 }
-const _window = window as any
-_window.copyCode = copyCode
+// const _window = window as any
+window.copyCode = copyCode
 
 const app: App<Element> = createApp(AppVue)
 app.component('svg-icon', SvgIcon)
