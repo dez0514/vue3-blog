@@ -40,6 +40,7 @@ import { ITopicType, IreplyType } from '../../types'
 import { addComment, addReply } from '../../api/comments'
 import { useLoginInfo } from '../../utils/useLoginInfo'
 import notification from '../notification/index'
+import { checkMint } from '../../utils'
 const { global_loginInfo } = useLoginInfo()
 const emit = defineEmits<{
   (e: 'submitEmit'): void,
@@ -203,6 +204,11 @@ const handleSubmit = async () => {
         message: '随便写写'
       })
       return
+    }
+    const obj = checkMint(contentHtml.value)
+    if(!obj.pass) {
+      notification.error(`您的留言包含以下敏感词汇：${obj.words.join('、')}`)
+      throw '包含敏感词汇'
     }
     // 提交接口 addComment, addReply
     if(!comment_id) { // 评论

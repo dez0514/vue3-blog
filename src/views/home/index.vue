@@ -13,6 +13,7 @@
         <div class="list-wrap">
           <card v-for="(item, index) in articleList" :key="index" :info="item"></card>
         </div>
+        <loading :is-show="isShowLoad" :status="loadState" :height="300" :isfixed="isLoadFixed" @refresh="getArtList" />
       </div>
     </div>
     <pagination :total="total" :page-size="pageSize" v-model:current-page="pageNumber"></pagination>
@@ -28,6 +29,15 @@ import pagination from '../../components/pagination.vue'
 import { getArticlesPage } from '../../api/articles'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
+import loading from '../../components/loading/loading.vue'
+const isShowLoad = ref<boolean>(false)
+const loadState = ref<0 | 1 | 2>(0)
+const isLoadFixed = ref<boolean>(false)
+const setLoadState = (showType: boolean, status: 0 | 1 | 2, isFixed: boolean) => {
+  isShowLoad.value = showType
+  loadState.value = status
+  isLoadFixed.value = isFixed // 加载时用fix， 失败,无数据时用 false
+}
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const pageNumber = ref<number>(1)
@@ -54,6 +64,7 @@ const getCurTag = (obj: { tag: string, ishot: boolean }) => {
   getArtList()
 }
 const getArtList = (init: boolean = false) => {
+  setLoadState(true, 0, true)
   const params = {
     pageSize: pageSize.value,
     pageNum: pageNumber.value,
@@ -76,9 +87,22 @@ const getArtList = (init: boolean = false) => {
           }
         })
       }
+      if(articleList.value.length > 0) {
+        setLoadState(false, 0, false)
+      } else {
+        setLoadState(true, 1, false)
+      }
     } else {
-
+      articleList.value = []
+      bannerList.value = []
+      total.value = 0
+      setLoadState(true, 2, false)
     }
+  }).catch(() => {
+    articleList.value = []
+    bannerList.value = []
+    total.value = 0
+    setLoadState(true, 2, false)
   })
 }
 onMounted(() => {
@@ -101,7 +125,7 @@ onMounted(() => {
   .list-box {
     flex: 1;
     box-sizing:border-box;
-    min-height: 606px;
+    min-height: 400px; /* 计算一下min-height比较好 */
     padding: 30px 0 0;
     &.app {
       padding: 15px 15px 0;

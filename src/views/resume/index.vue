@@ -107,7 +107,7 @@ const reviewSrc = ref<string>('')
 const info = ref<any>(null)
 const companyList = ref<any>([])
 const getResumeData = () => {
-  getResume().then((res: any) => {
+  getResume({}, { loading: true }).then((res: any) => {
     if(res.code === 0) {
       info.value = res.data
       let obj: any = {}
@@ -128,7 +128,6 @@ const getResumeData = () => {
         }
       })
       companyList.value = Object.values(obj).sort((a: any, b: any) => a.sort - b.sort)
-    } else {
     }
   })
 }

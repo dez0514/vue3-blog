@@ -1,6 +1,7 @@
 import axios from 'axios'
-import { AxiosRequestConfig } from 'axios'
+// import { AxiosRequestConfig } from 'axios'
 // import { baseURL } from '../api/urls'
+import loading from '../components/loading'
 
 const CONTENT_TYPE = {
   json: 'application/json;charset=utf-8',
@@ -13,11 +14,10 @@ const service = axios.create({
   headers: {
     'Content-Type': CONTENT_TYPE.json,
     projectid: 'client' // 前端页面
-  },
+  }
 })
-
 service.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: any) => {
     // 在所有请求头部添加token值
     // const token = localStorage.getItem('token') // store.state.token;
     // if (token) {
@@ -26,6 +26,10 @@ service.interceptors.request.use(
     // if (config.headers && config.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
     //   config.data = JSON.stringify(config.data)
     // }
+    // console.log('config===', config)
+    if(config.loading) {
+      loading.show()
+    }
     return config
   },
   error => {
@@ -34,13 +38,20 @@ service.interceptors.request.use(
 )
 
 service.interceptors.response.use(
-  (response) => {
+  (response: any) => {
     // 成功请求到数据
     // console.log('response==', response)
+    if(response.config.loading) {
+      loading.hide()
+    }
     return Promise.resolve(response.data)
   },
   (error) => {
     // 响应错误处理
+    // console.log('error==', error)
+    if(error.config.loading) {
+      loading.hide()
+    }
     if (axios.isCancel(error)) {
       // 取消请求的情况下，终端Promise调用链
       return { code: '-1', message: '请求取消' }
@@ -51,4 +62,5 @@ service.interceptors.response.use(
 )
 
 const CancelToken = axios.CancelToken
+
 export { service, CancelToken }

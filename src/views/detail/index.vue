@@ -47,6 +47,7 @@
             <div ref="detailbox" v-html="detailInfo && detailInfo.content"></div>
           </div>
         </div>
+        <loading :is-show="isShowLoad" :status="loadState" :height="300" :isfixed="isLoadFixed" @refresh="refreshDetail" />
         <div class="article-comment-wrap">
           <comment topic-type="articleComment" :topic-id="articleId" :data-list="[]" />
         </div>
@@ -70,6 +71,15 @@ import { useRoute } from 'vue-router'
 import { formartMd, getMdTitleList, MdTitle } from '../../utils/marked'
 import { setScrollTop, getOffsetTop } from '../../utils/dom'
 import debounce from 'lodash/debounce'
+import loading from '../../components/loading/loading.vue'
+const isShowLoad = ref<boolean>(false)
+const loadState = ref<0 | 1 | 2>(0)
+const isLoadFixed = ref<boolean>(false)
+const setLoadState = (showType: boolean, status: 0 | 1 | 2, isFixed: boolean) => {
+  isShowLoad.value = showType
+  loadState.value = status
+  isLoadFixed.value = isFixed // 加载时用fix， 失败,无数据时用 false
+}
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const isShowMenu = ref<boolean>(true)
@@ -103,9 +113,11 @@ const handleClickMenu = (index: number, item: MdTitle) => {
   console.log(`heading${item.hrefIndex}`)
 }
 const getArticleById = (id: string | number) => {
+  setLoadState(true, 0, true)
   getArticleDetail({ id }, { isLoading: false }).then((res: any) => {
     console.log('detail===', res)
     if (res.code === 0) {
+      setLoadState(false, 0, false)
       if(Object.keys(res.data).length === 0) {
         return
       }
@@ -130,8 +142,10 @@ const getArticleById = (id: string | number) => {
         }
       })
     } else {
+      setLoadState(true, 2, false)
     }
   }).catch(() => {
+    setLoadState(true, 2, false)
   })
 }
 const handleScrollPage = () => {
@@ -150,6 +164,13 @@ const handleScrollPage = () => {
   activeMenuIndex.value = index
 }
 const debounceScroll = debounce(handleScrollPage, 100)
+const refreshDetail = () => {
+  if (route.params.id) {
+    if(typeof route.params.id === 'string' || typeof route.params.id === 'number') {
+      getArticleById(route.params.id)
+    }
+  }
+}
 onMounted(() => {
   if (route.params.id) {
     if(typeof route.params.id === 'string' || typeof route.params.id === 'number') {

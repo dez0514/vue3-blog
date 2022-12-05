@@ -5,8 +5,8 @@
       <div class="list-box">
         <div class="list-wrap">
           <card v-for="(item, index) in resultList" :key="index" :info="item"></card>
-          <!-- <loading /> -->
         </div>
+        <loading :is-show="isShowLoad" :status="loadState" :height="300" :isfixed="isLoadFixed" @refresh="getArtList" />
       </div>
     </div>
     <pagination :total="total" :page-size="pageSize" v-model:current-page="pageNumber"></pagination>
@@ -18,9 +18,17 @@ import bannerBg from '../../assets/search-bg.jpg'
 import banner from '../../components/banner/banner.vue'
 import card from '../../components/card.vue'
 import pagination from '../../components/pagination.vue'
-// import loading from '../../components/loading.vue'
+import loading from '../../components/loading/loading.vue'
 import { useRoute } from 'vue-router'
 import { getArticlesPage } from '../../api/articles'
+const isShowLoad = ref<boolean>(false)
+const loadState = ref<0 | 1 | 2>(0)
+const isLoadFixed = ref<boolean>(false)
+const setLoadState = (showType: boolean, status: 0 | 1 | 2, isFixed: boolean) => {
+  isShowLoad.value = showType
+  loadState.value = status
+  isLoadFixed.value = isFixed // 加载时用fix， 失败,无数据时用 false
+}
 const route = useRoute()
 const pageNumber = ref<number>(1)
 const pageSize = ref<number>(10)
@@ -30,6 +38,7 @@ const keyword = computed(() => {
 })
 const resultList = ref<any[]>([])
 const getArtList = () => {
+  setLoadState(true, 0, true)
   const params = {
     pageSize: pageSize.value,
     pageNum: pageNumber.value,
@@ -40,9 +49,20 @@ const getArtList = () => {
     if(res.code === 0) {
       resultList.value = res.data
       total.value = Number(res.total)
+      if(resultList.value.length > 0) {
+        setLoadState(false, 0, false)
+      } else {
+        setLoadState(true, 1, false)
+      }
     } else {
-
+      resultList.value = []
+      total.value = 0
+      setLoadState(true, 2, false)
     }
+  }).catch(() => {
+    resultList.value = []
+    total.value = 0
+    setLoadState(true, 2, false)
   })
 }
 onMounted(() => {

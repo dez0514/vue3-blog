@@ -32,28 +32,31 @@
             </div>
           </div>
         </div>
-        <div class="meta margin-top">
+        <div class="meta margin-top" v-show="repoList.length > 0">
           <div class="title">瞎搞</div>
         </div>
-        <div class="about-content repo-list">
-          <div class="repo" v-for="(item, index) in repoList" :key="index" @click="handleClickRepo(item.html_url)">
-            <div class="name">{{ item.name }}</div>
-            <div class="time">{{ item.created_at }}</div>
-            <div class="repo-icon-wrap">
-              <div class="repo-icon-item">
-                <svg-icon class="icon" icon-class="star"></svg-icon>
-                {{ item.stargazers_count || 0 }}
-              </div>
-              <div class="repo-icon-item">
-                <svg-icon class="icon" icon-class="branch"></svg-icon>
-                {{ item.forks_count || 0 }}
-              </div>
-              <div class="repo-icon-item">
-                <svg-icon class="icon" icon-class="eyes"></svg-icon>
-                {{ item.subscribers_count || 0 }}
+        <div class="about-content">
+          <div class="repo-list">
+            <div class="repo" v-for="(item, index) in repoList" :key="index" @click="handleClickRepo(item.html_url)">
+              <div class="name">{{ item.name }}</div>
+              <div class="time">{{ item.created_at }}</div>
+              <div class="repo-icon-wrap">
+                <div class="repo-icon-item">
+                  <svg-icon class="icon" icon-class="star"></svg-icon>
+                  {{ item.stargazers_count || 0 }}
+                </div>
+                <div class="repo-icon-item">
+                  <svg-icon class="icon" icon-class="branch"></svg-icon>
+                  {{ item.forks_count || 0 }}
+                </div>
+                <div class="repo-icon-item">
+                  <svg-icon class="icon" icon-class="eyes"></svg-icon>
+                  {{ item.subscribers_count || 0 }}
+                </div>
               </div>
             </div>
           </div>
+          <loading :is-show="isShowLoad" :status="loadState" />
         </div>
         <div class="meta margin-top">
           <div class="title">博客说明</div>
@@ -71,12 +74,21 @@ import bannerBg from '../../assets/me.jpg'
 import { getRepos } from '../../api/user'
 import { onMounted, ref } from 'vue';
 import dayjs from 'dayjs';
+import loading from '../../components/loading/loading.vue'
+const isShowLoad = ref<boolean>(false)
+const loadState = ref<0 | 1 | 2>(0)
+const setLoadState = (showType: boolean, status: 0 | 1 | 2) => {
+  isShowLoad.value = showType
+  loadState.value = status
+}
 const repoList = ref<any[]>([])
 const handleClickRepo = (url: string) => {
   window.open(url, '_github')
 }
 const getRepoList = () => {
+  setLoadState(true, 0)
   getRepos().then((res: any) => {
+    setLoadState(false, 0)
     if(res.code === 0) {
       repoList.value = res.data.map((item: any) => {
         return {
@@ -86,8 +98,10 @@ const getRepoList = () => {
         }
       })
     } else {
-
+      setLoadState(true, 2)
     }
+  }).catch(() => {
+    setLoadState(true, 2)
   })
 }
 onMounted(() => {

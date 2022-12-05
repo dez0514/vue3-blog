@@ -45,7 +45,7 @@ const handleCheckMonth = (yearindex: number, monthindex:number, year: number, mo
   emit('change', { year, month })
 }
 const getTimeList = () => {
-  getArchiveTime().then((res: any) => {
+  getArchiveTime({}, { loading: true }).then((res: any) => {
     console.log(res)
     if(res.code === 0) {
       res.data.forEach((item: any) => {

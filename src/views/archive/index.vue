@@ -5,7 +5,7 @@
       <div style="width: 150px;flex-shrink: 0;padding-top: 20px;" v-if="isPc">
         <left-menu-wrap>
           <template #default>
-            <nav-times @change="getNavTime" />
+            <nav-times ref="navtimes" @change="getNavTime" />
           </template>
         </left-menu-wrap>
       </div>
@@ -15,6 +15,7 @@
             <card-line :info="item"></card-line>
           </div>
         </div>
+        <loading :is-show="isShowLoad" :status="loadState" :height="300" :isfixed="isLoadFixed" @refresh="getArchiveList" />
       </div>
     </div>
     <pagination :total="total" :page-size="pageSize" v-model:currentPage="pageNumber"></pagination>
@@ -31,8 +32,18 @@ import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 import { getArchivePage } from '../../api/articles'
 import bannerBg from '../../assets/write.jpg'
+import loading from '../../components/loading/loading.vue'
+const isShowLoad = ref<boolean>(false)
+const loadState = ref<0 | 1 | 2>(0)
+const isLoadFixed = ref<boolean>(false)
+const setLoadState = (showType: boolean, status: 0 | 1 | 2, isFixed: boolean) => {
+  isShowLoad.value = showType
+  loadState.value = status
+  isLoadFixed.value = isFixed // 加载时用fix， 失败,无数据时用 false
+}
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
+const navtimes = ref<InstanceType<typeof NavTimes> | null>(null)
 const pageNumber = ref<number>(1)
 const pageSize = ref<number>(10)
 const total = ref<number>(0)
@@ -47,17 +58,31 @@ const getNavTime = ({ year, month } : { year: number, month: number }) => {
   getArchiveList()
 }
 const getArchiveList = () => {
+  setLoadState(true, 0, true)
   const params = {
     year: curyear.value,
     month: curmonth.value,
     pageSize: pageSize.value,
     pageNum: pageNumber.value
   }
-  getArchivePage(params).then((res: any) => {
+  getArchivePage(params, { loading: true }).then((res: any) => {
     if(res.code === 0) {
       articleList.value = res.data
-      total.value = res.total
+      total.value = Number(res.total)
+      if(articleList.value.length > 0) {
+        setLoadState(false, 0, false)
+      } else {
+        setLoadState(true, 1, false)
+      }
+    } else {
+      articleList.value = [] // 清空
+      total.value = 0
+      setLoadState(true, 2, false)
     }
+  }).catch(() => {
+    articleList.value = []
+    total.value = 0
+    setLoadState(true, 2, false)
   })
 }
 onMounted(() => {

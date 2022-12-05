@@ -1,4 +1,6 @@
 import Cookies from 'js-cookie'
+import Mint from 'mint-filter'
+import mintWords from '../assets/mintWords'
 
 export const getCookie = (keyname: string) => {
   return Cookies.get(keyname)
@@ -34,8 +36,6 @@ export const setSessionStorage = (keyname: string, value: any) => {
     sessionStorage.setItem(keyname, JSON.stringify(value))
   }
 }
-
-
 
 export const checkStr = (str: string | undefined | null, type: string) => {
   if (typeof str !== 'string') {
@@ -79,4 +79,28 @@ export const checkStr = (str: string | undefined | null, type: string) => {
     default:
       return false
   }
+}
+
+// export const formatEmoji = (value: string) => {
+//   return value.replace(/\[(.+?)\]/g, (val, content) => {
+//     const arr = content.split('emoji=')
+//     const name = arr[1] ? arr[1].trim() : ''
+//     const current = emojiList.find((item) => item.name === name)
+//     const text = `<img src="${current?.url}" class="comment-emoji"/>`
+//     return name ? text : val
+//   })
+// }
+
+// 检查敏感词
+const mint = new Mint(mintWords)
+const emojiRe = /\[(.+?)\]/g
+export const checkMint = (text: string) => {
+  // 过滤表情导致的敏感词
+  return mint.filterSync(text.replace(emojiRe, ''))
+}
+
+// 敏感词过滤
+export const filterMint = (text: string) => {
+  return text
+  // return mint.filterSync(text).text as string
 }

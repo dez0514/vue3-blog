@@ -13,10 +13,10 @@
             <div class="side-txt">标签</div>
           </div>
           <div class="side-tag-list">
-            <div class="side-tag-item" v-for="(item, index) in tagsList" :key="index">{{ item }}</div>
+            <div class="side-tag-item" v-for="(item, index) in tagsList" :key="index" @click="handJumpTag(item)">{{ item }}</div>
           </div>
         </div>
-        <div class="side-artlist">
+        <div class="side-artlist" v-if="router.currentRoute.value.name === 'archive'">
           <div class="side-title">
             <div class="side-txt">时间轴</div>
           </div>
@@ -84,6 +84,7 @@ import png1 from '../assets/pg1.png'
 const configStores = configStore()
 const { isCollapse, isPc } = storeToRefs(configStores)
 const router = useRouter();
+console.log('router=====', router)
 interface tabItem {
   title: string;
   name: string;
@@ -162,6 +163,10 @@ const hotList = [
     reads: 0
   }
 ]
+const handJumpTag = (item: string) => {
+  router.push({ name: 'blog', params: { tag: item }})
+  configStores.updateConfig({ isCollapse: false, isShowMask: false })
+}
 const handleChangeRouter = (index: number, item: tabItem) => {
   tabIndex.value = index
   router.push({ name: item.name })

@@ -54,6 +54,14 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     component: () => import('@/views/search/index.vue')
   },
   {
+    path: '/blog/:tag',
+    name: 'blog',
+    meta: {
+      title: ':tag'
+    },
+    component: () => import('@/views/search/blog.vue')
+  },
+  {
     path: '/resume',
     name: 'resume',
     meta: {
@@ -97,6 +105,9 @@ router.beforeEach((
 ) => {
   if (typeof (to.meta.title) === 'string') {
     document.title = to.meta.title
+    if(to.name === 'blog' && to.params.tag) {
+      document.title = to.params.tag as string
+    }
   }
   NProgress.start()
   next()
