@@ -2,8 +2,9 @@
   <div class="massageboard">
     <banner :banner="bannerBg" title="留言板" extraTitle="同道中人，理性留言"></banner>
     <div class="message-content">
-      <comment topic-type="messageboard" :data-list="commentsArr" @refreshList="searchList" />
-      <loading :is-show="isShowLoad" :status="loadState" :height="300" :isfixed="isLoadFixed" @refresh="searchList" />
+      <comment topic-type="messageboard" :data-list="commentsArr" @refreshList="searchList">
+        <loading :is-show="isShowLoad" :status="loadState" :height="300" :isfixed="isLoadFixed" @refresh="searchList" />
+      </comment>
     </div>
     <pagination :total="total" :page-size="pageSize" v-model:current-page="pageNumber" @change="searchList" />
   </div>
@@ -43,12 +44,12 @@ const getCommentData = () => {
     } else {
       commentsArr.value = []
       total.value = 0
-      setLoadState(true, 2, true)
+      setLoadState(true, 2, false)
     }
   }).catch(() => {
     commentsArr.value = []
     total.value = 0
-    setLoadState(true, 2, true)
+    setLoadState(true, 2, false)
   })
 }
 const searchList = () => {

@@ -43,7 +43,7 @@ const { isPc } = storeToRefs(configStores);
 const pageNumber = ref<number>(1)
 const total = ref<number>(0)
 const pageSize = ref<number>(10) 
-const articleList = ref([])
+const articleList = ref<any>([])
 interface tagItem {
   name?: string;
 }

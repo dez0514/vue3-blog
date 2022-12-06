@@ -136,7 +136,7 @@ const submitCallback = () => {
     height: 42px;
     border: 1px solid #e6eaf0;
     border-radius: 6px;
-    background-color: pink;
+    background-color: #fff;
     .avatar-img {
       box-sizing: border-box;
       width: 100%;

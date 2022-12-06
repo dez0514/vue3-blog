@@ -19,41 +19,50 @@
       </div>
       <div id="art_wrap" :class="['art-wrap', (isPc && isShowMenu && detailMenuList.length > 0) ? '':'hideside']">
         <div :class="['article-content', isPc ? '_pc' : '']">
-          <github-corner position="left" fill="#20a0ff" color="#fff" :blank="true" repo="https://github.com/dez0514" />
-          <div class="meta">
-            <div>6月30日.2022年</div>
+          <github-corner v-show="!isShowLoadErr" position="left" fill="#20a0ff" color="#fff" :blank="true" repo="https://github.com/dez0514" />
+          <div class="meta" v-show="!isShowLoadErr">
+            <div>{{ (detailInfo && detailInfo.update_time) ? parseTime(detailInfo.update_time) : parseTime(detailInfo?.create_time)}}</div>
             <div class="meta-icon"><svg-icon icon-class="time" /></div>
-            <div class="meta-txt">JavaScript·vue</div>
+            <div class="meta-txt">{{ tagStr }}</div>
             <div class="meta-icon"><svg-icon icon-class="tag" /></div>
-            <div class="meta-txt">100</div>
+            <div class="meta-txt">{{ detailInfo?.views }}</div>
             <div class="meta-icon"><svg-icon icon-class="blog" /></div>
           </div>
-          <div :class="['control-wrap', isPc ? 'show_after' : '']">
+          <div v-show="!isShowLoadErr" :class="['control-wrap', isPc ? 'show_after' : '']">
             <div class="control-content">
-              <div class="control-btn">
-                <div class="control-icon"><svg-icon icon-class="like" /></div>
-                <div class="control-txt">6</div>
-              </div>
-              <div class="control-btn">
-                <div class="control-icon"><svg-icon icon-class="message" /></div>
-                <div class="control-txt">2</div>
-              </div>
-              <div class="control-btn" v-if="isPc && detailMenuList.length > 0">
-                <div class="control-icon" @click="handleChangeShowMenu"><svg-icon :icon-class="isShowMenu ? 'full_screen':'full_screen_cancel'" /></div>
-              </div>
+              <Tooltip content="点赞" color="#ff7849">
+                <div class="control-btn" :class="hasLiked ? 'liked' : ''" @click="handleSetLike">
+                  <div class="control-icon"><svg-icon icon-class="like" /></div>
+                  <div class="control-txt">{{ detailInfo?.likes }}</div>
+                </div>
+              </Tooltip>
+              <Tooltip content="留言" color="#ff7849">
+                <div class="control-btn" @click="handleToComment">
+                  <div class="control-icon"><svg-icon icon-class="message" /></div>
+                  <div class="control-txt">{{ commentsArr.length }}</div>
+                </div>
+              </Tooltip>
+              <Tooltip :content="isShowMenu ? '隐藏侧边栏' : '显示侧边栏'" color="#ff7849">
+                <div class="control-btn" v-if="isPc && detailMenuList.length > 0">
+                  <div class="control-icon" @click="handleChangeShowMenu"><svg-icon :icon-class="isShowMenu ? 'full_screen':'full_screen_cancel'" /></div>
+                </div>
+              </Tooltip>
             </div>
           </div>
-          <div class="article-content-wrap md-container">
+          <div v-show="!isShowLoadErr" class="article-content-wrap md-container">
             <div ref="detailbox" v-html="detailInfo && detailInfo.content"></div>
           </div>
+          <!-- 异常 -->
+          <loading-err :is-show="isShowLoadErr" :status="2" :height="300" :isfixed="false" @refresh="refreshDetail" />
         </div>
-        <loading :is-show="isShowLoad" :status="loadState" :height="300" :isfixed="isLoadFixed" @refresh="refreshDetail" />
-        <div class="article-comment-wrap">
-          <comment topic-type="articleComment" :topic-id="articleId" :data-list="[]" />
+        <div id="article-comment-wrap" class="article-comment-wrap">
+          <comment topic-type="articleComment" :topic-id="articleId" :data-list="commentsArr" @refreshList="searchList(articleId)">
+            <loading-err :is-show="isShowCommentErr" :status="2" :height="300" :isfixed="false" @refresh="searchList(articleId)" />
+          </comment>
         </div>
       </div>
     </div>
-    <pagination :total="total" :page-size="pageSize" v-model:current-page="pageNumber"></pagination>
+    <pagination :total="total" :page-size="pageSize" v-model:current-page="pageNumber" @change="searchList(articleId)" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -62,6 +71,7 @@ import LeftMenuWrap from '../../components/leftMenuWrap.vue'
 import banner from '../../components/banner/banner.vue'
 import comment from '../../components/comment/index.vue'
 import pagination from '../../components/pagination.vue';
+import Tooltip from '../../components/tooltip.vue'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 import { GithubCorner } from '@vfup/github-corner'
@@ -71,15 +81,13 @@ import { useRoute } from 'vue-router'
 import { formartMd, getMdTitleList, MdTitle } from '../../utils/marked'
 import { setScrollTop, getOffsetTop } from '../../utils/dom'
 import debounce from 'lodash/debounce'
-import loading from '../../components/loading/loading.vue'
-const isShowLoad = ref<boolean>(false)
-const loadState = ref<0 | 1 | 2>(0)
-const isLoadFixed = ref<boolean>(false)
-const setLoadState = (showType: boolean, status: 0 | 1 | 2, isFixed: boolean) => {
-  isShowLoad.value = showType
-  loadState.value = status
-  isLoadFixed.value = isFixed // 加载时用fix， 失败,无数据时用 false
-}
+import LoadingErr from '../../components/loading/loading.vue'
+import { ICommentList, tagItem } from '../../types'
+import { getCommentList } from '../../api/comments'
+import notification from '../../components/notification';
+import dayjs from 'dayjs'
+const isShowLoadErr = ref<boolean>(false)
+const isShowCommentErr = ref<boolean>(false)
 const configStores = configStore()
 const { isPc } = storeToRefs(configStores);
 const isShowMenu = ref<boolean>(true)
@@ -92,12 +100,45 @@ const articleId = computed(() => {
 })
 // console.log('articleId===', articleId.value)
 const detailInfo = ref<any>(null)
+const tagStr = computed(() => {
+  if(detailInfo.value && detailInfo.value.tagList) {
+    return detailInfo.value.tagList.map((item: tagItem) => item.name).join('·')
+  } else {
+    return ''
+  }
+})
 const detailMenuList = ref<MdTitle[]>([])
 const activeMenuIndex = ref<number>(0)
 const detailbox = ref(null as HTMLDivElement | null)
-// const curScrollTop = ref<number>(0)
+const commentsArr = ref<ICommentList[]>([])
+const hasLiked = ref<boolean>(false)
+const handleSetLike = () => {
+  if(hasLiked.value) {
+    notification.info('您已点过赞了。')
+    return
+  }
+  hasLiked.value = true
+  // console.log(detailInfo.value)
+  if(detailInfo.value) {
+    detailInfo.value.likes = detailInfo.value?.likes + 1
+  }
+}
+const setLoadErrShowState = (showType: boolean, errtype: 'isShowLoadErr' | 'isShowCommentErr' = 'isShowLoadErr') => {
+  if(errtype === 'isShowCommentErr') {
+    isShowCommentErr.value = showType
+  } else {
+    isShowLoadErr.value = showType
+  }
+}
 const handleChangeShowMenu = () => {
   isShowMenu.value = !isShowMenu.value
+}
+const parseTime = (timeStr: string | null | undefined) => {
+  if(timeStr) {
+    return dayjs(timeStr).format('MM月DD日 · YYYY年')
+  } else {
+    return ''
+  }
 }
 const handleClickMenu = (index: number, item: MdTitle) => {
   if (activeMenuIndex.value === index) return
@@ -109,15 +150,14 @@ const handleClickMenu = (index: number, item: MdTitle) => {
   const parentOffset = getOffsetTop(document.getElementById('art_wrap'))
   const top = item.scrollTop + parentOffset - pageOffset
   setScrollTop(top, { animate: true, duration: 1000 })
-  console.log(item)
-  console.log(`heading${item.hrefIndex}`)
+  // console.log(item)
+  // console.log(`heading${item.hrefIndex}`)
 }
 const getArticleById = (id: string | number) => {
-  setLoadState(true, 0, true)
-  getArticleDetail({ id }, { isLoading: false }).then((res: any) => {
-    console.log('detail===', res)
+  setLoadErrShowState(false)
+  getArticleDetail({ id }, { loading: true }).then((res: any) => {
+    // console.log('detail===', res)
     if (res.code === 0) {
-      setLoadState(false, 0, false)
       if(Object.keys(res.data).length === 0) {
         return
       }
@@ -142,15 +182,15 @@ const getArticleById = (id: string | number) => {
         }
       })
     } else {
-      setLoadState(true, 2, false)
+      setLoadErrShowState(true)
     }
   }).catch(() => {
-    setLoadState(true, 2, false)
+    setLoadErrShowState(true)
   })
 }
 const handleScrollPage = () => {
   const distance = document.documentElement.scrollTop // 滚动条卷起高度
-  console.log(distance)
+  // console.log(distance)
   const pageOffset = getOffsetTop(document.getElementById('detail'))
   const parentOffset = getOffsetTop(document.getElementById('art_wrap'))
   // 和点击时一样pc时：parentOffset - pageOffset = 340
@@ -171,10 +211,42 @@ const refreshDetail = () => {
     }
   }
 }
+const getCommentData = (id: string | number) => {
+  setLoadErrShowState(false, 'isShowCommentErr')
+  const params = {
+    pageSize: pageSize.value,
+    pageNum: pageNumber.value,
+    topicId: id
+  }
+  getCommentList(params, { loading: true }).then((res: any) => {
+    if(res.code === 0) {
+      commentsArr.value = res.data
+      total.value = Number(res.total)
+    } else {
+      commentsArr.value = []
+      total.value = 0
+      setLoadErrShowState(true, 'isShowCommentErr')
+    }
+  }).catch(() => {
+    commentsArr.value = []
+    total.value = 0
+    setLoadErrShowState(true, 'isShowCommentErr')
+  })
+}
+const searchList = (id: string | number) => {
+  pageNumber.value = 1
+  getCommentData(id)
+}
+// 页面滑到底部
+const handleToComment = () => {
+  const dom = document.getElementById('article-comment-wrap')
+  dom?.scrollIntoView({ behavior: 'smooth' })
+}
 onMounted(() => {
   if (route.params.id) {
     if(typeof route.params.id === 'string' || typeof route.params.id === 'number') {
       getArticleById(route.params.id)
+      searchList(route.params.id)
     }
   }
   window.addEventListener('scroll', debounceScroll)
@@ -282,6 +354,13 @@ onUnmounted(() => {
       display: flex;
       align-items: center;
       color: hsla(0,0%,100%,.5);
+      cursor: pointer;
+      &.liked {
+        color: #fff;
+      }
+      &:hover {
+        color: #fff;
+      }
     }
     .control-txt {
       margin-left: 4px;

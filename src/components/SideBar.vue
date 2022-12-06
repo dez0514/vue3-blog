@@ -8,12 +8,12 @@
         </div>
       </div>
       <div class="extra-sideinfo">
-        <div class="side-tags">
+        <div class="side-tags" v-if="(tagsList.length > 0)">
           <div class="side-title">
             <div class="side-txt">标签</div>
           </div>
           <div class="side-tag-list">
-            <div class="side-tag-item" v-for="(item, index) in tagsList" :key="index" @click="handJumpTag(item)">{{ item }}</div>
+            <div class="side-tag-item" v-for="(item, index) in tagsList" :key="index" @click="handJumpTag(item.name)">{{ item.name }}</div>
           </div>
         </div>
         <div class="side-artlist" v-if="router.currentRoute.value.name === 'archive'">
@@ -30,17 +30,21 @@
           </div>
           <div class="art-list">
             <div class="article" v-for="(item, index) in lastestList" :key="index">
-              <div class="cover"><img :src="item.cover" alt=""></div>
+              <div class="cover"><img :src="item.banner" alt=""></div>
               <div class="desc">
                 <div class="art-tit">{{ item.title }}</div>
                 <div class="icon-count">
                   <div class="icon-desc blog">
                     <svg-icon class="icon" icon-class="blog"></svg-icon>
-                    <div class="txt">{{item.comments}}</div>
+                    <div class="txt">{{ item.views }}</div>
+                  </div>
+                  <div class="icon-desc like">
+                    <svg-icon class="icon" icon-class="like"></svg-icon>
+                    <div class="txt">{{ item.likes }}</div>
                   </div>
                   <div class="icon-desc message">
                     <svg-icon class="icon" icon-class="message"></svg-icon>
-                    <div class="txt">{{item.reads}}</div>
+                    <div class="txt"></div>
                   </div>
                 </div>
               </div>
@@ -53,17 +57,21 @@
           </div>
           <div class="art-list">
             <div class="article" v-for="(item, index) in hotList" :key="index">
-              <div class="cover"><img :src="item.cover" alt=""></div>
+              <div class="cover"><img :src="item.banner" alt=""></div>
               <div class="desc">
                 <div class="art-tit">{{ item.title }}</div>
                 <div class="icon-count">
                   <div class="icon-desc blog">
                     <svg-icon class="icon" icon-class="blog"></svg-icon>
-                    <div class="txt">{{item.comments}}</div>
+                    <div class="txt">{{ item.views }}</div>
+                  </div>
+                  <div class="icon-desc like">
+                    <svg-icon class="icon" icon-class="like"></svg-icon>
+                    <div class="txt">{{ item.likes }}</div>
                   </div>
                   <div class="icon-desc message">
                     <svg-icon class="icon" icon-class="message"></svg-icon>
-                    <div class="txt">{{item.reads}}</div>
+                    <div class="txt">{{ item.views }}</div>
                   </div>
                 </div>
               </div>
@@ -75,12 +83,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, watch } from "vue"
+import { onMounted, ref, watch } from "vue"
 import { useRouter } from "vue-router";
 import { configStore } from '../store'
 import { storeToRefs } from 'pinia'
 import NavTimes from './NavTimes.vue'
-import png1 from '../assets/pg1.png'
+import { getAllTags } from '../api/tags'
+import { baseURL } from '../api/urls'
+import { tagItem } from '../types/index'
+import { getArticlesPage } from '../api/articles'
 const configStores = configStore()
 const { isCollapse, isPc } = storeToRefs(configStores)
 const router = useRouter();
@@ -98,71 +109,38 @@ const tabList: tabItem[] = [
   { title: '关于我', name: 'about', class: 'me', width: 91 },
   { title: '留言板', name: 'messageboard', class: 'message', width: 91 }
 ]
-const tagsList = ['Vue', 'React', 'Mongodb', 'test', '自定义', 'node', '随笔']
-const lastestList = [
-  {
-    title: '测试文章标题',
-    cover: png1,
-    comments: 0,
-    reads: 0
-  },
-  {
-    title: '测试文章标题测试文章标题测试文章标题测试文章标题22',
-    cover: png1,
-    comments: 0,
-    reads: 0
+const tagsList = ref<tagItem[]>([])
+const lastestList = ref<any>([])
+const hotList = ref<any>([])
+const getTagList = () => {
+  getAllTags().then((res: any) => {
+    if(res.code === 0) {
+      tagsList.value = res.data.map((item: any) => {
+        return {
+          ...item,
+          icon: item.icon ? `${baseURL}/imgs/${item.icon}` : ''
+        }
+      })
+    }
+  })
+}
+const getArtList = (ishot: boolean = false) => {
+  const params = {
+    pageSize: 5,
+    pageNum: 1,
+    ishot: ishot
   }
-]
-const hotList = [
-  {
-    title: '测试热门文章标题',
-    cover: png1,
-    comments: 0,
-    reads: 0
-  },
-  {
-    title: '测试热门文章标题2',
-    cover: png1,
-    comments: 0,
-    reads: 0
-  },
-  {
-    title: '测试热门文章标题',
-    cover: png1,
-    comments: 0,
-    reads: 0
-  },
-  {
-    title: '测试热门文章标题2',
-    cover: png1,
-    comments: 0,
-    reads: 0
-  },
-  {
-    title: '测试热门文章标题',
-    cover: png1,
-    comments: 0,
-    reads: 0
-  },
-  {
-    title: '测试热门文章标题2',
-    cover: png1,
-    comments: 0,
-    reads: 0
-  },
-  {
-    title: '测试热门文章标题',
-    cover: png1,
-    comments: 0,
-    reads: 0
-  },
-  {
-    title: '测试热门文章标题2',
-    cover: png1,
-    comments: 0,
-    reads: 0
-  }
-]
+  getArticlesPage(params).then((res: any) => {
+    console.log('getlist==', res)
+    if(res.code === 0) {
+      if(ishot) {
+        hotList.value = res.data
+      } else {
+        lastestList.value = res.data
+      }
+    }
+  })
+}
 const handJumpTag = (item: string) => {
   router.push({ name: 'blog', params: { tag: item }})
   configStores.updateConfig({ isCollapse: false, isShowMask: false })
@@ -178,6 +156,11 @@ watch(() => router.currentRoute.value, (value) => {
     const index = tabList.findIndex(item => item.name === value.name)
     tabIndex.value = index
   }
+})
+onMounted(() => {
+  getTagList()
+  getArtList()
+  getArtList(true)
 })
 </script>
 <style lang="scss" scoped>
@@ -332,6 +315,9 @@ watch(() => router.currentRoute.value, (value) => {
           margin-right: 5px;
         }
         &.blog {
+          color: var(--primary);
+        }
+        &.like {
           color: var(--color_2);
         }
         &.message {

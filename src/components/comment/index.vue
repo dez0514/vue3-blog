@@ -13,6 +13,7 @@
       <text-editor v-model="commentStr" :source="commentState" @submitEmit="submitCallback" />
     </div>
     <comment-list :list="dataList"  @setCommentEditorStatus="setCommentEditor" @getListEmit="submitCallback" />
+    <slot></slot>
   </div>
 </template>
 <script lang="ts" setup>

@@ -5,12 +5,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { toRefs, useSlots, onMounted, CSSProperties } from 'vue'
+import { toRefs, CSSProperties } from 'vue'
 interface Props {
   content: any;
   direction?: 'top' | 'right' | 'bottom' | 'left';
   color?: string;
-  contentStyle: CSSProperties
+  contentStyle?: CSSProperties
 }
 const props = withDefaults(defineProps<Props>(), {
   content: '',
@@ -19,10 +19,6 @@ const props = withDefaults(defineProps<Props>(), {
   contentStyle: () => ({})
 })
 const { content, direction, color } = toRefs(props)
-const slots = useSlots();
-onMounted(() => {
-  console.log(slots, "==");
-});
 </script>
 <style lang="less" scoped>
 .mixinColor (@color) {

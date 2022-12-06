@@ -21,6 +21,7 @@
 </template>
 <script lang="ts" setup>
 import { toRefs } from 'vue'
+import SvgIcon from '../SvgIcon.vue'
 interface Props {
   isfixed?: boolean;
   isShow?: boolean; // 是否显示

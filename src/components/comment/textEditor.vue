@@ -206,9 +206,10 @@ const handleSubmit = async () => {
       return
     }
     const obj = checkMint(contentHtml.value)
+    console.log(obj)
     if(!obj.pass) {
       notification.error(`您的留言包含以下敏感词汇：${obj.words.join('、')}`)
-      throw '包含敏感词汇'
+      return
     }
     // 提交接口 addComment, addReply
     if(!comment_id) { // 评论

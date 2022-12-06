@@ -152,7 +152,7 @@ onUnmounted(() => {
 .to-top {
   position: fixed;
   bottom: 60px;
-  right: 20px;
+  right: 23px;
   cursor: pointer;
   .icon {
     font-size: 34px;
