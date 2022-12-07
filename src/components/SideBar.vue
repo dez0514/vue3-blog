@@ -201,9 +201,6 @@ watch(() => router.currentRoute.value, (value) => {
     console.log("app路由变化了", value)
     const index = tabList.findIndex(item => item.name === value.name)
     tabIndex.value = index
-    if(value.name === 'detail') {
-
-    }
   }
 })
 onMounted(() => {
@@ -249,6 +246,7 @@ onMounted(() => {
   border-radius: 20px;
   transition: .25s;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   .icon {
     margin-right: 5px;
   }
@@ -277,6 +275,7 @@ onMounted(() => {
     font-size: 14px;
     font-weight: 600;
     transition: .25s;
+    -webkit-tap-highlight-color: transparent;
     &:hover {
       color: var(--primary);
     }
@@ -412,6 +411,7 @@ onMounted(() => {
       display: inline-block;
       color: var(--gray_4);
       text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
       &:hover {
         color: var(--primary);
       }

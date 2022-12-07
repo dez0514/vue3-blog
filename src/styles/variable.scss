@@ -105,10 +105,9 @@ body {
   background-color: var(--gray_9);
   color: var(--gray_4);
 }
-// side 出现时 禁止横向滚动
-// 竖向滚动会回到顶部，导致详情页目录始终停在第一个
-.lock #app {
-  overflow-x: hidden;
+// side 出现时 禁止滚动
+.lock {
+  overflow: hidden;
   width: 100vw;
 }
 

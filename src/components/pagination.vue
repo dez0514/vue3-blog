@@ -285,7 +285,9 @@ const dotClick = (type: string) => {
       .dot-hover {
         display: none;
       }
-
+      &.dot-prev, &.dot-next {
+        -webkit-tap-highlight-color: transparent;
+      }
       &.dot-prev:hover {
         .dot-icon {
           display: none;

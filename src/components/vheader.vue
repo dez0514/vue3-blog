@@ -213,6 +213,7 @@ onUnmounted(() => {
   margin-left: 50px;
   transition: .3s;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background-color: var(--primary);

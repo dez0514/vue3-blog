@@ -41,6 +41,7 @@ const { content, direction, color } = toRefs(props)
 .tooltip-box {
   position: relative;
   display: inline-block;
+  -webkit-tap-highlight-color: transparent;
   .mixinColor(var(--tooltip_color));
   .tooltip-arrow {
     min-width: 60px;

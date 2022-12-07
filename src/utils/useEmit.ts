@@ -5,8 +5,8 @@ interface Imit {
   item: MdTitle
 }
 type Events = {
-  'change-next-slide': () => void;
-  'change-prev-slide': () => void;
+  'change-next-slide': void;
+  'change-prev-slide': void;
   'change-detail-menuindex': Imit
 };
 

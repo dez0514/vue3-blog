@@ -97,6 +97,7 @@ onMounted(() => {
 .items-wrap {
     margin-bottom: 15px;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .nav-wrap {

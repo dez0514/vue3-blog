@@ -31,9 +31,9 @@ export const configStore = defineStore('config', {
     updateConfig(payload: UpdateState) {
       this.$state = { ...this.$state, ...payload }
       if (payload.isShowMask) {
-        document.getElementsByTagName("body")[0].className = 'lock'
+        document.documentElement.classList.add('lock')
       } else {
-        document.body.removeAttribute("class")
+        document.documentElement.classList.remove('lock')
       }
     }
   },

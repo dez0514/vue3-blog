@@ -311,6 +311,7 @@ onMounted(() => {
         .link {
           color: #df2050;
           text-decoration: none;
+          -webkit-tap-highlight-color: transparent;
           &:hover {
             text-decoration: underline;
           }
@@ -413,6 +414,7 @@ onMounted(() => {
     text-decoration: none;
     margin-right: 10px;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
     &:hover {
       text-decoration: underline;
     }

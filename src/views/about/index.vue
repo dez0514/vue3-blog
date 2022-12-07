@@ -228,6 +228,7 @@ onMounted(() => {
     transition: .25s;
     cursor: pointer;
     color: var(--gray_4);
+    -webkit-tap-highlight-color: transparent;
     .name {
       font-size: 18px;
     }

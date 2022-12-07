@@ -138,6 +138,7 @@ const goDetail = (id: string | number | undefined) => {
       margin-top: 5px;
       font-size: 14px;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
       &:hover {
         color: var(--primary);
         background: var(--white);

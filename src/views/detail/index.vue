@@ -376,6 +376,7 @@ onUnmounted(() => {
       align-items: center;
       color: hsla(0,0%,100%,.5);
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
       &.liked {
         color: #fff;
       }
@@ -456,6 +457,7 @@ onUnmounted(() => {
       display: inline-block;
       color: var(--gray_4);
       text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
       &:hover {
         color: var(--primary);
       }

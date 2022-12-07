@@ -319,6 +319,7 @@ const handleSubmit = async () => {
   margin-right: 10px;
   transition: color .25s;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cancel:hover {

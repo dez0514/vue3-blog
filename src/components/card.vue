@@ -160,6 +160,7 @@ const jumpToDetail = () => {
           line-height: 20px;
           position: relative;
           transition: padding 0.3s;
+          -webkit-tap-highlight-color: transparent;
         }
 
         .tag-strip::after {

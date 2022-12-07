@@ -283,12 +283,14 @@ const handleClickThirdIcon = (name: string) => {
     font-size: 16px;
     transition: box-shadow .3s;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 
     &.cancel {
       width: 105px;
       color: var(--text_color);
       background: var(--gray_opacity_1);
       box-shadow: 0 6px 12px var(--gray_opacity_2);
+      -webkit-tap-highlight-color: transparent;
     }
 
     &.save {
@@ -348,6 +350,7 @@ const handleClickThirdIcon = (name: string) => {
     .third-icon {
       margin: 0 4px;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
       &:hover {
         color: var(--primary);
       }
@@ -359,6 +362,7 @@ const handleClickThirdIcon = (name: string) => {
     text-align: center;
     transition: opacity .5s;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover {
       text-decoration: underline;

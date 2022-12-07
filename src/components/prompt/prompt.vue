@@ -115,6 +115,7 @@ const handleConfirm = async () => {
       color: var(--primary);
       position: relative;
       font-weight: 700;
+      -webkit-tap-highlight-color: transparent;
 
       &::after {
         content: '';

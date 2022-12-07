@@ -173,6 +173,7 @@ onUnmounted(() => {
   box-shadow: 0 13px 15px -5px var(--gray_opacity_2);
   line-height: 38px;
   text-align: center;
+  -webkit-tap-highlight-color: transparent;
   cursor: pointer;
   .icon {
     font-size: 16px;

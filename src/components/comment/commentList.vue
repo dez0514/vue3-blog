@@ -129,6 +129,7 @@ const submitCallback = () => {
 
 .wrapper {
   display: flex;
+  -webkit-tap-highlight-color: transparent;
 
   .side .avatar {
     overflow: hidden;
@@ -165,6 +166,9 @@ const submitCallback = () => {
         font-weight: 600;
         font-size: 14px;
         color: #738192;
+      }
+      .has_url {
+        -webkit-tap-highlight-color: transparent;
       }
       .has_url:hover {
         color: var(--primary);
@@ -220,7 +224,6 @@ const submitCallback = () => {
 }
 
 .wrapper:hover {
-
   .side .avatar,
   .main .name-wrap {
     border-color: #20a0ff;

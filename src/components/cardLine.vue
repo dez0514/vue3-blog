@@ -140,6 +140,7 @@ const jumpToDetail = () => {
   background-repeat: no-repeat;
   background-position: 50%;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cover:hover {
@@ -157,6 +158,7 @@ const jumpToDetail = () => {
   white-space: nowrap;
   text-overflow: ellipsis;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .title:hover {
@@ -187,6 +189,7 @@ const jumpToDetail = () => {
       position: relative;
       display: inline-block;
       transition: padding 0.3s;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .tag-strip::after {
