@@ -24,12 +24,12 @@
             <nav-times :inside="true"></nav-times>
           </div>
         </div>
-        <div class="side-artlist">
+        <div class="side-artlist" v-show="(router.currentRoute.value.name !== 'detail' && lastestList.length > 0)">
           <div class="side-title">
             <div class="side-txt">最新博客</div>
           </div>
-          <div class="art-list">
-            <div class="article" v-for="(item, index) in lastestList" :key="index">
+          <div class="art-list" v-show="(lastestList.length > 0)">
+            <div class="article" v-for="(item, index) in lastestList" :key="index" @click="handleToDetail(item.id)">
               <div class="cover"><img :src="item.banner" alt=""></div>
               <div class="desc">
                 <div class="art-tit">{{ item.title }}</div>
@@ -44,19 +44,19 @@
                   </div>
                   <div class="icon-desc message">
                     <svg-icon class="icon" icon-class="message"></svg-icon>
-                    <div class="txt"></div>
+                    <div class="txt">{{ item.commentCount }}</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="side-artlist">
+        <div class="side-artlist" v-show="(router.currentRoute.value.name !== 'detail' && hotList.length > 0)">
           <div class="side-title">
             <div class="side-txt">热门博客</div>
           </div>
-          <div class="art-list">
-            <div class="article" v-for="(item, index) in hotList" :key="index">
+          <div class="art-list" v-show="(hotList.length > 0)">
+            <div class="article" v-for="(item, index) in hotList" :key="index"  @click="handleToDetail(item.id)">
               <div class="cover"><img :src="item.banner" alt=""></div>
               <div class="desc">
                 <div class="art-tit">{{ item.title }}</div>
@@ -71,8 +71,22 @@
                   </div>
                   <div class="icon-desc message">
                     <svg-icon class="icon" icon-class="message"></svg-icon>
-                    <div class="txt">{{ item.views }}</div>
+                    <div class="txt">{{ item.commentCount }}</div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="side-artlist" v-if="(router.currentRoute.value.name === 'detail' && detailMenuList.length > 0)">
+          <div class="side-title">
+            <div class="side-txt">目录</div>
+          </div>
+          <div class="art-list">
+            <div class="menu-list">
+              <div v-for="(item,index) in detailMenuList" :key="index">
+                <div :class="['menu-item', item.nodeName, activeMenuIndex === index ? 'active':'']" @click="handleClickMenu(index, item)">
+                  <span :id="`heading${item.hrefIndex}`">{{ item.text }}</span>
                 </div>
               </div>
             </div>
@@ -92,8 +106,13 @@ import { getAllTags } from '../api/tags'
 import { baseURL } from '../api/urls'
 import { tagItem } from '../types/index'
 import { getArticlesPage } from '../api/articles'
+import { detailPageStore } from '../store/detail'
+import { emitter } from '../utils/useEmit'
+import { MdTitle } from '../utils/marked'
 const configStores = configStore()
-const { isCollapse, isPc } = storeToRefs(configStores)
+const detailStore = detailPageStore()
+const { isPc, isCollapse } = storeToRefs(configStores)
+const { detailMenuList, activeMenuIndex } = storeToRefs(detailStore)
 const router = useRouter();
 console.log('router=====', router)
 interface tabItem {
@@ -123,6 +142,14 @@ const getTagList = () => {
       })
     }
   })
+}
+const handleToDetail = (id: number | string) => {
+  router.push({ name: 'detail', params: { id: id } })
+  configStores.updateConfig({ isCollapse: false, isShowMask: false })
+}
+const handleClickMenu = (index: number, item: MdTitle) => {
+  emitter.emit('change-detail-menuindex', { index, item })
+  configStores.updateConfig({ isCollapse: false, isShowMask: false })
 }
 const getArtList = (ishot: boolean = false) => {
   const params = {
@@ -155,6 +182,9 @@ watch(() => router.currentRoute.value, (value) => {
     console.log("app路由变化了", value)
     const index = tabList.findIndex(item => item.name === value.name)
     tabIndex.value = index
+    if(value.name === 'detail') {
+
+    }
   }
 })
 onMounted(() => {
@@ -332,5 +362,141 @@ onMounted(() => {
 }
 .article:not(:first-child) {
   margin-top: 20px;
+}
+// 目录
+.menu-list {
+  margin-top: 8px;
+  position: relative;
+  padding: 8px 8px 20px 8px;
+  .menu-item {
+    position: relative;
+    display: inline-block;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--white), var(--gray_9) 6px, var(--gray_7));
+    filter: drop-shadow(0 1px 0 var(--gray_opacity_2)) drop-shadow(0 -1px 0 var(--white)) drop-shadow(5px 6px 5px var(--gray_opacity_1));
+    font-size: 14px;
+    line-height: 34px;
+    height: 34px;
+    padding: 0 12px 0 20px;
+    margin: 20px 0 5px -5px;
+    border-bottom-left-radius: 5px;
+    vertical-align: bottom;
+    text-shadow: 0 1px var(--white);
+    transition: 0.25s;
+    cursor: pointer;
+    span {
+      max-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+      color: var(--gray_4);
+      text-decoration: none;
+      &:hover {
+        color: var(--primary);
+      }
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: -16px;
+      display: inline-block;
+      border: 17px solid #d8e0ea;
+      border-left-width: 8px;
+      border-right: 8px solid transparent;
+      border-bottom: 17px solid transparent;
+      vertical-align: bottom;
+    }
+    &::before {
+      content: "";
+      border: 3px solid rgba(31, 45, 61, 0.2);
+      position: absolute;
+      left: 0;
+      top: -7px;
+      border-left: 3px solid transparent;
+      border-top: 3px solid transparent;
+      transform-origin: bottom;
+      transform: scaleY(0.8);
+    }
+    &.active {
+      background: linear-gradient(90deg,var(--analogous_light_2),var(--analogous) 6px,var(--primary_dark_1));
+      text-shadow: 0 -1px var(--primary_dark_2);
+      filter: drop-shadow(0 1px 0 var(--primary_dark_1)) drop-shadow(6px 7px 8px var(--primary_opacity_4));
+      box-shadow: none;
+      span {
+        color: var(--white);
+      }
+      &::after {
+        border-top: 17px solid var(--primary_dark_1);
+        border-left: 8px solid var(--primary_dark_1);
+      }
+      &::before {
+        border-bottom: 3px solid var(--analogous_dark_1);
+        border-right: 3px solid var(--analogous_dark_1);
+      }
+    }
+  }
+  .menu-item.h3 {
+    background: none;
+    margin-top: 5px;
+    padding-left: 25px;
+    filter: none;
+    span {
+      text-shadow: none;
+    }
+    &::after {
+      display: none;
+    }
+    &::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      border: 1px solid var(--gray_6);
+      background: var(--white);
+      left: 5px;
+      display: block;
+      position: absolute;
+      top: 50%;
+      -webkit-transform: translateY(-50%);
+      transform: translateY(-50%);
+      -webkit-transition: .3s;
+      transition: .3s;
+    }
+    &.active {
+      span {
+        color: var(--primary);
+        text-shadow: none; 
+      }
+      &::before {
+        content: "";
+        width: 17px;
+        height: 10px;
+        border-radius: 4px 100% 100% 4px/4px 80% 80% 4px;
+        border-color: var(--primary);
+        background: var(--primary_light_1);
+        box-shadow: 0 1px var(--analogous_light_2) inset,0 2px 3px var(--primary_opacity_3);
+        left: 1px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: .3s linear .3s;
+        box-sizing: border-box;
+      }
+    }
+  }
+}
+.menu-list::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 8px;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(90deg, #fff 1px, #d8e0ea);
+  border: 1px solid #cad1db;
+  box-shadow: 0.5px 3px 5px rgba(31, 45, 61, 0.1);
+  border-radius: 4px;
 }
 </style>

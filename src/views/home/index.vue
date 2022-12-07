@@ -167,7 +167,7 @@ onMounted(() => {
   .content .list-box .list-wrap {
     display: grid;
     grid-template-columns: repeat(1, 100%);
-    gap: 15px;
+    gap: 10px;
   }
 }
 

@@ -2,7 +2,7 @@
   <div class="search">
     <banner :banner="bannerBg" :title="tag" :extraTitle="`找到 ${total} 个结果`" />
     <div class="content">
-      <div class="list-box">
+      <div :class="['list-box', isPc ? '' : 'app']">
         <div class="list-wrap">
           <card v-for="(item, index) in resultList" :key="index" :info="item"></card>
         </div>
@@ -21,6 +21,10 @@ import pagination from '../../components/pagination.vue'
 import { useRoute } from 'vue-router'
 import { getArticlesPage } from '../../api/articles'
 import loading from '../../components/loading/loading.vue'
+import { configStore } from '../../store'
+import { storeToRefs } from 'pinia'
+const configStores = configStore()
+const { isPc } = storeToRefs(configStores);
 const isShowLoad = ref<boolean>(false)
 const loadState = ref<0 | 1 | 2>(0)
 const isLoadFixed = ref<boolean>(false)
@@ -88,9 +92,11 @@ onMounted(() => {
     box-sizing:border-box;
     width: 100%;
     min-height: calc(100vh - 82px - 138px - 320px - 50px);
+    &.app {
+      padding: 15px 15px 0;
+    }
   }
   .list-box .list-wrap {
-    padding-top: 30px;
     overflow: hidden;
     width: 100%;
     flex: 1;
@@ -126,7 +132,7 @@ onMounted(() => {
   .content .list-box .list-wrap {
     display: grid;
     grid-template-columns: repeat(1, 100%);
-    gap: 15px;
+    gap: 10px;
   }
 }
 

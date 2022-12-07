@@ -29,7 +29,7 @@
             <div class="meta-icon"><svg-icon icon-class="blog" /></div>
           </div>
           <div v-show="!isShowLoadErr" :class="['control-wrap', isPc ? 'show_after' : '']">
-            <div class="control-content">
+            <div class="control-content" :style="{ overflow: !isPc ? 'hidden' : 'auto' }">
               <Tooltip content="点赞" color="#ff7849">
                 <div class="control-btn" :class="hasLiked ? 'liked' : ''" @click="handleSetLike">
                   <div class="control-icon"><svg-icon icon-class="like" /></div>
@@ -42,7 +42,7 @@
                   <div class="control-txt">{{ commentsArr.length }}</div>
                 </div>
               </Tooltip>
-              <Tooltip :content="isShowMenu ? '隐藏侧边栏' : '显示侧边栏'" color="#ff7849">
+              <Tooltip v-if="isPc && detailMenuList.length > 0" :content="isShowMenu ? '隐藏侧边栏' : '显示侧边栏'" color="#ff7849">
                 <div class="control-btn" v-if="isPc && detailMenuList.length > 0">
                   <div class="control-icon" @click="handleChangeShowMenu"><svg-icon :icon-class="isShowMenu ? 'full_screen':'full_screen_cancel'" /></div>
                 </div>
@@ -73,6 +73,7 @@ import comment from '../../components/comment/index.vue'
 import pagination from '../../components/pagination.vue';
 import Tooltip from '../../components/tooltip.vue'
 import { configStore } from '../../store'
+import { detailPageStore } from '../../store/detail'
 import { storeToRefs } from 'pinia'
 import { GithubCorner } from '@vfup/github-corner'
 import '@vfup/github-corner/dist/style.css'
@@ -85,10 +86,12 @@ import LoadingErr from '../../components/loading/loading.vue'
 import { ICommentList, tagItem } from '../../types'
 import { getCommentList } from '../../api/comments'
 import notification from '../../components/notification';
+import { emitter } from '../../utils/useEmit'
 import dayjs from 'dayjs'
 const isShowLoadErr = ref<boolean>(false)
 const isShowCommentErr = ref<boolean>(false)
 const configStores = configStore()
+const detailStore = detailPageStore()
 const { isPc } = storeToRefs(configStores);
 const isShowMenu = ref<boolean>(true)
 const pageNumber = ref<number>(1)
@@ -143,6 +146,7 @@ const parseTime = (timeStr: string | null | undefined) => {
 const handleClickMenu = (index: number, item: MdTitle) => {
   if (activeMenuIndex.value === index) return
   activeMenuIndex.value = index
+  detailStore.updateDetailMenuIndex(activeMenuIndex.value)
   // 不用锚点, 锚点会刷新页面
   // 最终滚动位置 = 标题距离art_wrap的距离 + art_wrap距离页面顶部的距离 - routerView的paddingTop
   // 其实pc就等于 banner高度320 + 间距20
@@ -159,6 +163,7 @@ const getArticleById = (id: string | number) => {
     // console.log('detail===', res)
     if (res.code === 0) {
       if(Object.keys(res.data).length === 0) {
+        detailStore.updateDetailMenuList([])
         return
       }
       const content = formartMd(res.data.content)
@@ -179,13 +184,18 @@ const getArticleById = (id: string | number) => {
               }
             }
           }
+          // 将目录detailMenuList和activeMenuIndex 存到store, sidebar里使用
+          detailStore.updateDetailMenuList([...detailMenuList.value])
+          detailStore.updateDetailMenuIndex(activeMenuIndex.value)
         }
       })
     } else {
       setLoadErrShowState(true)
+      detailStore.updateDetailMenuList([])
     }
   }).catch(() => {
     setLoadErrShowState(true)
+    detailStore.updateDetailMenuList([])
   })
 }
 const handleScrollPage = () => {
@@ -202,6 +212,7 @@ const handleScrollPage = () => {
   const min = Math.min(...temp)
   const index = temp.findIndex((item:number) => item === min)
   activeMenuIndex.value = index
+  detailStore.updateDetailMenuIndex(activeMenuIndex.value)
 }
 const debounceScroll = debounce(handleScrollPage, 100)
 const refreshDetail = () => {
@@ -242,6 +253,10 @@ const handleToComment = () => {
   const dom = document.getElementById('article-comment-wrap')
   dom?.scrollIntoView({ behavior: 'smooth' })
 }
+const mittEvent = (params: { index: number, item: MdTitle }) => {
+  console.log(params)
+  handleClickMenu(params.index, params.item)
+}
 onMounted(() => {
   if (route.params.id) {
     if(typeof route.params.id === 'string' || typeof route.params.id === 'number') {
@@ -250,9 +265,15 @@ onMounted(() => {
     }
   }
   window.addEventListener('scroll', debounceScroll)
+  nextTick(() => {
+    emitter.on('change-detail-menuindex', (params) => mittEvent(params))
+  })
 })
 onUnmounted(() => {
+  detailStore.updateDetailMenuList([])
+  detailStore.updateDetailMenuIndex(0)
   window.removeEventListener('scroll', debounceScroll)
+  emitter.off('change-detail-menuindex', (params) => mittEvent(params))
 })
 </script>
 <style lang="scss" scoped>

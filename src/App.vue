@@ -63,6 +63,7 @@ const resize = () => {
 }
 const handleScrollPage = () => {
   const distance = document.documentElement.scrollTop
+  // console.log('distance==', distance)
   if (distance > 100) {
     showToTop.value = true
   } else {

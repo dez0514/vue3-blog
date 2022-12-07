@@ -50,6 +50,7 @@ $purple: rgb(114, 46, 209);
   --gray_8: #e6eaf0;
   --gray_9: #f0f2f7;
   --gray_10: #f0f0f0;
+  --text-color: #8492a6;
   --gray_opacity_0: rgba(31, 45, 61, 0);
   --gray_opacity_1: rgba(31, 45, 61, 0.1);
   --gray_opacity_2: rgba(31, 45, 61, 0.2);
@@ -104,9 +105,15 @@ body {
   background-color: var(--gray_9);
   color: var(--gray_4);
 }
-// side 出现时 禁止滚动
+// side 出现时 禁止横向滚动
+// 竖向滚动会回到顶部，导致详情页目录始终停在第一个
 .lock #app {
-  overflow: hidden;
-  height: 100vh;
+  overflow-x: hidden;
   width: 100vw;
+}
+
+@media (any-hover: hover) {
+	div {
+    color: initial;
+  }
 }

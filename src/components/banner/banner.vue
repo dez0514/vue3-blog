@@ -15,7 +15,7 @@
     </div>
   </div>
   <div v-else>
-    <div :class="['mode_image', isPc ? 'pc-banner-wrap' : 'banner-wrap']">
+    <div :class="['mode_image', isPc ? 'pc-banner-wrap' : 'banner-wrap', showRightImg ? '' : 'no_pic']">
       <bubble-cover :cover="banner" :radius="true" :shadow="shadow" :isBlur="isBlur"></bubble-cover>
       <div class="title-wraps">
         <div class="app-img-wrap" v-if="!isPc && banner && showRightImg" :style="{ '--url': `url(${banner})` }"></div>
@@ -106,6 +106,9 @@ onMounted(() => {
   position: relative;
   background-color: #78797b;
   height: 350px;
+  &.mode_image.no_pic {
+    height: 220px;
+  }
 
   .swiper-pics {
     position: absolute;
