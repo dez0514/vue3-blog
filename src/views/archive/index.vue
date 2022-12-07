@@ -5,7 +5,7 @@
       <div style="width: 150px;flex-shrink: 0;padding-top: 20px;" v-if="isPc">
         <left-menu-wrap>
           <template #default>
-            <nav-times ref="navtimes" @change="getNavTime" />
+            <nav-times ref="navtimes" :list="dateList" @change="getNavTime" />
           </template>
         </left-menu-wrap>
       </div>
@@ -30,7 +30,7 @@ import pagination from '../../components/pagination.vue'
 import cardLine from '../../components/cardLine.vue'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
-import { getArchivePage } from '../../api/articles'
+import { getArchivePage, getArchiveTime } from '../../api/articles'
 import bannerBg from '../../assets/write.jpg'
 import loading from '../../components/loading/loading.vue'
 const isShowLoad = ref<boolean>(false)
@@ -48,8 +48,26 @@ const pageNumber = ref<number>(1)
 const pageSize = ref<number>(10)
 const total = ref<number>(0)
 const articleList = ref<any>([])
+const dateList = ref<any>([])
 const curyear = ref<number>(0)
 const curmonth = ref<number>(0)
+const getTimeList = () => {
+  getArchiveTime({}, { loading: true }).then((res: any) => {
+    if(res.code === 0) {
+      res.data.forEach((item: any) => {
+        item.title = `${item.year}年`
+        item.monthArr = item.monthArr.map((inner:string) => {
+          return {
+            title: `${Number(inner)}月`,
+            value: Number(inner)
+          }
+        })
+        item.monthArr.unshift({ title: '全年', value: 0 })
+      })
+      dateList.value = res.data
+    }
+  })
+}
 const getNavTime = ({ year, month } : { year: number, month: number }) => {
   console.log('get===', year, month)
   curyear.value = year
@@ -86,6 +104,7 @@ const getArchiveList = () => {
   })
 }
 onMounted(() => {
+  getTimeList()
   getArchiveList()
 })
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div :class="['year-list', inside ? 'inside' : '']">
     <div :class="['year-title', (yearIndex === -1 || monthIndex === -1) ? 'active' : '']" @click="handleCheckOpen(-1)">全部</div>
-    <div v-for="(item, index) in dateList" :key="index">
+    <div v-for="(item, index) in list" :key="index">
       <div :class="['year-title', yearIndex === index ? 'active' : '']" @click="handleCheckOpen(index)">{{item.title}}</div>
       <div :class="['month-list', openIndex === index ? 'is_show' : '']" :style="{'--month-list-height' : item.monthArr.length * 40 + 'px' }" v-if="item.monthArr && item.monthArr.length > 0">
         <div v-for="(inner, idx) in item.monthArr" :key="idx" @click="handleCheckMonth(index, idx, item.year, inner.value)">
@@ -12,16 +12,19 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, toRefs } from "vue"
-import { getArchiveTime } from '../api/articles'
-const props = defineProps({
-  inside: { type: Boolean, default: false } // 在app sidebar中使用时，背景白色，pc端 外面使用时 无背景色
+import { ref, toRefs } from "vue"
+interface Props {
+  inside?: boolean; // 在app sidebar中使用时，背景白色，pc端 外面使用时 无背景色
+  list?: any;
+}
+const props = withDefaults(defineProps<Props>(), {
+  inside: false,
+  list: () => []
 })
-const { inside } = toRefs(props)
+const { inside, list } = toRefs(props)
 const openIndex = ref<number>(-1) // 只是控制展开，不高亮
 const yearIndex = ref<number>(-1) // 选月份的时候选年
 const monthIndex = ref<number>(-1)
-const dateList = ref<any>([])
 const emit = defineEmits<{
   (e: 'change', obj: { year: number, month: number }): void
 }>()
@@ -44,27 +47,6 @@ const handleCheckMonth = (yearindex: number, monthindex:number, year: number, mo
   // 将年月emit出去
   emit('change', { year, month })
 }
-const getTimeList = () => {
-  getArchiveTime({}, { loading: true }).then((res: any) => {
-    console.log(res)
-    if(res.code === 0) {
-      res.data.forEach((item: any) => {
-        item.title = `${item.year}年`
-        item.monthArr = item.monthArr.map((inner:string) => {
-          return {
-            title: `${Number(inner)}月`,
-            value: Number(inner)
-          }
-        })
-        item.monthArr.unshift({ title: '全年', value: 0 })
-      })
-      dateList.value = res.data
-    }
-  })
-}
-onMounted(() => {
-  getTimeList()
-})
 </script>
 <style lang="scss" scoped>
 .year-title {

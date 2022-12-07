@@ -16,12 +16,12 @@
             <div class="side-tag-item" v-for="(item, index) in tagsList" :key="index" @click="handJumpTag(item.name)">{{ item.name }}</div>
           </div>
         </div>
-        <div class="side-artlist" v-if="router.currentRoute.value.name === 'archive'">
+        <div class="side-artlist" v-if="router.currentRoute.value.name === 'archive' && dateList.length > 0">
           <div class="side-title">
             <div class="side-txt">时间轴</div>
           </div>
           <div class="art-list">
-            <nav-times :inside="true"></nav-times>
+            <nav-times :inside="true" :list="dateList"></nav-times>
           </div>
         </div>
         <div class="side-artlist" v-show="(router.currentRoute.value.name !== 'detail' && lastestList.length > 0)">
@@ -109,6 +109,7 @@ import { getArticlesPage } from '../api/articles'
 import { detailPageStore } from '../store/detail'
 import { emitter } from '../utils/useEmit'
 import { MdTitle } from '../utils/marked'
+import { getArchiveTime } from '../api/articles'
 const configStores = configStore()
 const detailStore = detailPageStore()
 const { isPc, isCollapse } = storeToRefs(configStores)
@@ -129,6 +130,7 @@ const tabList: tabItem[] = [
   { title: '留言板', name: 'messageboard', class: 'message', width: 91 }
 ]
 const tagsList = ref<tagItem[]>([])
+const dateList = ref<any>([])
 const lastestList = ref<any>([])
 const hotList = ref<any>([])
 const getTagList = () => {
@@ -177,6 +179,23 @@ const handleChangeRouter = (index: number, item: tabItem) => {
   router.push({ name: item.name })
   configStores.updateConfig({ isCollapse: false, isShowMask: false })
 }
+const getTimeList = () => {
+  getArchiveTime({}, { loading: false }).then((res: any) => {
+    if(res.code === 0) {
+      res.data.forEach((item: any) => {
+        item.title = `${item.year}年`
+        item.monthArr = item.monthArr.map((inner:string) => {
+          return {
+            title: `${Number(inner)}月`,
+            value: Number(inner)
+          }
+        })
+        item.monthArr.unshift({ title: '全年', value: 0 })
+      })
+      dateList.value = res.data
+    }
+  })
+}
 watch(() => router.currentRoute.value, (value) => {
   if(!isPc.value) {
     console.log("app路由变化了", value)
@@ -189,6 +208,7 @@ watch(() => router.currentRoute.value, (value) => {
 })
 onMounted(() => {
   getTagList()
+  getTimeList()
   getArtList()
   getArtList(true)
 })
