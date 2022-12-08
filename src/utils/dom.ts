@@ -113,7 +113,7 @@ export const copyTextByDom = (
     error?: (e: ClipboardJS.Event) => void
   }
 ) => {
-  let clipboard
+  let clipboard = null
   if (deep) {
     clipboard = new ClipboardJS(`.${selector}`, {
       text: (el: any) => {

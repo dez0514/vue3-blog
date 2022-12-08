@@ -18,7 +18,7 @@
   </transition>
   <side-bar v-if="!isPc"></side-bar>
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import vheader from './components/vheader.vue'
@@ -26,7 +26,7 @@ import vfooter from './components/vfooter.vue'
 import SideBar from './components/SideBar.vue'
 import loginCard from './components/loginCard.vue'
 import { configStore } from './store'
-import { onMounted, onUnmounted, ref } from 'vue';
+import { getCurrentInstance, onMounted, onUnmounted, ref } from 'vue';
 import { storeToRefs } from 'pinia'
 import { setScrollTop } from './utils/dom'
 import { useLoginInfo } from './utils/useLoginInfo'
@@ -38,6 +38,8 @@ const { isPc, isCollapse, isShowMask } = storeToRefs(configStores)
 const showToTop = ref<boolean>(false)
 const showLogin = ref<boolean>(false)
 const showLogBtn = ref<boolean>(false)
+const app = getCurrentInstance()
+console.log('====', app)
 const handleChangeShowLogin = (flag: boolean) => {
   showLogin.value = flag
 }
@@ -48,6 +50,7 @@ const handleClickLoginBtn = () => {
 const hideMaskAll = () => {
   configStores.updateConfig({ isCollapse: false, isShowMask: false })
   handleChangeShowLogin(false)
+  
 }
 const handleToTop = () => {
   setScrollTop(0, { animate: true, duration: 1000 })

@@ -15,8 +15,8 @@
               <svg-icon class="icon" icon-class="reply" />
             </div>
           </div>
-          <div class="content">
-            <div class="desc">{{item.content}}</div>
+          <div class="content md-container">
+            <div class="desc" v-html="parseContent(item.content)"></div>
           </div>
         </div>
       </div>
@@ -44,8 +44,8 @@
                     <svg-icon class="icon" icon-class="reply" />
                   </div>
                 </div>
-                <div class="content">
-                  <div class="desc">{{ inner.content }}</div>
+                <div class="content md-container">
+                  <div class="desc" v-html="parseContent(inner.content)"></div>
                 </div>
               </div>
             </div>
@@ -63,6 +63,8 @@ import TextEditor from './textEditor.vue'
 import { reactive, toRefs, ref } from 'vue'
 import { replyItem, IreplyType, ICommentList } from '../../types'
 import dayjs from 'dayjs';
+import { formatEmoji } from './emoji'
+import { formartMd } from '../../utils/marked'
 
 interface Props {
   list?: ICommentList[];
@@ -89,6 +91,12 @@ const parseTime = (timeStr: string | null | undefined) => {
   } else {
     return ''
   }
+}
+const parseContent = (content: string | undefined) => {
+  if(typeof content === 'undefined') return ''
+  const temp = formatEmoji(content)
+  const last = formartMd(temp, false)
+  return last
 }
 const hanleReply = (clickItem: any, replyType: IreplyType, commentId : string | number) => {
   commentStr.value = '' // 清空框的内容

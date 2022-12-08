@@ -10,16 +10,17 @@ import { copyTextByDom } from './utils/dom'
 import "@/styles/reset.scss";
 import 'nprogress/nprogress.css'
 import './styles/md/index.less'
+import notification from './components/notification'
 
 // 复制代码
 const copyCode = () => {
   copyTextByDom('copy-code-btn', {
     deep: true,
     success: () => {
-      // message.success('代码复制成功~')
+      notification.info('代码复制成功~')
     },
     error: () => {
-      // message.error('代码复制失败~')
+      notification.error('代码复制失败~')
     }
   })
 }

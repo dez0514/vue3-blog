@@ -1,15 +1,16 @@
 import highlightJs from 'highlight.js'
 import { marked } from 'marked'
 // 解析markdown
-export const formartMd = (md: string) => {
+// hid: 标题dom是否需要设置id
+export const formartMd = (md: string, hid: boolean = true ) => {
   const renderer = new marked.Renderer()
-  console.log('renderer===', renderer)
+  // console.log('renderer===', renderer)
   let index = 0
   renderer.heading = (text, level) => {
-    if (level < 4) {
-      return `<h${level} id=${renderer.options.headerPrefix}${index++}>${text}</h${level}>\n`
-    } else {
+    if(!hid || level >= 4) {
       return `<h${level}>${text}</h${level}>\n`
+    } else {
+      return `<h${level} id=${renderer.options.headerPrefix}${index++}>${text}</h${level}>\n`
     }
   };
   renderer.image = (href, title, text) => {
