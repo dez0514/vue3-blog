@@ -117,7 +117,7 @@ console.log('contentHtml===', contentHtml.value)
 const emoji = ref(null)
 const showEmoji = ref<boolean>(false)
 const blurIndex = ref<number | null | undefined>(null)
-const emojiTabs = ['emoji', 'qq']
+const emojiTabs = ['emoji', 'QQ']
 const emojiTabIndex = ref<number>(0)
 const showPreview = ref<boolean>(false)
 const previewContent = ref<string>('')
@@ -213,6 +213,7 @@ const handleSubmit = async () => {
       console.log('cParams==', cParams)
       const res: any = await addComment(cParams)
       if(res.code === 0) {
+        contentHtml.value = ''
         emit('submitEmit')
       }
     } else { // 回复
@@ -228,6 +229,7 @@ const handleSubmit = async () => {
       const res: any = await addReply(rParams)
       console.log('res reply==', res)
       if(res.code === 0) {
+        contentHtml.value = ''
         emit('cancelReplyEmit')
         emit('submitEmit')
       }
@@ -352,7 +354,8 @@ const handleSubmit = async () => {
     margin-bottom: 10px;
     padding-bottom: 10px;
     .emoji-tab-item {
-      padding: 0 5px;
+      min-width: 60px;
+      padding: 5px;
       text-align: center;
       cursor: pointer;
       &.act {
@@ -371,11 +374,6 @@ const handleSubmit = async () => {
       width: 36px;
       height: 36px;
       -webkit-tap-highlight-color: transparent;
-      /* &:hover {
-        .tip-pic {
-          display: block;
-        }
-      } */
       img {
         display: block;
         width: 100%;
@@ -418,6 +416,10 @@ const handleSubmit = async () => {
       display: block;
     }
   }
+  .emoji-list-wrap .emoji-tab .emoji-tab-item:hover {
+    background: #eee;
+    border-radius: 5px;
+  }
 }
 .emoji-list-wrap::before {
   content: '';
@@ -442,12 +444,6 @@ const handleSubmit = async () => {
 @media screen and (max-width: 990px) {
   .tips {
     display: none;
-  }
-  .emoji-list-wrap {
-    width: calc(100vw - 20px);
-    .emoji-list {
-      width: 100%;
-    }
   }
 }
 .preview-content {

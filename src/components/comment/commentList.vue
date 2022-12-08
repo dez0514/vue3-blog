@@ -244,6 +244,7 @@ const submitCallback = () => {
   }
 
   .main .reply-btn {
+    z-index: 10;
     color: #20a0ff;
     border-color: #20a0ff;
     box-shadow: 0 5px 8px rgba(32, 160, 255, 0.3);
