@@ -13,7 +13,7 @@
         <div class="list-wrap">
           <card v-for="(item, index) in articleList" :key="index" :info="item"></card>
         </div>
-        <loading :is-show="isShowLoad" :status="loadState" :height="300" :isfixed="isLoadFixed" @refresh="getArtList" />
+        <loading :is-show="isShowLoad" :status="loadState" :height="300" :isfixed="isLoadFixed" @refresh="getArtList(true)" />
       </div>
     </div>
     <pagination :total="total" :page-size="pageSize" v-model:current-page="pageNumber"></pagination>

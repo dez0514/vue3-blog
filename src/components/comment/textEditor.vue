@@ -1,7 +1,6 @@
 <template>
   <div>
-    <textarea class="comment-mde" ref="commentmde" v-model="contentHtml" @input="onTextChange" placeholder="同道中人，理性留言..."
-      rows="5"></textarea>
+    <textarea class="comment-mde" ref="commentmde" v-model="contentHtml" rows="5" placeholder="同道中人，理性留言..." @input="onTextChange" @blur="blurEvent"></textarea>
     <div class="btn-wraps">
       <div class="btn-box">
         <div ref="emoji" class="btn emojo" @click="handleShowEmoji">
@@ -34,7 +33,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, toRefs, computed, nextTick } from 'vue'
+import { ref, toRefs, computed } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { ITopicType, IreplyType } from '../../types'
 import { addComment, addReply } from '../../api/comments'
@@ -79,6 +78,7 @@ const { topic_type, topic_id, reply_type, reply_id, to_uid, comment_id } = sourc
 const from_uid = ref<string>('') // 获取登录用户
 // 偷懒写法 content 在组件内控制的，多个text-editor切换显示用v-if, 否则各自的值不会清空，始终只有一个text-editor
 // const content = ref<string>('')
+const commentmde = ref<HTMLTextAreaElement | null>(null)
 const contentHtml = computed({
   get() {
     return modelValue.value
@@ -169,7 +169,23 @@ const faceList: faceItem[] = [
   { title: '发红包', url: 'fahongbao.gif' }
 ]
 const getImgUrl = (name: string) => {
-  return new URL(`/src/assets/face/${name}`, import.meta.url).href
+  return new URL(`/src/assets/images/face/${name}`, import.meta.url).href
+}
+const blurIndex = ref<number | null | undefined>(null)
+const blurEvent = () => {
+  // console.log(commentmde.value?.selectionStart)
+  blurIndex.value = commentmde.value?.selectionStart
+}
+// 插入内容到指定光标处
+const handleInsertContent = (text: string) => {
+  console.log('text==', text)
+  const index = blurIndex.value
+  if(typeof index === 'object' || typeof index === 'undefined') { // null undefined
+    contentHtml.value+= text
+  } else {
+    const str = contentHtml.value
+    contentHtml.value = str.slice(0, index) + text + str.slice(index)
+  }
 }
 const onTextChange = () => { }
 const handleShowEmoji = () => {
@@ -177,6 +193,7 @@ const handleShowEmoji = () => {
 }
 const handleClickEmoji = (item: faceItem) => {
   console.log('face==', item)
+  handleInsertContent(`[:${item.title}:]`)
 }
 const handlePreview = () => { }
 onClickOutside(emoji, () => {
@@ -189,6 +206,7 @@ const handleCancelReply = () => {
   emit('cancelReplyEmit')
 }
 const handleSubmit = async () => {
+  console.log('contentHtml.value====', contentHtml.value)
   try {
     from_uid.value = global_loginInfo.email
     if (!from_uid.value) {

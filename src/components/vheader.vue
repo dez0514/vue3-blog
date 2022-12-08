@@ -1,6 +1,6 @@
 <template>
   <div v-if="isPc" :class="['header', scrollHeight > 0 ? 'fixed' : '']">
-    <div class="header-left"><img src="../assets/logo.png" alt="" /></div>
+    <div class="header-left"><img src="../assets/images/logo.png" alt="" /></div>
     <div :class="['header-right', showSearch ? 'trans' : '']">
       <div class="header-desc">
         <div class="tab-list">
@@ -26,7 +26,7 @@
         <svg-icon icon-class="menu"></svg-icon>
       </div>
       <div class="logo-wrap">
-        <img src="../assets/logo.png" alt="" />
+        <img src="../assets/images/logo.png" alt="" />
       </div>
       <div class="header-btn" @click="handleIsShowSearch(true)">
         <svg-icon icon-class="search"></svg-icon>

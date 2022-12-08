@@ -31,7 +31,7 @@ import cardLine from '../../components/cardLine.vue'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 import { getArchivePage, getArchiveTime } from '../../api/articles'
-import bannerBg from '../../assets/write.jpg'
+import bannerBg from '../../assets/images/write.jpg'
 import loading from '../../components/loading/loading.vue'
 const isShowLoad = ref<boolean>(false)
 const loadState = ref<0 | 1 | 2>(0)

@@ -14,7 +14,7 @@ import { onMounted, ref } from 'vue'
 import banner from '../../components/banner/banner.vue';
 import comment from '../../components/comment/index.vue'
 import pagination from '../../components/pagination.vue';
-import bannerBg from '../../assets/comment.jpg'
+import bannerBg from '../../assets/images/comment.jpg'
 import { ICommentList } from '../../types'
 import { getCommentList } from '../../api/comments'
 import loading from '../../components/loading/loading.vue'

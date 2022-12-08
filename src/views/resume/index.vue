@@ -94,7 +94,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import avatar from '../../assets/resume-avatar.jpg';
+import avatar from '../../assets/images/resume-avatar.jpg';
 import docxtemplater from 'docxtemplater'
 import PizZip from 'pizzip'
 import PizZipUtils from 'pizzip/utils'

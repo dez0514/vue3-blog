@@ -70,7 +70,7 @@
 </template>
 <script lang="ts" setup>
 import banner from '../../components/banner/banner.vue'
-import bannerBg from '../../assets/me.jpg'
+import bannerBg from '../../assets/images/me.jpg'
 import { getRepos } from '../../api/user'
 import { onMounted, ref } from 'vue';
 import dayjs from 'dayjs';

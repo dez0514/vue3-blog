@@ -218,7 +218,9 @@ const submitCallback = () => {
     }
   }
 }
-
+.edit-box {
+  margin-bottom: 10px;
+}
 .children {
   margin-left: 48px;
 }

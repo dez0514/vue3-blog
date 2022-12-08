@@ -14,7 +14,7 @@
 </template>
 <script lang="ts" setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import bannerBg from '../../assets/search-bg.jpg'
+import bannerBg from '../../assets/images/search-bg.jpg'
 import banner from '../../components/banner/banner.vue'
 import card from '../../components/card.vue'
 import pagination from '../../components/pagination.vue'
