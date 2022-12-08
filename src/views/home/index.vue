@@ -139,7 +139,7 @@ onMounted(() => {
   .list-box {
     flex: 1;
     box-sizing:border-box;
-    min-height: 400px; /* 计算一下min-height比较好 */
+    min-height: calc(100vh - 82px - 138px - 320px - 50px); /* 计算一下min-height比较好 */
     padding: 30px 0 0;
     &.app {
       padding: 15px 15px 0;

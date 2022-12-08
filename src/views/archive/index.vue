@@ -119,7 +119,7 @@ onMounted(() => {
   display: flex;
   .list-box {
     box-sizing:border-box;
-    min-height: 350px; // 606px;
+    min-height: calc(100vh - 82px - 138px - 320px - 50px); // 606px;
     /* width: calc(100% - 150px); */
     flex: 1;
   }
