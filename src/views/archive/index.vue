@@ -2,7 +2,7 @@
   <div class="archive">
     <banner :banner="bannerBg" title="博客归档" />
     <div class="content">
-      <div style="width: 150px;flex-shrink: 0;padding-top: 20px;" v-if="isPc">
+      <div style="width: 150px;flex-shrink: 0;padding-top: 20px;" v-if="(isPc && dateList.length > 0)">
         <left-menu-wrap>
           <template #default>
             <nav-times ref="navtimes" :list="dateList" @change="getNavTime" />
@@ -120,7 +120,8 @@ onMounted(() => {
   .list-box {
     box-sizing:border-box;
     min-height: 350px; // 606px;
-    width: calc(100% - 150px);
+    /* width: calc(100% - 150px); */
+    flex: 1;
   }
   .list-box .list-wrap {
     overflow: hidden;

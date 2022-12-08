@@ -22,9 +22,9 @@
                 </div>
             </div>
         </div>
-        <div class="title" v-show="tagList.length > 0">导航</div>
-        <div class="bot-nav" v-show="tagList.length > 0">
-            <div class="items-wrap" v-for="(item, index) in tagList" :key="index" @click="handleClickTab(index, item.name)">
+        <div class="title" v-show="list.length > 0">导航</div>
+        <div class="bot-nav" v-show="list.length > 0">
+            <div class="items-wrap" v-for="(item, index) in list" :key="index" @click="handleClickTab(index, item.name)">
                 <div class="nav-wrap">
                     <div class="nav-item" :class="tabIndex === index ? 'active' : ''">
                         <div class="item-icon">
@@ -40,14 +40,17 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { getAllTags } from '../api/tags'
-import { baseURL } from '../api/urls'
-import { tagItem } from '../types/index'
+import { ref, toRefs } from "vue"
+interface Props {
+  list?: any;
+}
+const props = withDefaults(defineProps<Props>(), {
+  list: () => []
+})
+const { list } = toRefs(props)
 const emit = defineEmits<{
   (e: 'change', obj: { tag: string, ishot: boolean }): void
 }>()
-const tagList = ref<tagItem[]>([])
 const tabIndex = ref<number>(-2)
 const handleClickTab = (index: number, name: string) => {
     if (tabIndex.value === index) return;
@@ -55,23 +58,6 @@ const handleClickTab = (index: number, name: string) => {
     const ishot = index === -1
     emit('change', { tag: name, ishot: ishot })
 }
-const getTagList = () => {
-  getAllTags().then((res: any) => {
-    if(res.code === 0) {
-      tagList.value = res.data.map((item: any) => {
-        return {
-          ...item,
-          icon: item.icon ? `${baseURL}/imgs/${item.icon}` : ''
-        }
-      })
-    } else {
-
-    }
-  })
-}
-onMounted(() => {
-  getTagList()
-})
 </script>
 <style lang="scss" scoped>
 .top-nav {

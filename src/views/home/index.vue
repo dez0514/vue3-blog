@@ -2,10 +2,10 @@
   <div class="home">
     <banner mode="swiper" :banner-list="bannerList"/>
     <div class="content">
-      <div class="left-menu-con" v-if="isPc">
+      <div class="left-menu-con" v-if="(isPc && tagList.length > 0)">
         <left-menu-wrap>
           <template #default>
-            <nav-tags @change="getCurTag" />
+            <nav-tags :list="tagList" @change="getCurTag" />
           </template>
         </left-menu-wrap>
       </div>
@@ -30,6 +30,9 @@ import { getArticlesPage } from '../../api/articles'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
 import loading from '../../components/loading/loading.vue'
+import { getAllTags } from '../../api/tags'
+import { tagItem } from '../../types/index'
+import { baseURL } from '../../api/urls'
 const isShowLoad = ref<boolean>(false)
 const loadState = ref<0 | 1 | 2>(0)
 const isLoadFixed = ref<boolean>(false)
@@ -44,9 +47,6 @@ const pageNumber = ref<number>(1)
 const total = ref<number>(0)
 const pageSize = ref<number>(10) 
 const articleList = ref<any>([])
-interface tagItem {
-  name?: string;
-}
 interface bannerItem {
   title: string;
   extraTitle: string;
@@ -57,6 +57,7 @@ interface bannerItem {
 const bannerList = ref<bannerItem[]>([])
 const ishot = ref<boolean>(false)
 const tag = ref<string>('')
+const tagList = ref<tagItem[]>([])
 const getCurTag = (obj: { tag: string, ishot: boolean }) => {
   tag.value = obj.tag
   ishot.value = obj.ishot
@@ -105,7 +106,20 @@ const getArtList = (init: boolean = false) => {
     setLoadState(true, 2, false)
   })
 }
+const getTagList = () => {
+  getAllTags().then((res: any) => {
+    if(res.code === 0) {
+      tagList.value = res.data.map((item: any) => {
+        return {
+          ...item,
+          icon: item.icon ? `${baseURL}/imgs/${item.icon}` : ''
+        }
+      })
+    }
+  })
+}
 onMounted(() => {
+  getTagList()
   getArtList(true)
 })
 </script>
