@@ -20,7 +20,7 @@
       <div id="art_wrap" :class="['art-wrap', (isPc && isShowMenu && detailMenuList.length > 0) ? '':'hideside']">
         <div :class="['article-content', isPc ? '_pc' : '']">
           <github-corner v-show="!isShowLoadErr" position="left" fill="#20a0ff" color="#fff" :blank="true" repo="https://github.com/dez0514" />
-          <div class="meta" v-show="!isShowLoadErr">
+          <div class="meta" v-show="!isShowLoadErr && detailInfo">
             <div>{{ (detailInfo && detailInfo.update_time) ? parseTime(detailInfo.update_time) : parseTime(detailInfo?.create_time)}}</div>
             <div class="meta-icon"><svg-icon icon-class="time" /></div>
             <div class="meta-txt">{{ tagStr }}</div>
@@ -31,7 +31,7 @@
           <div v-show="!isShowLoadErr" :class="['control-wrap', isPc ? 'show_after' : '']">
             <div class="control-content" :style="{ overflow: !isPc ? 'hidden' : 'auto' }">
               <Tooltip content="点赞" color="#ff7849">
-                <div class="control-btn" :class="hasLiked ? 'liked' : ''" @click="handleSetLike">
+                <div class="control-btn" :class="detailInfo && detailInfo?.hasLike ? 'liked' : ''" @click="handleSetLike">
                   <div class="control-icon"><svg-icon icon-class="like" /></div>
                   <div class="control-txt">{{ detailInfo?.likes }}</div>
                 </div>
@@ -77,7 +77,7 @@ import { detailPageStore } from '../../store/detail'
 import { storeToRefs } from 'pinia'
 import { GithubCorner } from '@vfup/github-corner'
 import '@vfup/github-corner/dist/style.css'
-import { getArticleDetail } from '../../api/articles'
+import { getArticleDetail, addLike } from '../../api/articles'
 import { useRoute } from 'vue-router'
 import { formartMd, getMdTitleList, MdTitle } from '../../utils/marked'
 import { setScrollTop, getOffsetTop } from '../../utils/dom'
@@ -114,17 +114,24 @@ const detailMenuList = ref<MdTitle[]>([])
 const activeMenuIndex = ref<number>(0)
 const detailbox = ref(null as HTMLDivElement | null)
 const commentsArr = ref<ICommentList[]>([])
-const hasLiked = ref<boolean>(false)
 const handleSetLike = () => {
-  if(hasLiked.value) {
-    notification.info('您已点过赞了。')
+  if(detailInfo.value.hasLike) {
+    // 加这个 要定期刷新页面，否则点赞时间过期了，此标识不会刷新
+    notification.error('您已点过赞了。')
     return
   }
-  hasLiked.value = true
-  // console.log(detailInfo.value)
-  if(detailInfo.value) {
-    detailInfo.value.likes = detailInfo.value?.likes + 1
-  }
+  if(!articleId.value) return
+  // 获取cookie里的浏览信息，如果有信息就提示已经点过赞
+  addLike({ id: articleId.value }).then((res: any) => {
+    if(res.code === 0) {
+      if(detailInfo.value) {
+        detailInfo.value.likes = detailInfo.value?.likes + 1
+        detailInfo.value.hasLike = true
+      }
+    } else {
+      notification.error(res.message)
+    }
+  })
 }
 const setLoadErrShowState = (showType: boolean, errtype: 'isShowLoadErr' | 'isShowCommentErr' = 'isShowLoadErr') => {
   if(errtype === 'isShowCommentErr') {
@@ -159,6 +166,7 @@ const handleClickMenu = (index: number, item: MdTitle) => {
 }
 const getArticleById = (id: string | number) => {
   setLoadErrShowState(false)
+  // 获取cookie里的浏览信息，如果没有信息就 通知接口更新浏览量
   getArticleDetail({ id }, { loading: true }).then((res: any) => {
     // console.log('detail===', res)
     if (res.code === 0) {
