@@ -124,3 +124,8 @@ console.log(appContext)
 1. 如果 cookie， session 都没有信息就显示未登录
 2. cookie 如果cookie里有登录信息就 利用此信息 调接口获取完整信息 存session， 显示已登录
 3. 如果 cookie 没有信息，session 有完整信息 显示为已登录， 没有完整信息那就清除信息，显示为未登录
+
+#### 其他好看的网站
+// https://ybiis.com/
+// https://heitaosan.com/cross
+// https://blog.yxbug.cn/guestbook.html
