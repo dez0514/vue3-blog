@@ -1,38 +1,20 @@
 <template>
   <div>
     <textarea class="comment-mde" ref="commentmde" v-model="contentHtml" rows="5" placeholder="同道中人，理性留言..." @input="onTextChange" @blur="blurEvent"></textarea>
+    <div :class="['emoji-board', showEmoji ? 'open': '']">
+      <emoji-box @emojiClick="handleClickEmoji"/>
+    </div>
     <div class="btn-wraps">
       <div class="btn-box">
         <div ref="emoji" class="btn emojo" @click="handleShowEmoji">
-          <svg-icon icon-class="emoji"></svg-icon>
-          <div class="emoji-list-wrap" v-show="showEmoji" @click.stop>
-            <div class="emoji-tab">
-              <div :class="['emoji-tab-item', index === emojiTabIndex ? 'act' : '']" v-for="(item, index) in emojiTabs" :key="index" @click="handleEmojiTab(index)">{{ item }}</div>
-            </div>
-            <ul class="emoji-list" v-show="(emojiTabIndex === 0)">
-              <li class="emoji-item" v-for="(item, index) in emojiList" :key="index"
-                @click.prevent="handleClickEmoji(item)">
-                <img class="emoji-pic" :src="item.url" alt="" />
-                <div class="tip-pic">
-                  <div class="tip">{{ item.cn }}</div>
-                  <img class="pic" :src="item.url" alt="" />
-                </div>
-              </li>
-            </ul>
-            <ul class="emoji-list face" v-show="(emojiTabIndex === 1)">
-              <li class="emoji-item" v-for="(item, index) in faceList" :key="index"
-                @click.prevent="handleClickEmoji(item)">
-                <img class="emoji-pic" :src="item.url" alt="" />
-                <div class="tip-pic">
-                  <div class="tip">{{ item.cn }}</div>
-                  <img class="pic" :src="item.url" alt="" />
-                </div>
-              </li>
-            </ul>
-          </div>
+          <tooltip content="表情">
+            <svg-icon icon-class="emoji"></svg-icon>
+          </tooltip>
         </div>
         <div class="btn preview" @click="handlePreview">
-          <svg-icon icon-class="preview"></svg-icon>
+          <tooltip content="预览">
+            <svg-icon icon-class="preview"></svg-icon>
+          </tooltip>
         </div>
       </div>
       <div class="btn-box">
@@ -53,14 +35,15 @@
   </div>
 </template>
 <script lang="ts" setup>
+import EmojiBox from './emoji.vue'
+import tooltip from '../tooltip.vue'
 import { ref, toRefs, computed, watch } from 'vue'
-import { onClickOutside } from '@vueuse/core'
 import { ITopicType, IreplyType } from '../../types'
 import { addComment, addReply } from '../../api/comments'
 import { useLoginInfo } from '../../utils/useLoginInfo'
 import notification from '../notification/index'
 import { checkMint } from '../../utils'
-import { emojiList, faceList, EmojiItem, formatEmoji } from './emoji'
+import { EmojiItem, formatEmoji } from './emoji'
 import { formartMd } from '../../utils/marked'
 import { configStore } from '../../store'
 import { storeToRefs } from 'pinia'
@@ -117,8 +100,6 @@ console.log('contentHtml===', contentHtml.value)
 const emoji = ref(null)
 const showEmoji = ref<boolean>(false)
 const blurIndex = ref<number | null | undefined>(null)
-const emojiTabs = ['emoji', 'QQ']
-const emojiTabIndex = ref<number>(0)
 const showPreview = ref<boolean>(false)
 const previewContent = ref<string>('')
 watch(isShowMask, (val) => {
@@ -127,9 +108,6 @@ watch(isShowMask, (val) => {
     showPreview.value = false
   }
 })
-const handleEmojiTab = (index: number) => {
-  emojiTabIndex.value = index
-}
 const blurEvent = () => {
   // console.log(commentmde.value?.selectionStart)
   blurIndex.value = commentmde.value?.selectionStart
@@ -150,11 +128,6 @@ const onTextChange = () => { }
 const handleShowEmoji = () => {
   showEmoji.value = !showEmoji.value
 }
-onClickOutside(emoji, () => {
-  if (showEmoji.value) {
-    showEmoji.value = false
-  }
-})
 const handleClickEmoji = (item: EmojiItem) => {
   console.log('face==', item)
   handleInsertContent(`[emoji=${item.name}]`)
@@ -249,6 +222,7 @@ const handleSubmit = async () => {
 
 .comment-mde {
   box-sizing: border-box;
+  margin-bottom: 2px;
   width: 100%;
   display: block;
   color: #738192;
@@ -270,7 +244,17 @@ const handleSubmit = async () => {
   border-color: #20a0ff;
   background-color: #fff;
 }
-
+.emoji-board {
+  overflow: hidden;
+  max-height: 0;
+  transition: .5s max-height;
+  border-radius: 8px;
+  border: 0;
+  &.open  {
+    max-height: 272px;
+    border: 1px solid #e6eaf0;
+  }
+}
 .btn-wraps {
   margin-top: 10px;
   display: flex;
@@ -335,112 +319,6 @@ const handleSubmit = async () => {
   }
 }
 
-.emoji-list-wrap {
-  box-sizing: border-box;
-  z-index: 10;
-  position: absolute;
-  top: calc(100% + 12px);
-  left: -5px;
-  background: #fff;
-  border: 1px solid #e6eaf0;
-  padding: 10px;
-  border-radius: 5px;
-  user-select: none;
-  box-shadow: 0 15px 20px var(--gray_opacity_2);
-  .emoji-tab {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #e6eaf0;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    .emoji-tab-item {
-      min-width: 60px;
-      padding: 5px;
-      text-align: center;
-      cursor: pointer;
-      &.act {
-        color: #20a0ff;
-      }
-    }
-  }
-  .emoji-list {
-    box-sizing: border-box;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-column-gap: 10px;
-    grid-row-gap: 10px;
-    .emoji-item {
-      position: relative;
-      width: 36px;
-      height: 36px;
-      -webkit-tap-highlight-color: transparent;
-      img {
-        display: block;
-        width: 100%;
-      }
-      .tip-pic {
-        z-index: 800;
-        position: absolute;
-        top: -105px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: none;
-        padding: 10px;
-        width: 70px;
-        background: #fff;
-        box-shadow: 0 15px 20px var(--gray_opacity_2);
-        border-radius: 8px;
-        .tip {
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          margin-bottom: 5px;
-          font-size: 14px;
-          text-align: center;
-        }
-      }
-    }
-    &.face {
-      grid-template-columns: repeat(10, 1fr);
-      .emoji-item {
-        width: 26px;
-        height: 26px;
-      }
-    }
-  }
-}
-
-@media(any-hover: hover) {
-  .emoji-list-wrap .emoji-list .emoji-item:hover {
-    .tip-pic {
-      display: block;
-    }
-  }
-  .emoji-list-wrap .emoji-tab .emoji-tab-item:hover {
-    background: #eee;
-    border-radius: 5px;
-  }
-}
-.emoji-list-wrap::before {
-  content: '';
-  position: absolute;
-  left: 10px;
-  top: -10px;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid #e6eaf0;
-  width: 0;
-}
-.emoji-list-wrap::after {
-  content: '';
-  position: absolute;
-  left: 12px;
-  top: -8px;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-bottom: 9px solid #fff;
-  width: 0;
-}
 @media screen and (max-width: 990px) {
   .tips {
     display: none;
