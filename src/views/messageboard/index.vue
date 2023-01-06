@@ -65,13 +65,16 @@ onMounted(() => {
   min-height: calc(100vh - 58px - 138px);
   position: relative;
 }
+.message-content {
+  margin-top: 20px;
+  padding-bottom: 50px;
+}
 @media screen and (max-width: 990px) {
   .massageboard {
     min-height: calc(100vh - 58px - 60px);
   }
-}
-.message-content {
-  margin-top: 20px;
-  padding-bottom: 50px;
+  .message-content {
+    padding-bottom: 20px;
+  }
 }
 </style>
