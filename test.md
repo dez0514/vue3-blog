@@ -61,12 +61,8 @@ const props = defineProps({
 })
 ```
 todo: 
-1. 导航栏。 pc
-2. 列表 card， 归档card。 pc app
-3. 分页器。 pc app  重写一个。。。
-4. 关于
-5. 文章详情 解析markdown, 代码块显示，文章大纲导航处理
-6. 留言板
+1. 分页器。 pc app  重写一个。。。
+
 
 
 ts 定义接口或者type:
@@ -129,3 +125,11 @@ console.log(appContext)
 // https://ybiis.com/
 // https://heitaosan.com/cross
 // https://blog.yxbug.cn/guestbook.html
+
+#### 网页置灰
+```
+body {
+  filter: grayscale(100%);
+}
+```
+
